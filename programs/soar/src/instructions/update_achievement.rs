@@ -12,14 +12,13 @@ pub fn handler(
     if let Some(title) = new_title {
         achievement.title = title;
     }
-    if let Some(desc) = new_description {
-        achievement.description = desc;
+    if let Some(description) = new_description {
+        achievement.description = description;
     }
     if let Some(meta) = new_meta {
         achievement.nft_meta = meta;
     }
 
     achievement.check_field_lengths()?;
-
     Ok(())
 }

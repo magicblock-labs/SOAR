@@ -16,11 +16,11 @@ pub fn handler(
     }
 
     if let Some(new_auth) = new_auth {
-        let initial_len = game_account.auth.len();
-        let prev_size = Game::calculate_size(initial_len);
+        let initial_auth_len = game_account.auth.len();
+        let prev_size = Game::size_with_auths(initial_auth_len);
 
         let new_size = prev_size
-            .checked_sub(initial_len * 32)
+            .checked_sub(initial_auth_len * 32)
             .unwrap()
             .checked_add(new_auth.len() * 32)
             .unwrap();
@@ -32,7 +32,7 @@ pub fn handler(
             new_size,
         )?;
 
-        game_account.set_auth(new_auth);
+        game_account.auth = new_auth;
     };
 
     Ok(())

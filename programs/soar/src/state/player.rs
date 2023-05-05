@@ -7,12 +7,12 @@ impl PlayerInfo {
     pub const SIZE: usize = 8 + // discriminator                
         8 + 32 + Self::MAX_USERNAME_LEN + 8 + 32;
 
-    pub fn new(id: u64, username: String, rank: u64, nft_meta: Pubkey, user: Pubkey) -> Self {
+    pub fn new(id: u64, username: String, nft_meta: Pubkey, user: Pubkey) -> Self {
         PlayerInfo {
             id,
             user,
             username,
-            rank,
+            rank: 0,
             nft_meta,
         }
     }

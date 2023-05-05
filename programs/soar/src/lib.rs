@@ -58,7 +58,7 @@ pub mod soar {
         update_achievement::handler(ctx, new_title, new_description, nft_meta)
     }
 
-    /// Overwrite the active [Leaderboard] and set a newly created one.
+    /// Overwrite the active [LeaderBoard] and set a newly created one.
     pub fn add_leaderboard(
         ctx: Context<AddLeaderBoard>,
         input: RegisterLeaderBoardInput,
@@ -69,11 +69,20 @@ pub mod soar {
     /// Create a [PlayerInfo] account for a particular user.
     pub fn create_player(
         ctx: Context<NewPlayer>,
-        id: u64,
+        unique_id: u64, // u64 or String?
         username: String,
         nft_meta: Pubkey,
     ) -> Result<()> {
-        create_player::handler(ctx, id, username, nft_meta)
+        create_player::handler(ctx, unique_id, username, nft_meta)
+    }
+
+    /// Update the username or nft_meta for a [PlayerInfo] account.
+    pub fn update_player(
+        ctx: Context<UpdatePlayer>,
+        username: Option<String>,
+        nft_meta: Option<Pubkey>,
+    ) -> Result<()> {
+        update_player::handler(ctx, username, nft_meta)
     }
 
     /// Register a [PlayerInfo] for a particular [Leaderboard], resulting in a newly-
@@ -231,7 +240,7 @@ pub struct RegisterPlayer<'info> {
     #[account(
         init,
         payer = user,
-        space = PlayerEntryList::initial_size(), // TODO: Handle entry list size and possible reallocs
+        space = PlayerEntryList::initial_size(),
         seeds = [seeds::ENTRY, player_info.key().as_ref(), leaderboard.key().as_ref()],
         bump
     )]
@@ -240,6 +249,14 @@ pub struct RegisterPlayer<'info> {
 }
 
 #[derive(Accounts)]
+pub struct UpdatePlayer<'info> {
+    pub user: Signer<'info>,
+    #[account(mut)]
+    pub player_info: Account<'info, PlayerInfo>,
+}
+
+#[derive(Accounts)]
+// TODO: Optionally update rank here or use a separate ix for that.
 pub struct SubmitScore<'info> {
     #[account(mut)]
     pub user: Signer<'info>,
@@ -253,4 +270,14 @@ pub struct SubmitScore<'info> {
     #[account(has_one = player_info, has_one = leaderboard)]
     pub player_entries: Account<'info, PlayerEntryList>,
     pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct MergePlayerId<'info> {
+    pub user: Signer<'info>,
+}
+
+#[derive(Accounts)]
+pub struct SubmitAchievement<'info> {
+    pub authority: Signer<'info>,
 }

@@ -33,10 +33,11 @@ pub fn handler<'a>(ctx: Context<'_, '_, '_, 'a, MergePlayerAccounts<'a>>, hint: 
     // 3. `user` is the valid user for that playerinfo account.
     // 4. `player_account` hasn't been "merged" before.
     for (user, player_account) in pairs {
-        let deserialized = Account::<'a, PlayerInfo>::try_from(player_account)?;
+        let mut deserialized = Account::<'a, PlayerInfo>::try_from(player_account)?;
         require!(user.is_signer, CrateError::MissingSignature);
         require_keys_eq!(deserialized.user, user.key());
         require_keys_eq!(deserialized.merged, Pubkey::default());
+        deserialized.merged = merge_account.key();
 
         player_infos.push(deserialized);
     }

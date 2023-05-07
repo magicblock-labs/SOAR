@@ -5,8 +5,6 @@ use crate::utils::create_account;
 use crate::{state::PlayerInfo, CrateError, MergePlayerAccounts};
 use std::collections::HashSet;
 
-/// Merge multiple accounts as belonging to the same user. The `hint` argument
-/// specifies the number of additional accounts to be merged.
 pub fn handler<'a>(ctx: Context<'_, '_, '_, 'a, MergePlayerAccounts<'a>>, hint: u64) -> Result<()> {
     let active_user = &mut ctx.accounts.user;
     let active_player_info = &ctx.accounts.player_info;

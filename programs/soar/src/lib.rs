@@ -96,6 +96,8 @@ pub mod soar {
         submit_score::handler(ctx, score)
     }
 
+    /// Merge multiple accounts as belonging to the same user. The `hint` argument
+    /// specifies the number of additional accounts to be merged.
     pub fn merge_player_accounts<'info>(ctx: Context<'_, '_, '_, 'info, MergePlayerAccounts<'info>>, hint: u64) -> Result<()> {
         merge_players::handler(ctx, hint)
     }

@@ -56,3 +56,9 @@ impl GameMeta {
         Ok(())
     }
 }
+
+impl Merged {
+    pub fn size(key_count: usize) -> usize {
+        4 + (key_count * 32)
+    }
+}

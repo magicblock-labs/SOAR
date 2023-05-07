@@ -87,15 +87,6 @@ pub mod soar {
 
     /// Register a [PlayerInfo] for a particular [Leaderboard], resulting in a newly-
     /// created [PlayerEntryList] account.
-    ///
-    // TODO: Is this a good idea if leaderboards can change? That would mean players
-    // need to register to each newly created leaderboard. There also `must` be checks
-    // that render the old leaderboards invalid.
-    //
-    // Alternatively, it could be better to have the connection be between the player_info
-    // and the game itself. This way a player has the same player_entry_list account
-    // irrespective of changes in the leaderboard. An entry could still contain a reference to
-    // the leaderboard that was active when it was made.
     pub fn register_player(ctx: Context<RegisterPlayer>) -> Result<()> {
         register_player::handler(ctx)
     }
@@ -103,6 +94,10 @@ pub mod soar {
     /// Submit a score for a player and have it timestamped and added to the [PlayerEntryList]
     pub fn submit_score(ctx: Context<SubmitScore>, score: u64) -> Result<()> {
         submit_score::handler(ctx, score)
+    }
+
+    pub fn merge_player_accounts<'info>(ctx: Context<'_, '_, '_, 'info, MergePlayerAccounts<'info>>, hint: u64) -> Result<()> {
+        merge_players::handler(ctx, hint)
     }
 }
 
@@ -273,8 +268,14 @@ pub struct SubmitScore<'info> {
 }
 
 #[derive(Accounts)]
-pub struct MergePlayerId<'info> {
+pub struct MergePlayerAccounts<'info> {
+    #[account(mut)]
     pub user: Signer<'info>,
+    #[account(has_one = user)]
+    pub player_info: Account<'info, PlayerInfo>,
+    /// CHECK: The [Merge] account to be initialized in handler.
+    pub merge_account: UncheckedAccount<'info>,
+    pub system_program: Program<'info, System>,
 }
 
 #[derive(Accounts)]

@@ -93,6 +93,17 @@ pub struct PlayerInfo {
     pub rank: u64,
     /// Metadata to represent this player.
     pub nft_meta: Pubkey,
+    /// Address of a [Merged] account that contains a list of all other
+    /// [PlayerInfo] accounts owned by the same user of this account.
+    pub merged: Pubkey,
+}
+
+#[account]
+#[derive(Default)]
+/// An account that holds a collection of [PlayerInfo]s that belong to the
+/// same player.
+pub struct Merged {
+    pub keys: Vec<Pubkey>,
 }
 
 #[account]

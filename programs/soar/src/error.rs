@@ -9,4 +9,8 @@ pub enum CrateError {
     /// Returned if the wrong authority attempts to sign for an instruction
     #[msg("Invalid authority for instruction")]
     InvalidAuthority,
+
+    /// Returned if an account that's expected to sign doesn't.
+    #[msg("An expected signature isn't present")]
+    MissingSignature,
 }

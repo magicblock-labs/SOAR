@@ -1,4 +1,9 @@
 {
+    "workspaces": [
+        "client/sdk",
+        "client/tests"
+    ],
+    "private": true,
     "scripts": {
         "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
         "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check"

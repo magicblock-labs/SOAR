@@ -1,0 +1,29 @@
+{
+    "name": "soar_sdk",
+    "version": "0.1.7",
+    "description": "Sdk bindings for the SOAR smart contract.",
+    "main": "dist/index.js",
+    "module": "dist/index.mjs",
+    "types": "dist/index.d.ts",
+    "type": "commonjs",
+    "exports": {
+      ".": {
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.js"
+      }
+    },
+    "scripts": {
+      "build": "rimraf dist; tsup",
+      "lint": "eslint -c ../../.eslintrc.yml --ext .ts,.tsx src"
+    },
+    "files": [
+      "dist"
+    ],
+    "dependencies": {
+      "@coral-xyz/anchor": "^0.26.0",
+      "@solana/web3.js": "^1.73.2",
+      "@solana/spl-token": "^0.3.7",
+      "bn.js": "^5.2.1"
+    }
+  }
+  

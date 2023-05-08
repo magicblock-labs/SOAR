@@ -14,7 +14,7 @@ pub const MAX_DESCRIPTION_LEN: usize = 200;
 #[derive(Default)]
 /// An account representing a single game.
 ///
-/// Seeds: `[b"game", game_title.as_bytes(), creator.key().as_ref()]`
+/// Seeds: `[b"game", creator.key().as_ref()]`
 pub struct Game {
     /// Game information.
     pub meta: GameMeta,
@@ -56,7 +56,7 @@ pub struct LeaderBoard {
 
 /// Represents a single achievement for a [Game].
 ///
-/// Seeds = `[b"achievement", game.key().as_ref(), id.to_le_bytes().as_ref()]`
+/// Seeds = `[b"achievement", game.key().as_ref(), title.as_bytes()]`
 #[account]
 pub struct Achievement {
     /// The game account it derives from.
@@ -81,10 +81,8 @@ pub struct Reward {
 #[derive(Default)]
 /// An account representing a player.
 ///
-/// Seeds: `[b"player", user.key().as_ref(), username.to_le_bytes()]`
+/// Seeds: `[b"player", user.key().as_ref()]`
 pub struct PlayerInfo {
-    /// The player's unique id.
-    pub id: u64,
     /// The wallet that owns this player-info account
     pub user: Pubkey,
     /// The player's username.
@@ -114,9 +112,11 @@ pub struct Merged {
 pub struct PlayerEntryList {
     /// The player_info account this entry is derived from
     pub player_info: Pubkey,
-    /// The leaderboard this entry derives from.
+    /// The leaderboard this entry derives from. 
+    // TODO: Get rid.
     pub leaderboard: Pubkey,
     /// Keep track of how many [StoreEntry]s are in the scores vec.
+    // TODO: Get rid.
     pub score_count: u64,
     /// Collection of entries.
     pub scores: Vec<ScoreEntry>,

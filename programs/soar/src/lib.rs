@@ -24,9 +24,8 @@ pub mod soar {
         ctx: Context<InitializeGame>,
         game_meta: GameMeta,
         game_auth: Vec<Pubkey>,
-        lb_input: RegisterLeaderBoardInput,
     ) -> Result<()> {
-        create_game::handler(ctx, game_meta, game_auth, lb_input)
+        create_game::handler(ctx, game_meta, game_auth)
     }
 
     /// Update a [Game]'s meta-information or authority list.
@@ -69,11 +68,10 @@ pub mod soar {
     /// Create a [PlayerInfo] account for a particular user.
     pub fn create_player(
         ctx: Context<NewPlayer>,
-        unique_id: u64, // u64 or String?
         username: String,
         nft_meta: Pubkey,
     ) -> Result<()> {
-        create_player::handler(ctx, unique_id, username, nft_meta)
+        create_player::handler(ctx, username, nft_meta)
     }
 
     /// Update the username or nft_meta for a [PlayerInfo] account.
@@ -91,14 +89,18 @@ pub mod soar {
         register_player::handler(ctx)
     }
 
-    /// Submit a score for a player and have it timestamped and added to the [PlayerEntryList]
-    pub fn submit_score(ctx: Context<SubmitScore>, score: u64) -> Result<()> {
+    /// Submit a score for a player and have it timestamped and added to the [PlayerEntryList].
+    /// Optionally increase the player's rank if needed.
+    pub fn submit_score(ctx: Context<SubmitScore>, score: u64, _rank: Option<u64>) -> Result<()> {
         submit_score::handler(ctx, score)
     }
 
     /// Merge multiple accounts as belonging to the same user. The `hint` argument
     /// specifies the number of additional accounts to be merged.
-    pub fn merge_player_accounts<'info>(ctx: Context<'_, '_, '_, 'info, MergePlayerAccounts<'info>>, hint: u64) -> Result<()> {
+    pub fn merge_player_accounts<'info>(
+        ctx: Context<'_, '_, '_, 'info, MergePlayerAccounts<'info>>,
+        hint: u64,
+    ) -> Result<()> {
         merge_players::handler(ctx, hint)
     }
 }
@@ -112,18 +114,10 @@ pub struct InitializeGame<'info> {
         init,
         payer = creator,
         space = Game::size_with_auths(auth.len()),
-        seeds = [seeds::GAME, meta.title.as_bytes(), creator.key().as_ref()],
+        seeds = [seeds::GAME, meta.title.as_bytes()],
         bump
     )]
     pub game: Account<'info, Game>,
-    #[account(
-        init,
-        payer = creator,
-        space = LeaderBoard::SIZE,
-        seeds = [seeds::LEADER, game.key().as_ref(), 1_u64.to_le_bytes().as_ref()],
-        bump
-    )]
-    pub leaderboard: Account<'info, LeaderBoard>,
     pub system_program: Program<'info, System>,
 }
 
@@ -157,7 +151,6 @@ pub struct AddAchievement<'info> {
         init,
         payer = payer,
         space = Achievement::SIZE,
-        // Todo: last seed okay as title or to use incrementing index?
         seeds = [seeds::ACHIEVEMENT, game.key().as_ref(), title.as_bytes()],
         bump,
     )]
@@ -195,7 +188,6 @@ pub struct AddLeaderBoard<'info> {
         init,
         payer = payer,
         space = LeaderBoard::SIZE,
-        // last seed okay as title or to use incrementing index?
         seeds = [seeds::LEADER, game.key().as_ref(), &next_leaderboard_id(&game).to_le_bytes()],
         bump,
     )]
@@ -216,8 +208,7 @@ pub struct NewPlayer<'info> {
         init,
         payer = user,
         space = PlayerInfo::SIZE,
-        // Todo: Leave last seed as username or use id instead?
-        seeds = [seeds::PLAYER, user.key().as_ref(), username.as_bytes()],
+        seeds = [seeds::PLAYER, user.key().as_ref()],
         bump,
     )]
     pub player_info: Account<'info, PlayerInfo>,

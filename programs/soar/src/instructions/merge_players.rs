@@ -1,8 +1,8 @@
-use anchor_lang::prelude::*;
-use anchor_lang::solana_program::account_info::next_account_info;
 use crate::state::Merged;
 use crate::utils::create_account;
 use crate::{state::PlayerInfo, CrateError, MergePlayerAccounts};
+use anchor_lang::prelude::*;
+use anchor_lang::solana_program::account_info::next_account_info;
 use std::collections::HashSet;
 
 pub fn handler<'a>(ctx: Context<'_, '_, '_, 'a, MergePlayerAccounts<'a>>, hint: u64) -> Result<()> {
@@ -11,7 +11,7 @@ pub fn handler<'a>(ctx: Context<'_, '_, '_, 'a, MergePlayerAccounts<'a>>, hint: 
     let merge_account = &ctx.accounts.merge_account;
     let system_program = &ctx.accounts.system_program;
 
-    // We use `ctx.remaining_accounts()` to can pass in a variable number of accounts to be merged. 
+    // We use `ctx.remaining_accounts()` to can pass in a variable number of accounts to be merged.
     // This requires that the accounts be passed in a specified order i.e: The user account comes
     // first and is followed by the player_account, repeated for as many accounts there are to be merged.
     let accounts_to_merge = &mut ctx.remaining_accounts.iter();
@@ -51,12 +51,7 @@ pub fn handler<'a>(ctx: Context<'_, '_, '_, 'a, MergePlayerAccounts<'a>>, hint: 
         .collect();
 
     let size = Merged::size(keys.len());
-    create_account(
-        size,
-        &merge_account,
-        &active_user,
-        system_program,
-    )?;
+    create_account(size, merge_account, active_user, system_program)?;
 
     let mut merge_account = Account::<'_, Merged>::try_from(merge_account)?;
     merge_account.keys = keys;

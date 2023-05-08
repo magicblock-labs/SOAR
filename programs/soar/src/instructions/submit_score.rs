@@ -40,7 +40,7 @@ pub fn handler(ctx: Context<SubmitScore>, score: u64) -> Result<()> {
     }
 
     player_entries.scores.push(entry);
-
     player_entries.score_count = count.checked_add(1).unwrap();
+
     Ok(())
 }

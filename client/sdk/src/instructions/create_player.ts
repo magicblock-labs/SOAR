@@ -1,29 +1,24 @@
 import { type Program } from "@coral-xyz/anchor";
-import { PublicKey, SystemProgram, TransactionInstruction } from "@solana/web3.js";
+import {
+  type PublicKey,
+  SystemProgram,
+  type TransactionInstruction,
+} from "@solana/web3.js";
 import { type Soar } from "../idl/soar";
-import { derivePlayerInfoAddress } from "../utils";
 
-export type CreatePlayerArgs = {
-  username: string,
-  nftMeta: PublicKey,
-}
-type CreatePlayerAccounts = Soar["instructions"]["5"]["accounts"];
-
-export const createPlayer = async (
+export const createPlayerInstruction = async (
   program: Program<Soar>,
+  newPlayerInfo: PublicKey,
   user: PublicKey,
   username: string,
-  nftMeta: PublicKey,
+  nftMeta: PublicKey
 ): Promise<TransactionInstruction> => {
-  const newPlayer = derivePlayerInfoAddress(user, program.programId)[0];
-
   return program.methods
     .createPlayer(username, nftMeta)
     .accounts({
-      user: user,
-      playerInfo: newPlayer,
+      user,
+      playerInfo: newPlayerInfo,
       systemProgram: SystemProgram.programId,
     })
     .instruction();
-}
-
+};

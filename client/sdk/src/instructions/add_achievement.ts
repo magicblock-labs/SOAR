@@ -1,34 +1,29 @@
 import { type Program } from "@coral-xyz/anchor";
-import { PublicKey, SystemProgram, TransactionInstruction } from "@solana/web3.js";
-import { Soar } from "../idl/soar";
-import { deriveAchievementAddress } from "../utils";
+import {
+  type PublicKey,
+  SystemProgram,
+  type TransactionInstruction,
+} from "@solana/web3.js";
+import { type Soar } from "../idl/soar";
 
-export type AddAchievementArgs = {
-  title: string,
-  description: string,
-  nftMeta: PublicKey,
-}
-type AddAchievementAccounts = Soar["instructions"]["2"]["accounts"];
-
-export const addAchievement = async (
+export const addAchievementInstruction = async (
   program: Program<Soar>,
+  newAchievementAddress: PublicKey,
   game: PublicKey,
   payer: PublicKey,
   authority: PublicKey,
   title: string,
   description: string,
-  nftMeta: PublicKey,
+  nftMeta: PublicKey
 ): Promise<TransactionInstruction> => {
-  const newAchievement = deriveAchievementAddress(game, title, program.programId)[0];
-
   return program.methods
     .addAchievement(title, description, nftMeta)
     .accounts({
-      authority: authority,
+      authority,
       game,
       payer,
-      newAchievement,
+      newAchievement: newAchievementAddress,
       systemProgram: SystemProgram.programId,
     })
     .instruction();
-}
+};

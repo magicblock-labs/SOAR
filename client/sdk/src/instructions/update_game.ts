@@ -1,30 +1,26 @@
-import { type Program } from "@coral-xyz/anchor";
-import { PublicKey, TransactionInstruction, SystemProgram } from "@solana/web3.js";
+import { type IdlTypes, type Program } from "@coral-xyz/anchor";
+import {
+  type PublicKey,
+  type TransactionInstruction,
+  SystemProgram,
+} from "@solana/web3.js";
 import { type Soar } from "../idl/soar";
-import { GameMeta } from "../state/accounts";
 
-export type UpdateGameArgs = {
-  newMeta: GameMeta | null,
-  newAuth: PublicKey[] | null,
-}
-type UpdateGameAccounts = Soar["instructions"]["1"]["accounts"];
-
-export const updateGame = async (
+export const updateGameInstruction = async (
   program: Program<Soar>,
   payer: PublicKey,
-  game: PublicKey,
+  gameAddress: PublicKey,
   authority: PublicKey,
-  newMeta: GameMeta | null,
-  newAuths: PublicKey[] | null,
+  newMeta: IdlTypes<Soar>["GameMeta"] | null,
+  newAuths: PublicKey[] | null
 ): Promise<TransactionInstruction> => {
   return program.methods
     .updateGame(newMeta, newAuths)
     .accounts({
-      authority: authority,
+      authority,
       payer,
-      game,
-      systemProgram: SystemProgram.programId
+      game: gameAddress,
+      systemProgram: SystemProgram.programId,
     })
     .instruction();
-}
-
+};

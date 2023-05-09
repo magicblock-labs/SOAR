@@ -103,6 +103,10 @@ pub mod soar {
     ) -> Result<()> {
         merge_players::handler(ctx, hint)
     }
+
+    pub fn unlock_player_achievement(ctx: Context<UnlockPlayerAchievement>) -> Result<()> {
+        unlock_player_achievement::handler(ctx)
+    }
 }
 
 #[derive(Accounts)]
@@ -124,7 +128,7 @@ pub struct InitializeGame<'info> {
 #[derive(Accounts)]
 pub struct UpdateGame<'info> {
     #[account(
-        constraint = game.check_signer_is_auth(authority.key)
+        constraint = game.check_authority_is_signer(authority.key)
         @ CrateError::InvalidAuthority
     )]
     pub authority: Signer<'info>,
@@ -140,7 +144,7 @@ pub struct UpdateGame<'info> {
 pub struct AddAchievement<'info> {
     #[account(
         mut,
-        constraint = game.check_signer_is_auth(authority.key)
+        constraint = game.check_authority_is_signer(authority.key)
         @ CrateError::InvalidAuthority
     )]
     pub authority: Signer<'info>,
@@ -162,7 +166,7 @@ pub struct AddAchievement<'info> {
 pub struct UpdateAchievement<'info> {
     #[account(
         mut,
-        constraint = game.check_signer_is_auth(authority.key)
+        constraint = game.check_authority_is_signer(authority.key)
         @ CrateError::InvalidAuthority
     )]
     pub authority: Signer<'info>,
@@ -175,7 +179,7 @@ pub struct UpdateAchievement<'info> {
 pub struct AddLeaderBoard<'info> {
     #[account(
         mut,
-        constraint = game.check_signer_is_auth(authority.key)
+        constraint = game.check_authority_is_signer(authority.key)
         @ CrateError::InvalidAuthority
     )]
     pub authority: Signer<'info>,
@@ -248,7 +252,7 @@ pub struct UpdatePlayer<'info> {
 pub struct SubmitScore<'info> {
     #[account(mut)]
     pub user: Signer<'info>,
-    #[account(constraint = game.check_signer_is_auth(&authority.key()))]
+    #[account(constraint = game.check_authority_is_signer(&authority.key()))]
     pub authority: Signer<'info>,
     #[account(has_one = user)]
     pub player_info: Account<'info, PlayerInfo>,
@@ -272,6 +276,27 @@ pub struct MergePlayerAccounts<'info> {
 }
 
 #[derive(Accounts)]
-pub struct SubmitAchievement<'info> {
+pub struct UnlockPlayerAchievement<'info> {
     pub authority: Signer<'info>,
+    #[account(mut)]
+    pub user: Signer<'info>,
+    #[account(has_one = user)]
+    pub player_info: Account<'info, PlayerInfo>,
+    #[account(has_one = player_info, has_one = leaderboard)]
+    pub player_entry: Account<'info, PlayerEntryList>,
+    #[account(has_one = game)]
+    pub leaderboard: Account<'info, LeaderBoard>,
+    #[account(constraint = game.check_authority_is_signer(&authority.key()))]
+    pub game: Account<'info, Game>,
+    #[account(has_one = game)]
+    pub achievement: Account<'info, Achievement>,
+    #[account(
+        init,
+        payer = user,
+        space = PlayerAchievement::SIZE,
+        seeds = [seeds::PLAYER_ACHIEVEMENT, ],
+        bump
+    )]
+    pub player_achievement: Account<'info, PlayerAchievement>,
+    pub system_program: Program<'info, System>,
 }

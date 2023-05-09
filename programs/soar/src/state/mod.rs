@@ -112,7 +112,7 @@ pub struct Merged {
 pub struct PlayerEntryList {
     /// The player_info account this entry is derived from
     pub player_info: Pubkey,
-    /// The leaderboard this entry derives from. 
+    /// The leaderboard this entry derives from.
     // TODO: Get rid.
     pub leaderboard: Pubkey,
     /// Keep track of how many [StoreEntry]s are in the scores vec.
@@ -146,7 +146,7 @@ pub struct PlayerAchievement {
     /// Timestamp showing when this achievement was unlocked.
     pub timestamp: i64,
     /// True for unlocked, false for locked.
-    pub status: bool,
+    pub unlocked: bool,
 }
 
 /// Parameters needed when registering a leaderboard

@@ -12,7 +12,7 @@ impl Game {
         Self::SIZE_WITHOUT_AUTHS + 4 + (auth_len * 32)
     }
 
-    pub fn check_signer_is_auth(&self, key: &Pubkey) -> bool {
+    pub fn check_authority_is_signer(&self, key: &Pubkey) -> bool {
         self.auth.contains(key)
     }
 

@@ -35,4 +35,8 @@ export module InstructionResult {
   export interface UpdateAchievement {
     transaction: Transaction;
   }
+  export interface UnlockPlayerAchievement {
+    newPlayerAchievement: PublicKey;
+    transaction: Transaction;
+  }
 }

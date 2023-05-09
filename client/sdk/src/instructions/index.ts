@@ -8,3 +8,4 @@ export * from "./submit_score";
 export * from "./update_achievement";
 export * from "./update_game";
 export * from "./update_player";
+export * from "./unlock_player_achievement";

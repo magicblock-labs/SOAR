@@ -17,15 +17,17 @@ import {
   initializeGameInstruction,
   mergePlayerAccountsInstruction,
   registerPlayerEntryInstruction,
-  submitScoreInstruction,
   updateAchievementInstruction,
   updateGameInstruction,
   updatePlayerInstruction,
+  submitScoreInstruction,
+  unlockPlayerAchievementInstruction,
 } from "./instructions";
 import {
   deriveAchievementAddress,
   deriveGameAddress,
   deriveLeaderBoardAddress,
+  derivePlayerAchievementAddress,
   derivePlayerEntryListAddress,
   derivePlayerInfoAddress,
   zip,
@@ -369,6 +371,61 @@ export class SoarProgram {
     transaction.add(update);
 
     return { transaction };
+  }
+
+  public async unlockPlayerAchievement(
+    authority: PublicKey,
+    achievement: PublicKey,
+    game: PublicKey | null,
+    leaderboard: PublicKey | null
+  ): Promise<InstructionResult.UnlockPlayerAchievement> {
+    const playerAccount = derivePlayerInfoAddress(
+      this.provider.publicKey,
+      this.program.programId
+    )[0];
+
+    const gameAddress =
+      game ?? (await this.program.account.achievement.fetch(achievement)).game;
+
+    let leaderBoardAddress: PublicKey;
+    if (leaderboard === null) {
+      const gameAccount = await this.program.account.game.fetch(gameAddress);
+      leaderBoardAddress = deriveLeaderBoardAddress(
+        gameAccount.leaderboard as any as BN,
+        gameAddress,
+        this.program.programId
+      )[0];
+    } else {
+      leaderBoardAddress = leaderboard;
+    }
+
+    const playerEntryList = derivePlayerEntryListAddress(
+      playerAccount,
+      leaderBoardAddress,
+      this.program.programId
+    )[0];
+    const newPlayerAchievement = derivePlayerAchievementAddress(
+      this.provider.publicKey,
+      achievement,
+      this.program.programId
+    )[0];
+
+    const unlock = await unlockPlayerAchievementInstruction(
+      this.program,
+      this.provider.publicKey,
+      playerAccount,
+      playerEntryList,
+      gameAddress,
+      leaderBoardAddress,
+      achievement,
+      authority,
+      newPlayerAchievement
+    );
+
+    return {
+      newPlayerAchievement,
+      transaction: new Transaction().add(unlock),
+    };
   }
 
   public async sendAndConfirmTransaction(

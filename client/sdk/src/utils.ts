@@ -7,6 +7,7 @@ const enum Seeds {
   ACHIEVEMENT = "achievement",
   PLAYER = "player",
   ENTRY = "entry",
+  PLAYER_ACHIEVEMENT = "player_achievement",
 }
 
 export const deriveGameAddress = (
@@ -57,13 +58,17 @@ export const derivePlayerEntryListAddress = (
     programId
   );
 
-export const derivePlayerAchievement = (
+export const derivePlayerAchievementAddress = (
   player: PublicKey,
   achievement: PublicKey,
   programId: PublicKey
 ): [PublicKey, number] =>
   PublicKey.findProgramAddressSync(
-    [player.toBuffer(), achievement.toBuffer()],
+    [
+      Buffer.from(Seeds.PLAYER_ACHIEVEMENT),
+      player.toBuffer(),
+      achievement.toBuffer(),
+    ],
     programId
   );
 

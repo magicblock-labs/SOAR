@@ -414,6 +414,57 @@ export type Soar = {
           "type": "u64"
         }
       ]
+    },
+    {
+      "name": "unlockPlayerAchievement",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "playerInfo",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "playerEntry",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "leaderboard",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "game",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "achievement",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "playerAchievement",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -690,7 +741,7 @@ export type Soar = {
             "type": "i64"
           },
           {
-            "name": "status",
+            "name": "unlocked",
             "docs": [
               "True for unlocked, false for locked."
             ],
@@ -1242,6 +1293,57 @@ export const IDL: Soar = {
           "type": "u64"
         }
       ]
+    },
+    {
+      "name": "unlockPlayerAchievement",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "playerInfo",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "playerEntry",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "leaderboard",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "game",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "achievement",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "playerAchievement",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -1518,7 +1620,7 @@ export const IDL: Soar = {
             "type": "i64"
           },
           {
-            "name": "status",
+            "name": "unlocked",
             "docs": [
               "True for unlocked, false for locked."
             ],

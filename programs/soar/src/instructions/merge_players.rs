@@ -1,6 +1,6 @@
 use crate::state::Merged;
 use crate::utils::create_account;
-use crate::{state::PlayerInfo, CrateError, MergePlayerAccounts};
+use crate::{state::Player, CrateError, MergePlayerAccounts};
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::account_info::next_account_info;
 use std::collections::HashSet;
@@ -31,7 +31,7 @@ pub fn handler<'a>(ctx: Context<'_, '_, '_, 'a, MergePlayerAccounts<'a>>, hint: 
     // 3. `user` is the valid user for that playerinfo account.
     // 4. `player_account` hasn't been "merged" before.
     for (user, player_account) in pairs {
-        let mut deserialized = Account::<'a, PlayerInfo>::try_from(player_account)?;
+        let mut deserialized = Account::<'a, Player>::try_from(player_account)?;
         require!(user.is_signer, CrateError::MissingSignature);
         require_keys_eq!(deserialized.user, user.key());
         require_keys_eq!(deserialized.merged, Pubkey::default());

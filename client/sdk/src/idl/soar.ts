@@ -465,6 +465,229 @@ export type Soar = {
         }
       ],
       "args": []
+    },
+    {
+      "name": "addReward",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "game",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "achievement",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "newReward",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "collectionUpdateAuth",
+          "isMut": false,
+          "isSigner": true,
+          "isOptional": true
+        },
+        {
+          "name": "collectionMint",
+          "isMut": false,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
+          "name": "collectionMetadata",
+          "isMut": true,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenMetadataProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "input",
+          "type": {
+            "defined": "RegisterNewRewardInput"
+          }
+        }
+      ]
+    },
+    {
+      "name": "mintReward",
+      "accounts": [
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "user",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "game",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "achievement",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "reward",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "player",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "playerAchievement",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "mint",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "metadata",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "masterEdition",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mintNftTo",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenMetadataProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "verifyReward",
+      "accounts": [
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "game",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "achievement",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "reward",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "user",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "player",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "playerAchievement",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "metadataToVerify",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "collectionMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "collectionMetadata",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "collectionMasterEdition",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -588,17 +811,69 @@ export type Soar = {
           {
             "name": "reward",
             "docs": [
-              "The earned reward from unlocking this achievement."
+              "Whether to mint a reward for unlocking this achievement."
             ],
             "type": {
-              "defined": "Reward"
+              "option": "publicKey"
             }
           }
         ]
       }
     },
     {
-      "name": "playerInfo",
+      "name": "reward",
+      "docs": [
+        "Contains details of a NFT reward."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "achievement",
+            "type": "publicKey"
+          },
+          {
+            "name": "uri",
+            "docs": [
+              "URI of the NFT to be minted."
+            ],
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "docs": [
+              "Name of the NFT to be minted."
+            ],
+            "type": "string"
+          },
+          {
+            "name": "symbol",
+            "docs": [
+              "Symbol of the NFT to be minted."
+            ],
+            "type": "string"
+          },
+          {
+            "name": "minted",
+            "docs": [
+              "Number of nft rewards given so far."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "collectionMint",
+            "docs": [
+              "Optional: A collection to verify a minted nft as belonging to."
+            ],
+            "type": {
+              "option": "publicKey"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "player",
       "docs": [
         "An account representing a player.",
         "",
@@ -714,7 +989,7 @@ export type Soar = {
       "docs": [
         "Represents a player's status for a particular [Achievement].",
         "",
-        "Seeds = `[player.key().as_ref(), achievement.key().as_ref()]`."
+        "Seeds = `[b\"player-achievement\", player.key().as_ref(), achievement.key().as_ref()]`."
       ],
       "type": {
         "kind": "struct",
@@ -746,6 +1021,15 @@ export type Soar = {
               "True for unlocked, false for locked."
             ],
             "type": "bool"
+          },
+          {
+            "name": "metadata",
+            "docs": [
+              "This is [Some] only if the player has minted a reward for the achievement."
+            ],
+            "type": {
+              "option": "publicKey"
+            }
           }
         ]
       }
@@ -799,21 +1083,6 @@ export type Soar = {
       }
     },
     {
-      "name": "Reward",
-      "docs": [
-        "Placeholder type. TODO: Replace"
-      ],
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "x",
-            "type": "u8"
-          }
-        ]
-      }
-    },
-    {
       "name": "ScoreEntry",
       "docs": [
         "A single score entry for a player."
@@ -841,7 +1110,7 @@ export type Soar = {
     {
       "name": "RegisterLeaderBoardInput",
       "docs": [
-        "Parameters needed when registering a leaderboard"
+        "Parameters needed when registering a leaderboard."
       ],
       "type": {
         "kind": "struct",
@@ -856,23 +1125,51 @@ export type Soar = {
           }
         ]
       }
+    },
+    {
+      "name": "RegisterNewRewardInput",
+      "docs": [
+        "Parameters used for registering metadata information for an nft reward."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "uri",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "symbol",
+            "type": "string"
+          }
+        ]
+      }
     }
   ],
   "errors": [
     {
       "code": 6000,
       "name": "InvalidFieldLength",
-      "msg": "Exceeded max length for field"
+      "msg": "Exceeded max length for field."
     },
     {
       "code": 6001,
       "name": "InvalidAuthority",
-      "msg": "Invalid authority for instruction"
+      "msg": "Invalid authority for instruction."
     },
     {
       "code": 6002,
       "name": "MissingSignature",
-      "msg": "An expected signature isn't present"
+      "msg": "An expected signature isn't present."
+    },
+    {
+      "code": 6003,
+      "name": "NoRewardForAchievement",
+      "msg": "Reward not specified for this achievement."
     }
   ]
 };
@@ -1344,6 +1641,229 @@ export const IDL: Soar = {
         }
       ],
       "args": []
+    },
+    {
+      "name": "addReward",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "game",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "achievement",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "newReward",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "collectionUpdateAuth",
+          "isMut": false,
+          "isSigner": true,
+          "isOptional": true
+        },
+        {
+          "name": "collectionMint",
+          "isMut": false,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
+          "name": "collectionMetadata",
+          "isMut": true,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenMetadataProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "input",
+          "type": {
+            "defined": "RegisterNewRewardInput"
+          }
+        }
+      ]
+    },
+    {
+      "name": "mintReward",
+      "accounts": [
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "user",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "game",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "achievement",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "reward",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "player",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "playerAchievement",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "mint",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "metadata",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "masterEdition",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mintNftTo",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenMetadataProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "verifyReward",
+      "accounts": [
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "game",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "achievement",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "reward",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "user",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "player",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "playerAchievement",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "metadataToVerify",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "collectionMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "collectionMetadata",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "collectionMasterEdition",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -1467,17 +1987,69 @@ export const IDL: Soar = {
           {
             "name": "reward",
             "docs": [
-              "The earned reward from unlocking this achievement."
+              "Whether to mint a reward for unlocking this achievement."
             ],
             "type": {
-              "defined": "Reward"
+              "option": "publicKey"
             }
           }
         ]
       }
     },
     {
-      "name": "playerInfo",
+      "name": "reward",
+      "docs": [
+        "Contains details of a NFT reward."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "achievement",
+            "type": "publicKey"
+          },
+          {
+            "name": "uri",
+            "docs": [
+              "URI of the NFT to be minted."
+            ],
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "docs": [
+              "Name of the NFT to be minted."
+            ],
+            "type": "string"
+          },
+          {
+            "name": "symbol",
+            "docs": [
+              "Symbol of the NFT to be minted."
+            ],
+            "type": "string"
+          },
+          {
+            "name": "minted",
+            "docs": [
+              "Number of nft rewards given so far."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "collectionMint",
+            "docs": [
+              "Optional: A collection to verify a minted nft as belonging to."
+            ],
+            "type": {
+              "option": "publicKey"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "player",
       "docs": [
         "An account representing a player.",
         "",
@@ -1593,7 +2165,7 @@ export const IDL: Soar = {
       "docs": [
         "Represents a player's status for a particular [Achievement].",
         "",
-        "Seeds = `[player.key().as_ref(), achievement.key().as_ref()]`."
+        "Seeds = `[b\"player-achievement\", player.key().as_ref(), achievement.key().as_ref()]`."
       ],
       "type": {
         "kind": "struct",
@@ -1625,6 +2197,15 @@ export const IDL: Soar = {
               "True for unlocked, false for locked."
             ],
             "type": "bool"
+          },
+          {
+            "name": "metadata",
+            "docs": [
+              "This is [Some] only if the player has minted a reward for the achievement."
+            ],
+            "type": {
+              "option": "publicKey"
+            }
           }
         ]
       }
@@ -1678,21 +2259,6 @@ export const IDL: Soar = {
       }
     },
     {
-      "name": "Reward",
-      "docs": [
-        "Placeholder type. TODO: Replace"
-      ],
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "x",
-            "type": "u8"
-          }
-        ]
-      }
-    },
-    {
       "name": "ScoreEntry",
       "docs": [
         "A single score entry for a player."
@@ -1720,7 +2286,7 @@ export const IDL: Soar = {
     {
       "name": "RegisterLeaderBoardInput",
       "docs": [
-        "Parameters needed when registering a leaderboard"
+        "Parameters needed when registering a leaderboard."
       ],
       "type": {
         "kind": "struct",
@@ -1735,23 +2301,51 @@ export const IDL: Soar = {
           }
         ]
       }
+    },
+    {
+      "name": "RegisterNewRewardInput",
+      "docs": [
+        "Parameters used for registering metadata information for an nft reward."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "uri",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "symbol",
+            "type": "string"
+          }
+        ]
+      }
     }
   ],
   "errors": [
     {
       "code": 6000,
       "name": "InvalidFieldLength",
-      "msg": "Exceeded max length for field"
+      "msg": "Exceeded max length for field."
     },
     {
       "code": 6001,
       "name": "InvalidAuthority",
-      "msg": "Invalid authority for instruction"
+      "msg": "Invalid authority for instruction."
     },
     {
       "code": 6002,
       "name": "MissingSignature",
-      "msg": "An expected signature isn't present"
+      "msg": "An expected signature isn't present."
+    },
+    {
+      "code": 6003,
+      "name": "NoRewardForAchievement",
+      "msg": "Reward not specified for this achievement."
     }
   ]
 };

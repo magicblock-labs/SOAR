@@ -2,7 +2,6 @@ mod achievement;
 mod game;
 mod leaderboard;
 mod player;
-mod reward;
 mod score;
 
 use anchor_lang::prelude::*;
@@ -67,14 +66,24 @@ pub struct Achievement {
     pub description: String,
     /// Metadata representing this achievement.
     pub nft_meta: Pubkey,
-    /// The earned reward from unlocking this achievement.
-    pub reward: Reward,
+    /// Whether to mint a reward for unlocking this achievement.
+    pub reward: Option<Pubkey>,
 }
 
-/// Placeholder type. TODO: Replace
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Default)]
+/// Contains details of a NFT reward.
+#[account]
 pub struct Reward {
-    pub x: u8,
+    pub achievement: Pubkey,
+    /// URI of the NFT to be minted.
+    pub uri: String,
+    /// Name of the NFT to be minted.
+    pub name: String,
+    /// Symbol of the NFT to be minted.
+    pub symbol: String,
+    /// Number of nft rewards given so far.
+    pub minted: u64,
+    /// Optional: A collection to verify a minted nft as belonging to.
+    pub collection_mint: Option<Pubkey>,
 }
 
 #[account]
@@ -82,7 +91,7 @@ pub struct Reward {
 /// An account representing a player.
 ///
 /// Seeds: `[b"player", user.key().as_ref()]`
-pub struct PlayerInfo {
+pub struct Player {
     /// The wallet that owns this player-info account
     pub user: Pubkey,
     /// The player's username.
@@ -121,7 +130,7 @@ pub struct PlayerEntryList {
     /// Collection of entries.
     pub scores: Vec<ScoreEntry>,
     // TODO:(Vec<Entry>) Push and realloc each time, or realloc in batches and keep
-    // track of size?
+    // track of size.
 }
 
 /// A single score entry for a player.
@@ -137,7 +146,7 @@ pub struct ScoreEntry {
 #[derive(Default)]
 /// Represents a player's status for a particular [Achievement].
 ///
-/// Seeds = `[player.key().as_ref(), achievement.key().as_ref()]`.
+/// Seeds = `[b"player-achievement", player.key().as_ref(), achievement.key().as_ref()]`.
 pub struct PlayerAchievement {
     /// The player's [PlayerInfo] account.
     pub player: Pubkey,
@@ -147,11 +156,21 @@ pub struct PlayerAchievement {
     pub timestamp: i64,
     /// True for unlocked, false for locked.
     pub unlocked: bool,
+    /// This is [Some] only if the player has minted a reward for the achievement.
+    pub metadata: Option<Pubkey>,
 }
 
-/// Parameters needed when registering a leaderboard
+/// Parameters needed when registering a leaderboard.
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Default)]
 pub struct RegisterLeaderBoardInput {
     pub description: String,
     pub nft_meta: Pubkey,
+}
+
+/// Parameters used for registering metadata information for an nft reward.
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Default)]
+pub struct RegisterNewRewardInput {
+    pub uri: String,
+    pub name: String,
+    pub symbol: String,
 }

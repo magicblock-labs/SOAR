@@ -2,6 +2,8 @@
 #![allow(dead_code)]
 
 use anchor_lang::prelude::*;
+use anchor_spl::associated_token::AssociatedToken;
+use anchor_spl::token::{Mint, Token};
 
 declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
 
@@ -107,6 +109,18 @@ pub mod soar {
     pub fn unlock_player_achievement(ctx: Context<UnlockPlayerAchievement>) -> Result<()> {
         unlock_player_achievement::handler(ctx)
     }
+
+    pub fn add_reward(ctx: Context<AddReward>, input: RegisterNewRewardInput) -> Result<()> {
+        add_reward::handler(ctx, input)
+    }
+
+    pub fn mint_reward(ctx: Context<MintReward>) -> Result<()> {
+        mint_reward::handler(ctx)
+    }
+
+    pub fn verify_reward(ctx: Context<VerifyReward>) -> Result<()> {
+        verify_reward::handler(ctx)
+    }
 }
 
 #[derive(Accounts)]
@@ -204,18 +218,17 @@ fn next_leaderboard_id(game: &Account<'_, Game>) -> u64 {
 }
 
 #[derive(Accounts)]
-#[instruction(i: u64, username: String, p: Pubkey)]
 pub struct NewPlayer<'info> {
     #[account(mut)]
     pub user: Signer<'info>,
     #[account(
         init,
         payer = user,
-        space = PlayerInfo::SIZE,
+        space = Player::SIZE,
         seeds = [seeds::PLAYER, user.key().as_ref()],
         bump,
     )]
-    pub player_info: Account<'info, PlayerInfo>,
+    pub player_info: Account<'info, Player>,
     pub system_program: Program<'info, System>,
 }
 
@@ -224,7 +237,7 @@ pub struct RegisterPlayer<'info> {
     #[account(mut)]
     pub user: Signer<'info>,
     #[account(has_one = user)]
-    pub player_info: Account<'info, PlayerInfo>,
+    pub player_info: Account<'info, Player>,
     #[account(constraint = game.leaderboard == leaderboard.id)]
     pub game: Account<'info, Game>,
     #[account(has_one = game)]
@@ -244,7 +257,7 @@ pub struct RegisterPlayer<'info> {
 pub struct UpdatePlayer<'info> {
     pub user: Signer<'info>,
     #[account(mut)]
-    pub player_info: Account<'info, PlayerInfo>,
+    pub player_info: Account<'info, Player>,
 }
 
 #[derive(Accounts)]
@@ -255,7 +268,7 @@ pub struct SubmitScore<'info> {
     #[account(constraint = game.check_authority_is_signer(&authority.key()))]
     pub authority: Signer<'info>,
     #[account(has_one = user)]
-    pub player_info: Account<'info, PlayerInfo>,
+    pub player_info: Account<'info, Player>,
     pub game: Account<'info, Game>,
     #[account(has_one = game)]
     pub leaderboard: Account<'info, LeaderBoard>,
@@ -269,7 +282,7 @@ pub struct MergePlayerAccounts<'info> {
     #[account(mut)]
     pub user: Signer<'info>,
     #[account(has_one = user)]
-    pub player_info: Account<'info, PlayerInfo>,
+    pub player_info: Account<'info, Player>,
     /// CHECK: The [Merge] account to be initialized in handler.
     pub merge_account: UncheckedAccount<'info>,
     pub system_program: Program<'info, System>,
@@ -281,7 +294,7 @@ pub struct UnlockPlayerAchievement<'info> {
     #[account(mut)]
     pub user: Signer<'info>,
     #[account(has_one = user)]
-    pub player_info: Account<'info, PlayerInfo>,
+    pub player_info: Account<'info, Player>,
     #[account(has_one = player_info, has_one = leaderboard)]
     pub player_entry: Account<'info, PlayerEntryList>,
     #[account(has_one = game)]
@@ -294,9 +307,119 @@ pub struct UnlockPlayerAchievement<'info> {
         init,
         payer = user,
         space = PlayerAchievement::SIZE,
-        seeds = [seeds::PLAYER_ACHIEVEMENT, ],
+        seeds = [seeds::PLAYER_ACHIEVEMENT, player_info.key().as_ref(), achievement.key().as_ref()],
         bump
     )]
     pub player_achievement: Account<'info, PlayerAchievement>,
     pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct AddReward<'info> {
+    pub authority: Signer<'info>,
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    #[account(constraint = game.check_authority_is_signer(&authority.key()))]
+    pub game: Account<'info, Game>,
+    #[account(has_one = game)]
+    pub achievement: Account<'info, Achievement>,
+    #[account(
+        init,
+        payer = payer,
+        space = Reward::SIZE,
+        seeds = [seeds::REWARD, achievement.key().as_ref()],
+        bump,
+    )]
+    pub new_reward: Account<'info, Reward>,
+    pub collection_update_auth: Option<Signer<'info>>,
+    pub collection_mint: Option<Account<'info, Mint>>,
+    #[account(mut)]
+    /// CHECK: Checked in instruction handler.
+    pub collection_metadata: Option<UncheckedAccount<'info>>,
+    pub system_program: Program<'info, System>,
+    #[account(address = mpl_token_metadata::ID)]
+    /// CHECK: We check that the ID is the correct one.
+    pub token_metadata_program: UncheckedAccount<'info>,
+}
+
+#[derive(Accounts)]
+pub struct MintReward<'info> {
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    pub authority: Signer<'info>,
+    /// CHECK: Checked in has_one relationship with `player`.
+    pub user: UncheckedAccount<'info>,
+    #[account(constraint = game.check_authority_is_signer(&authority.key()))]
+    pub game: Box<Account<'info, Game>>,
+    #[account(
+        has_one = game,
+        constraint = achievement.reward.unwrap() == reward.key()
+    )]
+    pub achievement: Box<Account<'info, Achievement>>,
+    #[account(has_one = achievement)]
+    pub reward: Box<Account<'info, Reward>>,
+    #[account(has_one = user)]
+    pub player: Box<Account<'info, Player>>,
+    #[account(
+        has_one = player,
+        has_one = achievement,
+    )]
+    pub player_achievement: Box<Account<'info, PlayerAchievement>>,
+    #[account(mut)]
+    /// CHECK: Initialized as mint in instruction.
+    pub mint: Signer<'info>,
+    #[account(mut)]
+    /// CHECK: Checked in metaplex program.
+    pub metadata: UncheckedAccount<'info>,
+    #[account(mut)]
+    /// CHECK: Checked in metaplex program.
+    pub master_edition: UncheckedAccount<'info>,
+    #[account(mut)]
+    /// CHECK: Initialized in handler as token account owned by `user`.
+    pub mint_nft_to: UncheckedAccount<'info>,
+    pub token_program: Program<'info, Token>,
+    pub associated_token_program: Program<'info, AssociatedToken>,
+    #[account(address = mpl_token_metadata::ID)]
+    /// CHECK: Verified program address.
+    pub token_metadata_program: UncheckedAccount<'info>,
+    pub system_program: Program<'info, System>,
+    pub rent: Sysvar<'info, Rent>,
+}
+
+#[derive(Accounts)]
+pub struct VerifyReward<'info> {
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    pub authority: Signer<'info>,
+    #[account(constraint = game.check_authority_is_signer(&authority.key()))]
+    pub game: Box<Account<'info, Game>>,
+    #[account(
+        has_one = game,
+        constraint = achievement.reward.unwrap() == reward.key()
+    )]
+    pub achievement: Box<Account<'info, Achievement>>,
+    #[account(
+        has_one = achievement,
+        seeds = [seeds::REWARD, achievement.key().as_ref()], bump,
+        constraint = reward.collection_mint == Some(collection_mint.key())
+    )]
+    pub reward: Box<Account<'info, Reward>>,
+    /// CHECK: Checked in has_one relationship with `player`.
+    pub user: UncheckedAccount<'info>,
+    #[account(has_one = user)]
+    pub player: Box<Account<'info, Player>>,
+    #[account(
+        has_one = player, has_one = achievement,
+        constraint = player_achievement.metadata.unwrap() == metadata_to_verify.key()
+    )]
+    pub player_achievement: Box<Account<'info, PlayerAchievement>>,
+    /// CHECK: We check that it's the same metadata in `player_achievement`.
+    pub metadata_to_verify: UncheckedAccount<'info>,
+    /// CHECK: We check that it's the reward's collection mint.
+    pub collection_mint: UncheckedAccount<'info>,
+    #[account(mut)]
+    /// CHECK: Checked in CPI to Metaplex.
+    pub collection_metadata: UncheckedAccount<'info>,
+    /// CHECK: Checked in CPI to Metaplex.
+    pub collection_master_edition: UncheckedAccount<'info>,
 }

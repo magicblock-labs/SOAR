@@ -9,12 +9,14 @@ export interface PlayerAchievementAccountInfo {
   player: PublicKey;
   timestamp: BN;
   unlocked: boolean;
+  metadata: PublicKey | null;
 }
 export interface ReadablePlayerAchievementInfo {
   address: string;
   player: string;
   timestamp: string;
   unlocked: boolean;
+  metadata: string | null;
 }
 export const playerAchievementFromIdlAccount = (
   account: IDLPlayerAchievementAccount,
@@ -33,5 +35,6 @@ export const printPlayerAchievementInfo = (
     player: info.player.toBase58(),
     timestamp: info.timestamp.toString(),
     unlocked: info.unlocked,
+    metadata: info.metadata !== null ? info.metadata.toBase58() : info.metadata,
   };
 };

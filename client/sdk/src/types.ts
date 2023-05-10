@@ -39,4 +39,15 @@ export module InstructionResult {
     newPlayerAchievement: PublicKey;
     transaction: Transaction;
   }
+  export interface AddReward {
+    newReward: PublicKey;
+    transaction: Transaction;
+  }
+  export interface MintReward {
+    newMint: PublicKey;
+    transaction: Transaction;
+  }
+  export interface VerifyReward {
+    transaction: Transaction;
+  }
 }

@@ -9,10 +9,7 @@ export interface AchievementAccountInfo {
   title: string;
   description: string;
   nftMeta: PublicKey;
-  reward: Reward;
-}
-export interface Reward {
-  x: number;
+  reward: PublicKey | null;
 }
 export interface ReadableAchievementInfo {
   address: string;
@@ -20,7 +17,7 @@ export interface ReadableAchievementInfo {
   title: string;
   description: string;
   nftMeta: string;
-  reward: Reward;
+  reward: string | null;
 }
 export const achievementFromIdlAccount = (
   account: IDLAchievementAccount,
@@ -40,6 +37,6 @@ export const printAchievementInfo = (
     title: info.title,
     description: info.description,
     nftMeta: info.nftMeta.toBase58(),
-    reward: info.reward,
+    reward: info.reward !== null ? info.reward.toBase58() : info.reward,
   };
 };

@@ -1,5 +1,7 @@
 import { PublicKey } from "@solana/web3.js";
 import type BN from "bn.js";
+import { TOKEN_METADATA_PROGRAM_ID } from "./constants";
+import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 
 const enum Seeds {
   GAME = "game",
@@ -8,6 +10,7 @@ const enum Seeds {
   PLAYER = "player",
   ENTRY = "entry",
   PLAYER_ACHIEVEMENT = "player_achievement",
+  REWARD = "reward",
 }
 
 export const deriveGameAddress = (
@@ -39,7 +42,7 @@ export const deriveAchievementAddress = (
     programId
   );
 
-export const derivePlayerInfoAddress = (
+export const derivePlayerAddress = (
   user: PublicKey,
   programId: PublicKey
 ): [PublicKey, number] =>
@@ -71,6 +74,45 @@ export const derivePlayerAchievementAddress = (
     ],
     programId
   );
+
+export const deriveRewardAddress = (
+  achievement: PublicKey,
+  programId: PublicKey
+): [PublicKey, number] =>
+  PublicKey.findProgramAddressSync(
+    [Buffer.from(Seeds.REWARD), achievement.toBuffer()],
+    programId
+  );
+
+export const deriveMetadataAddress = (mint: PublicKey): [PublicKey, number] => {
+  return PublicKey.findProgramAddressSync(
+    [
+      Buffer.from("metadata"),
+      TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+      mint.toBuffer(),
+    ],
+    TOKEN_METADATA_PROGRAM_ID
+  );
+};
+
+export const deriveEditionAddress = (mint: PublicKey): [PublicKey, number] => {
+  return PublicKey.findProgramAddressSync(
+    [
+      Buffer.from("metadata"),
+      TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+      mint.toBuffer(),
+      Buffer.from("edition"),
+    ],
+    TOKEN_METADATA_PROGRAM_ID
+  );
+};
+
+export const deriveAssociatedTokenAddress = (
+  mint: PublicKey,
+  user: PublicKey
+): PublicKey => {
+  return getAssociatedTokenAddressSync(mint, user);
+};
 
 export const zip = <T, U>(a: T[], b: U[], defaultB: U): Array<[T, U]> =>
   a.map((k, i) => {

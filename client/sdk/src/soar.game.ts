@@ -2,7 +2,7 @@ import { type AnchorProvider, type IdlTypes } from "@coral-xyz/anchor";
 import { type PublicKey, type Transaction } from "@solana/web3.js";
 import { type Soar } from "./idl/soar";
 import type BN from "bn.js";
-import { deriveLeaderBoardAddress, derivePlayerInfoAddress } from "./utils";
+import { deriveLeaderBoardAddress, derivePlayerAddress } from "./utils";
 import { type InstructionResult } from "./types";
 import { SoarProgram } from "./soar.program";
 import {
@@ -210,7 +210,7 @@ export class Game {
   public async fetchPlayerScores(
     player: PublicKey
   ): Promise<PlayerEntryListAccountInfo[]> {
-    const playerInfo = derivePlayerInfoAddress(
+    const playerInfo = derivePlayerAddress(
       player,
       this.soar.program.programId
     )[0];

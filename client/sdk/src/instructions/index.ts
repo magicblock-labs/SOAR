@@ -9,3 +9,6 @@ export * from "./update_achievement";
 export * from "./update_game";
 export * from "./update_player";
 export * from "./unlock_player_achievement";
+export * from "./add_reward";
+export * from "./mint_reward";
+export * from "./verify_reward";

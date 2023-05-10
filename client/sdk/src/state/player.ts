@@ -3,7 +3,7 @@ import type BN from "bn.js";
 import { type IdlAccounts } from "@coral-xyz/anchor";
 import { type Soar } from "../idl/soar";
 
-type IDLPlayerAccount = IdlAccounts<Soar>["playerInfo"];
+type IDLPlayerAccount = IdlAccounts<Soar>["player"];
 export interface PlayerAccountInfo {
   address: PublicKey;
   user: PublicKey;

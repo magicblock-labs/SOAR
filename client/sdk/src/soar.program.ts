@@ -22,6 +22,9 @@ import {
   updatePlayerInstruction,
   submitScoreInstruction,
   unlockPlayerAchievementInstruction,
+  addRewardInstruction,
+  mintRewardInstruction,
+  verifyRewardInstruction,
 } from "./instructions";
 import {
   deriveAchievementAddress,
@@ -29,7 +32,11 @@ import {
   deriveLeaderBoardAddress,
   derivePlayerAchievementAddress,
   derivePlayerEntryListAddress,
-  derivePlayerInfoAddress,
+  derivePlayerAddress,
+  deriveRewardAddress,
+  deriveEditionAddress,
+  deriveMetadataAddress,
+  deriveAssociatedTokenAddress,
   zip,
 } from "./utils";
 import { type InstructionResult } from "./types";
@@ -96,7 +103,7 @@ export class SoarProgram {
     nftMeta: PublicKey
   ): Promise<InstructionResult.CreatePlayer> {
     const transaction = new Transaction();
-    const newPlayer = derivePlayerInfoAddress(
+    const newPlayer = derivePlayerAddress(
       this.provider.publicKey,
       this.program.programId
     )[0];
@@ -141,7 +148,7 @@ export class SoarProgram {
     updatedNftMeta: PublicKey | null
   ): Promise<InstructionResult.UpdatePlayer> {
     const transaction = new Transaction();
-    const playerInfo = derivePlayerInfoAddress(
+    const playerInfo = derivePlayerAddress(
       this.provider.publicKey,
       this.program.programId
     )[0];
@@ -163,17 +170,14 @@ export class SoarProgram {
   ): Promise<InstructionResult.MergePlayerAccounts> {
     const transaction = new Transaction();
 
-    const playerInfo = derivePlayerInfoAddress(
+    const playerInfo = derivePlayerAddress(
       this.provider.publicKey,
       this.program.programId
     )[0];
     const accounts = new Array<AccountMeta>();
     let hint = 0;
     for (const key of keys) {
-      const playerInfo = derivePlayerInfoAddress(
-        key,
-        this.program.programId
-      )[0];
+      const playerInfo = derivePlayerAddress(key, this.program.programId)[0];
 
       const keyMeta: AccountMeta = {
         pubkey: key,
@@ -283,7 +287,7 @@ export class SoarProgram {
     const gameAddress =
       game ?? (await this.program.account.leaderBoard.fetch(leaderboard)).game;
 
-    const playerInfo = derivePlayerInfoAddress(
+    const playerInfo = derivePlayerAddress(
       this.provider.publicKey,
       this.program.programId
     )[0];
@@ -320,7 +324,7 @@ export class SoarProgram {
 
     // TODO: Add a pre-instruction that registers the player to the current leaderboard if
     // they aren't already registered?
-    const playerInfo = derivePlayerInfoAddress(
+    const playerInfo = derivePlayerAddress(
       this.provider.publicKey,
       this.program.programId
     )[0];
@@ -379,7 +383,7 @@ export class SoarProgram {
     game: PublicKey | null,
     leaderboard: PublicKey | null
   ): Promise<InstructionResult.UnlockPlayerAchievement> {
-    const playerAccount = derivePlayerInfoAddress(
+    const playerAccount = derivePlayerAddress(
       this.provider.publicKey,
       this.program.programId
     )[0];
@@ -425,6 +429,163 @@ export class SoarProgram {
     return {
       newPlayerAchievement,
       transaction: new Transaction().add(unlock),
+    };
+  }
+
+  public async addRewardForAchievement(
+    authority: PublicKey,
+    achievement: PublicKey,
+    payer: PublicKey,
+    game: PublicKey | null,
+    uri: string,
+    name: string,
+    symbol: string,
+    includeCollection: {
+      authority: PublicKey;
+      mint: PublicKey;
+      metadata: PublicKey;
+    } | null
+  ): Promise<InstructionResult.AddReward> {
+    const gameAddress =
+      game ?? (await this.program.account.achievement.fetch(achievement)).game;
+
+    const newRewardAddress = deriveRewardAddress(
+      achievement,
+      this.program.programId
+    )[0];
+
+    const instruction = await addRewardInstruction(
+      this.program,
+      authority,
+      payer,
+      achievement,
+      gameAddress,
+      newRewardAddress,
+      uri,
+      name,
+      symbol,
+      includeCollection !== null ? includeCollection.authority : null,
+      includeCollection !== null ? includeCollection.mint : null,
+      includeCollection !== null ? includeCollection.metadata : null
+    );
+
+    return {
+      newReward: newRewardAddress,
+      transaction: new Transaction().add(instruction),
+    };
+  }
+
+  public async mintPlayerRewardForAchievement(
+    authority: PublicKey,
+    achievement: PublicKey,
+    payer: PublicKey,
+    user: PublicKey,
+    game: PublicKey | null
+  ): Promise<InstructionResult.MintReward> {
+    const gameAddress =
+      game ?? (await this.program.account.achievement.fetch(achievement)).game;
+
+    const userPlayerAccount = derivePlayerAddress(
+      user,
+      this.program.programId
+    )[0];
+    const rewardAddress = deriveRewardAddress(
+      achievement,
+      this.program.programId
+    )[0];
+    const playerAchievement = derivePlayerAchievementAddress(
+      userPlayerAccount,
+      achievement,
+      this.program.programId
+    )[0];
+
+    const mint = Keypair.generate();
+    const metadata = deriveMetadataAddress(mint.publicKey)[0];
+    const masterEdition = deriveEditionAddress(mint.publicKey)[0];
+    const ata = deriveAssociatedTokenAddress(mint.publicKey, user);
+
+    const instruction = await mintRewardInstruction(
+      this.program,
+      authority,
+      payer,
+      user,
+      userPlayerAccount,
+      gameAddress,
+      achievement,
+      rewardAddress,
+      playerAchievement,
+      mint,
+      metadata,
+      masterEdition,
+      ata
+    );
+
+    return {
+      newMint: mint.publicKey,
+      transaction: new Transaction().add(instruction),
+    };
+  }
+
+  public async verifyPlayerMintedRewardForAchievement(
+    authority: PublicKey,
+    payer: PublicKey,
+    achievement: PublicKey,
+    game: PublicKey | null,
+    user: PublicKey
+  ): Promise<InstructionResult.VerifyReward> {
+    const gameAddress =
+      game ?? (await this.program.account.achievement.fetch(achievement)).game;
+
+    const userPlayerAccount = derivePlayerAddress(
+      user,
+      this.program.programId
+    )[0];
+    const rewardAddress = deriveRewardAddress(
+      achievement,
+      this.program.programId
+    )[0];
+    const playerAchievement = derivePlayerAchievementAddress(
+      userPlayerAccount,
+      achievement,
+      this.program.programId
+    )[0];
+
+    const account = await this.program.account.playerAchievement.fetch(
+      playerAchievement
+    );
+    if (account === null || account.metadata === null) {
+      throw new Error("No reward minted for this user.");
+    }
+
+    const rewardAccount = await this.program.account.reward.fetch(
+      rewardAddress
+    );
+    if (rewardAccount.collectionMint === null) {
+      throw new Error("No collection to verify rewards for.");
+    }
+
+    const mint = rewardAccount.collectionMint;
+    const metadata = deriveMetadataAddress(mint)[0];
+    const edition = deriveEditionAddress(mint)[0];
+
+    const instruction = await verifyRewardInstruction(
+      this.program,
+      authority,
+      payer,
+      user,
+      userPlayerAccount,
+      gameAddress,
+      achievement,
+      rewardAddress,
+      playerAchievement,
+      account.metadata,
+      rewardAccount.collectionMint,
+      metadata,
+      edition
+    );
+
+    return {
+      transaction: new Transaction().add(instruction),
     };
   }
 
@@ -485,7 +646,7 @@ export class SoarProgram {
   }
 
   public async fetchAllPlayerAccountsInfo(): Promise<PlayerAccountInfo[]> {
-    const players = await this.program.account.playerInfo.all();
+    const players = await this.program.account.player.all();
 
     return players.map((player) =>
       playerInfoFromIdlAccount(player.account, player.publicKey)
@@ -495,10 +656,8 @@ export class SoarProgram {
   public async getAllUserPlayerAccountsKeys(
     user: PublicKey
   ): Promise<PublicKey[]> {
-    const playerInfo = derivePlayerInfoAddress(user, this.program.programId)[0];
-    const playerAccount = await this.program.account.playerInfo.fetch(
-      playerInfo
-    );
+    const playerInfo = derivePlayerAddress(user, this.program.programId)[0];
+    const playerAccount = await this.program.account.player.fetch(playerInfo);
     const mergeAccount = playerAccount.merged;
 
     if (mergeAccount === PublicKey.default) {
@@ -530,7 +689,7 @@ export class SoarProgram {
   public async fetchUserAchievementInfo(
     user: PublicKey
   ): Promise<PlayerAchievementAccountInfo[]> {
-    const player = derivePlayerInfoAddress(user, this.program.programId)[0];
+    const player = derivePlayerAddress(user, this.program.programId)[0];
     const achievements = await this.program.account.playerAchievement.all([
       {
         memcmp: {

@@ -67,7 +67,7 @@ pub mod soar {
         add_leaderboard::handler(ctx, input)
     }
 
-    /// Create a [PlayerInfo] account for a particular user.
+    /// Create a [Player] account for a particular user.
     pub fn create_player(
         ctx: Context<NewPlayer>,
         username: String,
@@ -76,7 +76,7 @@ pub mod soar {
         create_player::handler(ctx, username, nft_meta)
     }
 
-    /// Update the username or nft_meta for a [PlayerInfo] account.
+    /// Update the username or nft_meta for a [Player] account.
     pub fn update_player(
         ctx: Context<UpdatePlayer>,
         username: Option<String>,
@@ -85,7 +85,7 @@ pub mod soar {
         update_player::handler(ctx, username, nft_meta)
     }
 
-    /// Register a [PlayerInfo] for a particular [Leaderboard], resulting in a newly-
+    /// Register a [Player] for a particular [Leaderboard], resulting in a newly-
     /// created [PlayerEntryList] account.
     pub fn register_player(ctx: Context<RegisterPlayer>) -> Result<()> {
         register_player::handler(ctx)

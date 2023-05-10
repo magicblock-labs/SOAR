@@ -101,13 +101,13 @@ pub struct Player {
     /// Metadata to represent this player.
     pub nft_meta: Pubkey,
     /// Address of a [Merged] account that contains a list of all other
-    /// [PlayerInfo] accounts owned by the same user of this account.
+    /// [Player] accounts owned by the same user of this account.
     pub merged: Pubkey,
 }
 
 #[account]
 #[derive(Default)]
-/// An account that holds a collection of [PlayerInfo]s that belong to the
+/// An account that holds a collection of [Player]s that belong to the
 /// same player.
 pub struct Merged {
     pub keys: Vec<Pubkey>,
@@ -115,7 +115,7 @@ pub struct Merged {
 
 #[account]
 #[derive(Default)]
-/// Represents a [PlayerInfo]'s collection of score entries([Entry]) for a particular [LeaderBoard].
+/// Represents a [Player]'s collection of score entries([Entry]) for a particular [LeaderBoard].
 ///
 /// Seeds: `[b"entry", player_info.key().as_ref(), leaderboard.key().as_ref()]`
 pub struct PlayerEntryList {
@@ -148,7 +148,7 @@ pub struct ScoreEntry {
 ///
 /// Seeds = `[b"player-achievement", player.key().as_ref(), achievement.key().as_ref()]`.
 pub struct PlayerAchievement {
-    /// The player's [PlayerInfo] account.
+    /// The player's [Player] account.
     pub player: Pubkey,
     /// The key of the [Achievement] unlocked for this player.
     pub achievement: Pubkey,

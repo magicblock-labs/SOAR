@@ -26,9 +26,9 @@ pub fn handler<'a>(ctx: Context<'_, '_, '_, 'a, MergePlayerAccounts<'a>>, hint: 
 
     let mut player_infos = vec![];
     // We check that:
-    // 1. `player_account` is a valid PlayerInfo acccount.
+    // 1. `player_account` is a valid Player acccount.
     // 2. `user's` signature is present for this instruction.
-    // 3. `user` is the valid user for that playerinfo account.
+    // 3. `user` is the valid user for that player account.
     // 4. `player_account` hasn't been "merged" before.
     for (user, player_account) in pairs {
         let mut deserialized = Account::<'a, Player>::try_from(player_account)?;

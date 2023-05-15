@@ -6,14 +6,15 @@ mod score;
 
 use anchor_lang::prelude::*;
 
+#[constant]
 pub const MAX_TITLE_LEN: usize = 30;
+#[constant]
 pub const MAX_DESCRIPTION_LEN: usize = 200;
 
 #[account]
 #[derive(Default)]
 /// An account representing a single game.
 ///
-/// Seeds: `[b"game", creator.key().as_ref()]`
 pub struct Game {
     /// Game information.
     pub meta: GameMeta,
@@ -30,10 +31,10 @@ pub struct GameMeta {
     pub title: String,
     /// The game description, max length = 200 bytes
     pub description: String,
-    /// The genre, max length = 40 bytes
-    pub genre: String,
-    /// The type, max length = 20 bytes
-    pub game_type: String,
+    /// The [Genre], stored as a u8.
+    pub genre: u8,
+    /// The [GameType], stored as a u8
+    pub game_type: u8,
     /// A mpl collection key representing this game
     pub nft_meta: Pubkey,
 }
@@ -100,17 +101,26 @@ pub struct Player {
     pub rank: u64,
     /// Metadata to represent this player.
     pub nft_meta: Pubkey,
-    /// Address of a [Merged] account that contains a list of all other
-    /// [Player] accounts owned by the same user of this account.
-    pub merged: Pubkey,
 }
 
+/// An account that represents a single user's ownership of
+/// multiple [Player] accounts.
 #[account]
-#[derive(Default)]
-/// An account that holds a collection of [Player]s that belong to the
-/// same player.
 pub struct Merged {
-    pub keys: Vec<Pubkey>,
+    /// The user that initialized this merge.
+    pub initiator: Pubkey,
+    /// Details of all the [Player] accounts to be merged with the main_user's.
+    pub others: Vec<MergeInfo>,
+    /// Whether or not full permissions are granted and the merge complete.
+    pub merge_complete: bool,
+}
+
+/// Represents a [Player] account that's included in the merge and indicates
+/// if the authority of that account has granted permission.
+#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
+pub struct MergeInfo {
+    pub key: Pubkey,
+    pub approved: bool,
 }
 
 #[account]
@@ -173,4 +183,78 @@ pub struct RegisterNewRewardInput {
     pub uri: String,
     pub name: String,
     pub symbol: String,
+}
+
+pub enum GameType {
+    Mobile,
+    Desktop,
+    Web,
+    Unspecified,
+}
+
+impl GameType {
+    /// Custom to enforce that `unspecified` is always stored as 255,
+    /// leaving space to make additions without breaking existing logic.
+    pub fn to_u8(&self) -> u8 {
+        use GameType::*;
+        match self {
+            Mobile => 0,
+            Desktop => 1,
+            Web => 2,
+            Unspecified => 255,
+        }
+    }
+}
+
+impl From<u8> for GameType {
+    fn from(val: u8) -> Self {
+        match val {
+            0 => Self::Mobile,
+            1 => Self::Desktop,
+            2 => Self::Web,
+            _ => Self::Unspecified,
+        }
+    }
+}
+
+#[allow(non_snake_case)]
+pub enum Genre {
+    Rpg,
+    Mmo,
+    Action,
+    Adventure,
+    Puzzle,
+    Casual,
+    Unspecified,
+}
+
+impl Genre {
+    /// Custom to enforce that `unspecified` is always stored as 255,
+    /// leaving space to make additions without breaking existing logic.
+    pub fn to_u8(&self) -> u8 {
+        use Genre::*;
+        match self {
+            Rpg => 0,
+            Mmo => 1,
+            Action => 2,
+            Adventure => 3,
+            Puzzle => 4,
+            Casual => 5,
+            Unspecified => 255,
+        }
+    }
+}
+
+impl From<u8> for Genre {
+    fn from(val: u8) -> Self {
+        match val {
+            0 => Self::Rpg,
+            1 => Self::Mmo,
+            2 => Self::Action,
+            3 => Self::Adventure,
+            4 => Self::Puzzle,
+            5 => Self::Casual,
+            _ => Self::Unspecified,
+        }
+    }
 }

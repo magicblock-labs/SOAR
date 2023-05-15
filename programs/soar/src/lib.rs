@@ -97,27 +97,39 @@ pub mod soar {
         submit_score::handler(ctx, score)
     }
 
-    /// Merge multiple accounts as belonging to the same user. The `hint` argument
-    /// specifies the number of additional accounts to be merged.
-    pub fn merge_player_accounts<'info>(
-        ctx: Context<'_, '_, '_, 'info, MergePlayerAccounts<'info>>,
-        hint: u64,
-    ) -> Result<()> {
-        merge_players::handler(ctx, hint)
+    /// Initialize a new merge account and await approval from the verified users of all the
+    /// specified [Player] accounts.
+    pub fn initiate_merge<'a>(ctx: Context<'_, '_, '_, 'a, InitiateMerge<'a>>) -> Result<()> {
+        initiate_merge::handler(ctx)
     }
 
+    /// Register merge confirmation for a particular [Player] account included in a [Merged].
+    pub fn register_merge_approval(ctx: Context<RegisterMergeApproval>) -> Result<()> {
+        register_merge_approval::handler(ctx)
+    }
+
+    /// Indicate that a player has completed some [Achievement] and create a [PlayerAchievement]
+    /// as proof.
     pub fn unlock_player_achievement(ctx: Context<UnlockPlayerAchievement>) -> Result<()> {
         unlock_player_achievement::handler(ctx)
     }
 
+    /// Optional: Add an NFT-based [Reward] for unlocking some [Achievement].
     pub fn add_reward(ctx: Context<AddReward>, input: RegisterNewRewardInput) -> Result<()> {
         add_reward::handler(ctx, input)
     }
 
+    /// Mint an NFT reward for unlocking a [PlayerAchievement] account.
+    ///
+    /// Optional: Only relevant if an NFT reward is specified for that achievement.
     pub fn mint_reward(ctx: Context<MintReward>) -> Result<()> {
         mint_reward::handler(ctx)
     }
 
+    /// Verify NFT reward as belonging to a particular collection.
+    ///
+    /// Optional: Only relevant if an NFT reward is specified and the reward's
+    /// `collection_mint` is Some(...)
     pub fn verify_reward(ctx: Context<VerifyReward>) -> Result<()> {
         verify_reward::handler(ctx)
     }
@@ -131,9 +143,7 @@ pub struct InitializeGame<'info> {
     #[account(
         init,
         payer = creator,
-        space = Game::size_with_auths(auth.len()),
-        seeds = [seeds::GAME, meta.title.as_bytes()],
-        bump
+        space = Game::size_with_auths(auth.len())
     )]
     pub game: Account<'info, Game>,
     pub system_program: Program<'info, System>,
@@ -142,7 +152,7 @@ pub struct InitializeGame<'info> {
 #[derive(Accounts)]
 pub struct UpdateGame<'info> {
     #[account(
-        constraint = game.check_authority_is_signer(authority.key)
+        constraint = game.check_signer_is_authority(authority.key)
         @ CrateError::InvalidAuthority
     )]
     pub authority: Signer<'info>,
@@ -158,7 +168,7 @@ pub struct UpdateGame<'info> {
 pub struct AddAchievement<'info> {
     #[account(
         mut,
-        constraint = game.check_authority_is_signer(authority.key)
+        constraint = game.check_signer_is_authority(authority.key)
         @ CrateError::InvalidAuthority
     )]
     pub authority: Signer<'info>,
@@ -180,7 +190,7 @@ pub struct AddAchievement<'info> {
 pub struct UpdateAchievement<'info> {
     #[account(
         mut,
-        constraint = game.check_authority_is_signer(authority.key)
+        constraint = game.check_signer_is_authority(authority.key)
         @ CrateError::InvalidAuthority
     )]
     pub authority: Signer<'info>,
@@ -193,7 +203,7 @@ pub struct UpdateAchievement<'info> {
 pub struct AddLeaderBoard<'info> {
     #[account(
         mut,
-        constraint = game.check_authority_is_signer(authority.key)
+        constraint = game.check_signer_is_authority(authority.key)
         @ CrateError::InvalidAuthority
     )]
     pub authority: Signer<'info>,
@@ -265,7 +275,7 @@ pub struct UpdatePlayer<'info> {
 pub struct SubmitScore<'info> {
     #[account(mut)]
     pub user: Signer<'info>,
-    #[account(constraint = game.check_authority_is_signer(&authority.key()))]
+    #[account(constraint = game.check_signer_is_authority(&authority.key()))]
     pub authority: Signer<'info>,
     #[account(has_one = user)]
     pub player_info: Account<'info, Player>,
@@ -278,14 +288,24 @@ pub struct SubmitScore<'info> {
 }
 
 #[derive(Accounts)]
-pub struct MergePlayerAccounts<'info> {
+pub struct InitiateMerge<'info> {
     #[account(mut)]
     pub user: Signer<'info>,
     #[account(has_one = user)]
     pub player_info: Account<'info, Player>,
-    /// CHECK: The [Merge] account to be initialized in handler.
+    /// CHECK: Account to be initialized in handler.
     pub merge_account: UncheckedAccount<'info>,
     pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct RegisterMergeApproval<'info> {
+    #[account(mut)]
+    pub user: Signer<'info>,
+    #[account(has_one = user)]
+    pub player_info: Account<'info, Player>,
+    #[account(mut)]
+    pub merge_account: Account<'info, Merged>,
 }
 
 #[derive(Accounts)]
@@ -299,7 +319,7 @@ pub struct UnlockPlayerAchievement<'info> {
     pub player_entry: Account<'info, PlayerEntryList>,
     #[account(has_one = game)]
     pub leaderboard: Account<'info, LeaderBoard>,
-    #[account(constraint = game.check_authority_is_signer(&authority.key()))]
+    #[account(constraint = game.check_signer_is_authority(&authority.key()))]
     pub game: Account<'info, Game>,
     #[account(has_one = game)]
     pub achievement: Account<'info, Achievement>,
@@ -319,7 +339,7 @@ pub struct AddReward<'info> {
     pub authority: Signer<'info>,
     #[account(mut)]
     pub payer: Signer<'info>,
-    #[account(constraint = game.check_authority_is_signer(&authority.key()))]
+    #[account(constraint = game.check_signer_is_authority(&authority.key()))]
     pub game: Account<'info, Game>,
     #[account(has_one = game)]
     pub achievement: Account<'info, Achievement>,
@@ -349,7 +369,7 @@ pub struct MintReward<'info> {
     pub authority: Signer<'info>,
     /// CHECK: Checked in has_one relationship with `player`.
     pub user: UncheckedAccount<'info>,
-    #[account(constraint = game.check_authority_is_signer(&authority.key()))]
+    #[account(constraint = game.check_signer_is_authority(&authority.key()))]
     pub game: Box<Account<'info, Game>>,
     #[account(
         has_one = game,
@@ -391,7 +411,7 @@ pub struct VerifyReward<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
     pub authority: Signer<'info>,
-    #[account(constraint = game.check_authority_is_signer(&authority.key()))]
+    #[account(constraint = game.check_signer_is_authority(&authority.key()))]
     pub game: Box<Account<'info, Game>>,
     #[account(
         has_one = game,

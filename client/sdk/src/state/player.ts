@@ -10,7 +10,6 @@ export interface PlayerAccountInfo {
   username: string;
   rank: BN;
   nftMeta: PublicKey;
-  merged: PublicKey;
 }
 export interface ReadablePlayerAccountInfo {
   address: string;
@@ -18,7 +17,6 @@ export interface ReadablePlayerAccountInfo {
   username: string;
   rank: string;
   nftMeta: string;
-  merged: string;
 }
 export const playerInfoFromIdlAccount = (
   account: IDLPlayerAccount,
@@ -38,6 +36,5 @@ export const printPlayerInfo = (
     username: info.username,
     rank: info.rank.toString(),
     nftMeta: info.nftMeta.toBase58(),
-    merged: info.nftMeta.toBase58(),
   };
 };

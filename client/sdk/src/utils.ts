@@ -13,15 +13,6 @@ const enum Seeds {
   REWARD = "reward",
 }
 
-export const deriveGameAddress = (
-  creator: PublicKey,
-  programId: PublicKey
-): [PublicKey, number] =>
-  PublicKey.findProgramAddressSync(
-    [Buffer.from(Seeds.GAME), creator.toBuffer()],
-    programId
-  );
-
 export const deriveLeaderBoardAddress = (
   id: BN,
   game: PublicKey,

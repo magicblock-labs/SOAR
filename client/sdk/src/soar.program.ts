@@ -3,19 +3,18 @@ import {
   type AccountMeta,
   type ConfirmOptions,
   Keypair,
-  PublicKey,
+  type PublicKey,
   type Signer,
   Transaction,
 } from "@solana/web3.js";
 import { IDL, type Soar } from "./idl/soar";
 import { PROGRAM_ID } from "./constants";
-import BN from "bn.js";
+import type BN from "bn.js";
 import {
   addLeaderBoardInstruction,
   addAchievementInstruction,
   createPlayerInstruction,
   initializeGameInstruction,
-  mergePlayerAccountsInstruction,
   registerPlayerEntryInstruction,
   updateAchievementInstruction,
   updateGameInstruction,
@@ -25,10 +24,11 @@ import {
   addRewardInstruction,
   mintRewardInstruction,
   verifyRewardInstruction,
+  initiateMergeInstruction,
+  registerMergeApprovalInstruction,
 } from "./instructions";
 import {
   deriveAchievementAddress,
-  deriveGameAddress,
   deriveLeaderBoardAddress,
   derivePlayerAchievementAddress,
   derivePlayerEntryListAddress,
@@ -42,6 +42,8 @@ import {
 import { type InstructionResult } from "./types";
 import { Game } from "./soar.game";
 import {
+  type GameType,
+  type Genre,
   type GameAccountInfo,
   gameInfoFromIdlAccount,
   type PlayerAccountInfo,
@@ -66,17 +68,14 @@ export class SoarProgram {
   public async initializeNewGame(
     title: string,
     description: string,
-    genre: string,
-    gameType: string,
+    genre: Genre,
+    gameType: GameType,
     nftMeta: PublicKey,
     authorities: PublicKey[]
   ): Promise<InstructionResult.InitializeGame> {
     const transaction = new Transaction();
 
-    const newGameAddress = deriveGameAddress(
-      this.provider.publicKey,
-      this.program.programId
-    )[0];
+    const newGameAddress = Keypair.generate().publicKey;
 
     const initGame = await initializeGameInstruction(
       this.program,
@@ -165,41 +164,29 @@ export class SoarProgram {
     return { transaction };
   }
 
-  public async mergePlayerAccounts(
-    keys: PublicKey[]
-  ): Promise<InstructionResult.MergePlayerAccounts> {
+  public async initiateMerge(
+    playerAccountKeys: PublicKey[]
+  ): Promise<InstructionResult.InitiateMerge> {
     const transaction = new Transaction();
 
     const playerInfo = derivePlayerAddress(
       this.provider.publicKey,
       this.program.programId
     )[0];
-    const accounts = new Array<AccountMeta>();
-    let hint = 0;
-    for (const key of keys) {
-      const playerInfo = derivePlayerAddress(key, this.program.programId)[0];
 
-      const keyMeta: AccountMeta = {
+    const accounts = playerAccountKeys.map((key) => {
+      const meta: AccountMeta = {
         pubkey: key,
         isSigner: true,
         isWritable: false,
       };
-      const infoMeta: AccountMeta = {
-        pubkey: playerInfo,
-        isSigner: false,
-        isWritable: true,
-      };
-
-      accounts.push(keyMeta);
-      accounts.push(infoMeta);
-      hint += 1;
-    }
+      return meta;
+    });
 
     const mergeAccount = Keypair.generate();
 
-    const merge = await mergePlayerAccountsInstruction(
+    const initMerge = await initiateMergeInstruction(
       this.program,
-      new BN(hint),
       this.provider.publicKey,
       playerInfo,
       mergeAccount,
@@ -207,8 +194,30 @@ export class SoarProgram {
     );
 
     return {
-      mergeAccount: mergeAccount.publicKey,
-      transaction: transaction.add(merge),
+      newMergeAccount: mergeAccount.publicKey,
+      transaction: transaction.add(initMerge),
+    };
+  }
+
+  public async registerMergeApproval(
+    mergeAccount: PublicKey
+  ): Promise<InstructionResult.RegisterMergeApproval> {
+    const transaction = new Transaction();
+
+    const playerInfo = derivePlayerAddress(
+      this.provider.publicKey,
+      this.program.programId
+    )[0];
+
+    const registerApproval = await registerMergeApprovalInstruction(
+      this.program,
+      this.provider.publicKey,
+      playerInfo,
+      mergeAccount
+    );
+
+    return {
+      transaction: transaction.add(registerApproval),
     };
   }
 
@@ -620,8 +629,8 @@ export class SoarProgram {
   public async newGame(
     title: string,
     description: string,
-    genre: string,
-    gameType: string,
+    genre: Genre,
+    gameType: GameType,
     nftMeta: PublicKey,
     auths: PublicKey[]
   ): Promise<Game> {
@@ -651,23 +660,6 @@ export class SoarProgram {
     return players.map((player) =>
       playerInfoFromIdlAccount(player.account, player.publicKey)
     );
-  }
-
-  public async getAllUserPlayerAccountsKeys(
-    user: PublicKey
-  ): Promise<PublicKey[]> {
-    const playerInfo = derivePlayerAddress(user, this.program.programId)[0];
-    const playerAccount = await this.program.account.player.fetch(playerInfo);
-    const mergeAccount = playerAccount.merged;
-
-    if (mergeAccount === PublicKey.default) {
-      return [playerInfo];
-    }
-
-    const mergeAccountInfo = await this.program.account.merged.fetch(
-      mergeAccount
-    );
-    return mergeAccountInfo.keys;
   }
 
   public async fetchGameAccountsInfoByGenre(

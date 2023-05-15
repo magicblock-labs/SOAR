@@ -1,6 +1,22 @@
 export type Soar = {
   "version": "0.1.0",
   "name": "soar",
+  "constants": [
+    {
+      "name": "MAX_TITLE_LEN",
+      "type": {
+        "defined": "usize"
+      },
+      "value": "30"
+    },
+    {
+      "name": "MAX_DESCRIPTION_LEN",
+      "type": {
+        "defined": "usize"
+      },
+      "value": "200"
+    }
+  ],
   "instructions": [
     {
       "name": "initializeGame",
@@ -16,7 +32,7 @@ export type Soar = {
         {
           "name": "game",
           "isMut": true,
-          "isSigner": false
+          "isSigner": true
         },
         {
           "name": "systemProgram",
@@ -222,7 +238,7 @@ export type Soar = {
     {
       "name": "createPlayer",
       "docs": [
-        "Create a [PlayerInfo] account for a particular user."
+        "Create a [Player] account for a particular user."
       ],
       "accounts": [
         {
@@ -255,7 +271,7 @@ export type Soar = {
     {
       "name": "updatePlayer",
       "docs": [
-        "Update the username or nft_meta for a [PlayerInfo] account."
+        "Update the username or nft_meta for a [Player] account."
       ],
       "accounts": [
         {
@@ -287,7 +303,7 @@ export type Soar = {
     {
       "name": "registerPlayer",
       "docs": [
-        "Register a [PlayerInfo] for a particular [Leaderboard], resulting in a newly-",
+        "Register a [Player] for a particular [Leaderboard], resulting in a newly-",
         "created [PlayerEntryList] account."
       ],
       "accounts": [
@@ -381,10 +397,10 @@ export type Soar = {
       ]
     },
     {
-      "name": "mergePlayerAccounts",
+      "name": "initiateMerge",
       "docs": [
-        "Merge multiple accounts as belonging to the same user. The `hint` argument",
-        "specifies the number of additional accounts to be merged."
+        "Initialize a new merge account and await approval from the verified users of all the",
+        "specified [Player] accounts."
       ],
       "accounts": [
         {
@@ -408,15 +424,38 @@ export type Soar = {
           "isSigner": false
         }
       ],
-      "args": [
+      "args": []
+    },
+    {
+      "name": "registerMergeApproval",
+      "docs": [
+        "Register merge confirmation for a particular [Player] account included in a [Merged]."
+      ],
+      "accounts": [
         {
-          "name": "hint",
-          "type": "u64"
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "playerInfo",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "mergeAccount",
+          "isMut": true,
+          "isSigner": false
         }
-      ]
+      ],
+      "args": []
     },
     {
       "name": "unlockPlayerAchievement",
+      "docs": [
+        "Indicate that a player has completed some [Achievement] and create a [PlayerAchievement]",
+        "as proof."
+      ],
       "accounts": [
         {
           "name": "authority",
@@ -468,6 +507,9 @@ export type Soar = {
     },
     {
       "name": "addReward",
+      "docs": [
+        "Optional: Add an NFT-based [Reward] for unlocking some [Achievement]."
+      ],
       "accounts": [
         {
           "name": "authority",
@@ -534,6 +576,11 @@ export type Soar = {
     },
     {
       "name": "mintReward",
+      "docs": [
+        "Mint an NFT reward for unlocking a [PlayerAchievement] account.",
+        "",
+        "Optional: Only relevant if an NFT reward is specified for that achievement."
+      ],
       "accounts": [
         {
           "name": "payer",
@@ -625,6 +672,12 @@ export type Soar = {
     },
     {
       "name": "verifyReward",
+      "docs": [
+        "Verify NFT reward as belonging to a particular collection.",
+        "",
+        "Optional: Only relevant if an NFT reward is specified and the reward's",
+        "`collection_mint` is Some(...)"
+      ],
       "accounts": [
         {
           "name": "payer",
@@ -695,8 +748,7 @@ export type Soar = {
       "name": "game",
       "docs": [
         "An account representing a single game.",
-        "",
-        "Seeds: `[b\"game\", creator.key().as_ref()]`"
+        ""
       ],
       "type": {
         "kind": "struct",
@@ -909,14 +961,6 @@ export type Soar = {
               "Metadata to represent this player."
             ],
             "type": "publicKey"
-          },
-          {
-            "name": "merged",
-            "docs": [
-              "Address of a [Merged] account that contains a list of all other",
-              "[PlayerInfo] accounts owned by the same user of this account."
-            ],
-            "type": "publicKey"
           }
         ]
       }
@@ -924,17 +968,36 @@ export type Soar = {
     {
       "name": "merged",
       "docs": [
-        "An account that holds a collection of [PlayerInfo]s that belong to the",
-        "same player."
+        "An account that represents a single user's ownership of",
+        "multiple [Player] accounts."
       ],
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "keys",
+            "name": "initiator",
+            "docs": [
+              "The user that initialized this merge."
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "others",
+            "docs": [
+              "Details of all the [Player] accounts to be merged with the main_user's."
+            ],
             "type": {
-              "vec": "publicKey"
+              "vec": {
+                "defined": "MergeInfo"
+              }
             }
+          },
+          {
+            "name": "mergeComplete",
+            "docs": [
+              "Whether or not full permissions are granted and, by effect, the merge complete."
+            ],
+            "type": "bool"
           }
         ]
       }
@@ -942,7 +1005,7 @@ export type Soar = {
     {
       "name": "playerEntryList",
       "docs": [
-        "Represents a [PlayerInfo]'s collection of score entries([Entry]) for a particular [LeaderBoard].",
+        "Represents a [Player]'s collection of score entries([Entry]) for a particular [LeaderBoard].",
         "",
         "Seeds: `[b\"entry\", player_info.key().as_ref(), leaderboard.key().as_ref()]`"
       ],
@@ -997,7 +1060,7 @@ export type Soar = {
           {
             "name": "player",
             "docs": [
-              "The player's [PlayerInfo] account."
+              "The player's [Player] account."
             ],
             "type": "publicKey"
           },
@@ -1061,16 +1124,16 @@ export type Soar = {
           {
             "name": "genre",
             "docs": [
-              "The genre, max length = 40 bytes"
+              "The [Genre], stored as a u8."
             ],
-            "type": "string"
+            "type": "u8"
           },
           {
             "name": "gameType",
             "docs": [
-              "The type, max length = 20 bytes"
+              "The [GameType], stored as a u8"
             ],
-            "type": "string"
+            "type": "u8"
           },
           {
             "name": "nftMeta",
@@ -1078,6 +1141,26 @@ export type Soar = {
               "A mpl collection key representing this game"
             ],
             "type": "publicKey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MergeInfo",
+      "docs": [
+        "Represents a [Player] account that's included in the merge and indicates",
+        "if the authority of that account has granted permission."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "key",
+            "type": "publicKey"
+          },
+          {
+            "name": "approved",
+            "type": "bool"
           }
         ]
       }
@@ -1148,6 +1231,55 @@ export type Soar = {
           }
         ]
       }
+    },
+    {
+      "name": "GameType",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Mobile"
+          },
+          {
+            "name": "Desktop"
+          },
+          {
+            "name": "Web"
+          },
+          {
+            "name": "Unspecified"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Genre",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "RPG"
+          },
+          {
+            "name": "MMO"
+          },
+          {
+            "name": "Action"
+          },
+          {
+            "name": "Adventure"
+          },
+          {
+            "name": "Puzzle"
+          },
+          {
+            "name": "Casual"
+          },
+          {
+            "name": "Unspecified"
+          }
+        ]
+      }
     }
   ],
   "errors": [
@@ -1170,6 +1302,11 @@ export type Soar = {
       "code": 6003,
       "name": "NoRewardForAchievement",
       "msg": "Reward not specified for this achievement."
+    },
+    {
+      "code": 6004,
+      "name": "AccountNotPartOfMerge",
+      "msg": "The merge account does not include this player account"
     }
   ]
 };
@@ -1177,6 +1314,22 @@ export type Soar = {
 export const IDL: Soar = {
   "version": "0.1.0",
   "name": "soar",
+  "constants": [
+    {
+      "name": "MAX_TITLE_LEN",
+      "type": {
+        "defined": "usize"
+      },
+      "value": "30"
+    },
+    {
+      "name": "MAX_DESCRIPTION_LEN",
+      "type": {
+        "defined": "usize"
+      },
+      "value": "200"
+    }
+  ],
   "instructions": [
     {
       "name": "initializeGame",
@@ -1192,7 +1345,7 @@ export const IDL: Soar = {
         {
           "name": "game",
           "isMut": true,
-          "isSigner": false
+          "isSigner": true
         },
         {
           "name": "systemProgram",
@@ -1398,7 +1551,7 @@ export const IDL: Soar = {
     {
       "name": "createPlayer",
       "docs": [
-        "Create a [PlayerInfo] account for a particular user."
+        "Create a [Player] account for a particular user."
       ],
       "accounts": [
         {
@@ -1431,7 +1584,7 @@ export const IDL: Soar = {
     {
       "name": "updatePlayer",
       "docs": [
-        "Update the username or nft_meta for a [PlayerInfo] account."
+        "Update the username or nft_meta for a [Player] account."
       ],
       "accounts": [
         {
@@ -1463,7 +1616,7 @@ export const IDL: Soar = {
     {
       "name": "registerPlayer",
       "docs": [
-        "Register a [PlayerInfo] for a particular [Leaderboard], resulting in a newly-",
+        "Register a [Player] for a particular [Leaderboard], resulting in a newly-",
         "created [PlayerEntryList] account."
       ],
       "accounts": [
@@ -1557,10 +1710,10 @@ export const IDL: Soar = {
       ]
     },
     {
-      "name": "mergePlayerAccounts",
+      "name": "initiateMerge",
       "docs": [
-        "Merge multiple accounts as belonging to the same user. The `hint` argument",
-        "specifies the number of additional accounts to be merged."
+        "Initialize a new merge account and await approval from the verified users of all the",
+        "specified [Player] accounts."
       ],
       "accounts": [
         {
@@ -1584,15 +1737,38 @@ export const IDL: Soar = {
           "isSigner": false
         }
       ],
-      "args": [
+      "args": []
+    },
+    {
+      "name": "registerMergeApproval",
+      "docs": [
+        "Register merge confirmation for a particular [Player] account included in a [Merged]."
+      ],
+      "accounts": [
         {
-          "name": "hint",
-          "type": "u64"
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "playerInfo",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "mergeAccount",
+          "isMut": true,
+          "isSigner": false
         }
-      ]
+      ],
+      "args": []
     },
     {
       "name": "unlockPlayerAchievement",
+      "docs": [
+        "Indicate that a player has completed some [Achievement] and create a [PlayerAchievement]",
+        "as proof."
+      ],
       "accounts": [
         {
           "name": "authority",
@@ -1644,6 +1820,9 @@ export const IDL: Soar = {
     },
     {
       "name": "addReward",
+      "docs": [
+        "Optional: Add an NFT-based [Reward] for unlocking some [Achievement]."
+      ],
       "accounts": [
         {
           "name": "authority",
@@ -1710,6 +1889,11 @@ export const IDL: Soar = {
     },
     {
       "name": "mintReward",
+      "docs": [
+        "Mint an NFT reward for unlocking a [PlayerAchievement] account.",
+        "",
+        "Optional: Only relevant if an NFT reward is specified for that achievement."
+      ],
       "accounts": [
         {
           "name": "payer",
@@ -1801,6 +1985,12 @@ export const IDL: Soar = {
     },
     {
       "name": "verifyReward",
+      "docs": [
+        "Verify NFT reward as belonging to a particular collection.",
+        "",
+        "Optional: Only relevant if an NFT reward is specified and the reward's",
+        "`collection_mint` is Some(...)"
+      ],
       "accounts": [
         {
           "name": "payer",
@@ -1871,8 +2061,7 @@ export const IDL: Soar = {
       "name": "game",
       "docs": [
         "An account representing a single game.",
-        "",
-        "Seeds: `[b\"game\", creator.key().as_ref()]`"
+        ""
       ],
       "type": {
         "kind": "struct",
@@ -2085,14 +2274,6 @@ export const IDL: Soar = {
               "Metadata to represent this player."
             ],
             "type": "publicKey"
-          },
-          {
-            "name": "merged",
-            "docs": [
-              "Address of a [Merged] account that contains a list of all other",
-              "[PlayerInfo] accounts owned by the same user of this account."
-            ],
-            "type": "publicKey"
           }
         ]
       }
@@ -2100,17 +2281,36 @@ export const IDL: Soar = {
     {
       "name": "merged",
       "docs": [
-        "An account that holds a collection of [PlayerInfo]s that belong to the",
-        "same player."
+        "An account that represents a single user's ownership of",
+        "multiple [Player] accounts."
       ],
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "keys",
+            "name": "initiator",
+            "docs": [
+              "The user that initialized this merge."
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "others",
+            "docs": [
+              "Details of all the [Player] accounts to be merged with the main_user's."
+            ],
             "type": {
-              "vec": "publicKey"
+              "vec": {
+                "defined": "MergeInfo"
+              }
             }
+          },
+          {
+            "name": "mergeComplete",
+            "docs": [
+              "Whether or not full permissions are granted and, by effect, the merge complete."
+            ],
+            "type": "bool"
           }
         ]
       }
@@ -2118,7 +2318,7 @@ export const IDL: Soar = {
     {
       "name": "playerEntryList",
       "docs": [
-        "Represents a [PlayerInfo]'s collection of score entries([Entry]) for a particular [LeaderBoard].",
+        "Represents a [Player]'s collection of score entries([Entry]) for a particular [LeaderBoard].",
         "",
         "Seeds: `[b\"entry\", player_info.key().as_ref(), leaderboard.key().as_ref()]`"
       ],
@@ -2173,7 +2373,7 @@ export const IDL: Soar = {
           {
             "name": "player",
             "docs": [
-              "The player's [PlayerInfo] account."
+              "The player's [Player] account."
             ],
             "type": "publicKey"
           },
@@ -2237,16 +2437,16 @@ export const IDL: Soar = {
           {
             "name": "genre",
             "docs": [
-              "The genre, max length = 40 bytes"
+              "The [Genre], stored as a u8."
             ],
-            "type": "string"
+            "type": "u8"
           },
           {
             "name": "gameType",
             "docs": [
-              "The type, max length = 20 bytes"
+              "The [GameType], stored as a u8"
             ],
-            "type": "string"
+            "type": "u8"
           },
           {
             "name": "nftMeta",
@@ -2254,6 +2454,26 @@ export const IDL: Soar = {
               "A mpl collection key representing this game"
             ],
             "type": "publicKey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MergeInfo",
+      "docs": [
+        "Represents a [Player] account that's included in the merge and indicates",
+        "if the authority of that account has granted permission."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "key",
+            "type": "publicKey"
+          },
+          {
+            "name": "approved",
+            "type": "bool"
           }
         ]
       }
@@ -2324,6 +2544,55 @@ export const IDL: Soar = {
           }
         ]
       }
+    },
+    {
+      "name": "GameType",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Mobile"
+          },
+          {
+            "name": "Desktop"
+          },
+          {
+            "name": "Web"
+          },
+          {
+            "name": "Unspecified"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Genre",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "RPG"
+          },
+          {
+            "name": "MMO"
+          },
+          {
+            "name": "Action"
+          },
+          {
+            "name": "Adventure"
+          },
+          {
+            "name": "Puzzle"
+          },
+          {
+            "name": "Casual"
+          },
+          {
+            "name": "Unspecified"
+          }
+        ]
+      }
     }
   ],
   "errors": [
@@ -2346,6 +2615,11 @@ export const IDL: Soar = {
       "code": 6003,
       "name": "NoRewardForAchievement",
       "msg": "Reward not specified for this achievement."
+    },
+    {
+      "code": 6004,
+      "name": "AccountNotPartOfMerge",
+      "msg": "The merge account does not include this player account"
     }
   ]
 };

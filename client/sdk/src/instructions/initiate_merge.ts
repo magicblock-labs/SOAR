@@ -1,31 +1,29 @@
 import { type Program } from "@coral-xyz/anchor";
 import {
   type AccountMeta,
-  type PublicKey,
   type Keypair,
+  type PublicKey,
   type TransactionInstruction,
   SystemProgram,
 } from "@solana/web3.js";
 import { type Soar } from "../idl/soar";
-import BN from "bn.js";
 
-export const mergePlayerAccountsInstruction = async (
+export const initiateMergeInstruction = async (
   program: Program<Soar>,
-  hint: BN,
   user: PublicKey,
   userPlayerAccount: PublicKey,
-  mergeAccount: Keypair,
+  newMergeAccount: Keypair,
   others: AccountMeta[]
 ): Promise<TransactionInstruction> => {
   return program.methods
-    .mergePlayerAccounts(new BN(hint))
+    .initiateMerge()
     .accounts({
       user,
       playerInfo: userPlayerAccount,
-      mergeAccount: mergeAccount.publicKey,
+      mergeAccount: newMergeAccount.publicKey,
       systemProgram: SystemProgram.programId,
     })
     .remainingAccounts(others)
-    .signers([mergeAccount])
+    .signers([newMergeAccount])
     .instruction();
 };

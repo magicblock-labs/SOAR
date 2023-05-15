@@ -13,10 +13,6 @@ export module InstructionResult {
   export interface UpdatePlayer {
     transaction: Transaction;
   }
-  export interface MergePlayerAccounts {
-    mergeAccount: PublicKey;
-    transaction: Transaction;
-  }
   export interface AddGameAchievement {
     newAchievement: PublicKey;
     transaction: Transaction;
@@ -48,6 +44,13 @@ export module InstructionResult {
     transaction: Transaction;
   }
   export interface VerifyReward {
+    transaction: Transaction;
+  }
+  export interface InitiateMerge {
+    newMergeAccount: PublicKey;
+    transaction: Transaction;
+  }
+  export interface RegisterMergeApproval {
     transaction: Transaction;
   }
 }

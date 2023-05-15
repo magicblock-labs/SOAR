@@ -16,4 +16,7 @@ pub enum CrateError {
 
     #[msg("Reward not specified for this achievement.")]
     NoRewardForAchievement,
+
+    #[msg("The merge account does not include this player account")]
+    AccountNotPartOfMerge,
 }

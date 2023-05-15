@@ -5,6 +5,7 @@ import {
   type TransactionInstruction,
 } from "@solana/web3.js";
 import { type Soar } from "../idl/soar";
+import { type GameType, type Genre } from "../state/game";
 
 export const initializeGameInstruction = async (
   program: Program<Soar>,
@@ -12,8 +13,8 @@ export const initializeGameInstruction = async (
   creator: PublicKey,
   title: string,
   description: string,
-  genre: string,
-  gameType: string,
+  genre: Genre,
+  gameType: GameType,
   nftMeta: PublicKey,
   authorities: PublicKey[]
 ): Promise<TransactionInstruction> => {

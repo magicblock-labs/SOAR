@@ -8,8 +8,8 @@ export interface GameAccountInfo {
   address: PublicKey;
   title: string;
   description: string;
-  genre: string;
-  gameType: string;
+  genre: Genre;
+  gameType: GameType;
   nftMeta: PublicKey;
   leaderboardId: BN;
   auth: PublicKey[];
@@ -18,8 +18,8 @@ export interface ReadableGameAccountInfo {
   address: string;
   title: string;
   description: string;
-  genre: string;
-  gameType: string;
+  genre: Genre;
+  gameType: GameType;
   nftMeta: string;
   leaderboardId: string;
   auth: string[];
@@ -54,3 +54,20 @@ export const printGameInfo = (
     auth: info.auth.map((auth) => auth.toBase58()),
   };
 };
+
+export const enum GameType {
+  Mobile = 0,
+  Desktop = 1,
+  Web = 2,
+  Unspecified = 255,
+}
+
+export const enum Genre {
+  RPG = 0,
+  MMO = 1,
+  Action = 2,
+  Adventure = 3,
+  Puzzle = 4,
+  Casual = 5,
+  Unspecified = 255,
+}

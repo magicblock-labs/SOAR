@@ -6,6 +6,8 @@ import { deriveLeaderBoardAddress, derivePlayerAddress } from "./utils";
 import { type InstructionResult } from "./types";
 import { SoarProgram } from "./soar.program";
 import {
+  type GameType,
+  type Genre,
   type AchievementAccountInfo,
   achievementFromIdlAccount,
   type GameAccountInfo,
@@ -41,8 +43,8 @@ export class Game {
     program: SoarProgram,
     title: string,
     description: string,
-    genre: string,
-    gameType: string,
+    genre: Genre,
+    gameType: GameType,
     nftMeta: PublicKey,
     auths: PublicKey[]
   ): Promise<Game> {

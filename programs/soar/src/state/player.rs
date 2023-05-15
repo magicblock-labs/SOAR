@@ -5,7 +5,7 @@ impl Player {
     pub const MAX_USERNAME_LEN: usize = 100;
 
     pub const SIZE: usize = 8 + // discriminator                
-        32 + Self::MAX_USERNAME_LEN + 8 + 32 + 32;
+        32 + Self::MAX_USERNAME_LEN + 8 + 32;
 
     pub fn new(username: String, nft_meta: Pubkey, user: Pubkey) -> Self {
         Player {
@@ -13,7 +13,6 @@ impl Player {
             username,
             rank: 0,
             nft_meta,
-            merged: Pubkey::default(),
         }
     }
 
@@ -45,6 +44,21 @@ impl PlayerEntryList {
             leaderboard,
             score_count: 0,
             scores: Vec::with_capacity(Self::INITIAL_SCORES_LENGTH),
+        }
+    }
+}
+
+impl Merged {
+    pub fn size(others_count: usize) -> usize {
+        4 + 32 + (others_count * (32 + 1))
+    }
+}
+
+impl MergeInfo {
+    pub fn new(key: Pubkey) -> Self {
+        MergeInfo {
+            key,
+            approved: false,
         }
     }
 }

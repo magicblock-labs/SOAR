@@ -11,7 +11,8 @@ export interface GameAccountInfo {
   genre: Genre;
   gameType: GameType;
   nftMeta: PublicKey;
-  leaderboardId: BN;
+  achievementCount: BN;
+  leaderboardCount: BN;
   auth: PublicKey[];
 }
 export interface ReadableGameAccountInfo {
@@ -21,7 +22,8 @@ export interface ReadableGameAccountInfo {
   genre: Genre;
   gameType: GameType;
   nftMeta: string;
-  leaderboardId: string;
+  achievementCount: string;
+  leaderboardCount: string;
   auth: string[];
 }
 
@@ -36,7 +38,8 @@ export const gameInfoFromIdlAccount = (
     genre: account.meta.genre,
     gameType: account.meta.gameType,
     nftMeta: account.meta.nftMeta,
-    leaderboardId: account.leaderboard as any as BN,
+    achievementCount: account.achievementCount,
+    leaderboardCount: account.leaderboardCount,
     auth: account.auth,
   };
 };
@@ -50,7 +53,8 @@ export const printGameInfo = (
     genre: info.genre,
     gameType: info.gameType,
     nftMeta: info.nftMeta.toBase58(),
-    leaderboardId: info.leaderboardId.toString(),
+    achievementCount: info.achievementCount.toString(),
+    leaderboardCount: info.leaderboardCount.toString(),
     auth: info.auth.map((auth) => auth.toBase58()),
   };
 };

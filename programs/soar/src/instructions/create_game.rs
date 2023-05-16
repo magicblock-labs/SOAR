@@ -13,7 +13,8 @@ pub fn handler(
     let mut game_object = Game::default();
 
     game_object.set_meta(game_meta_input);
-    game_object.leaderboard = 0;
+    game_object.leaderboard_count = 0;
+    game_object.achievement_count = 0;
     game_object.auth = game_auth_input;
 
     game_account.set_inner(game_object);

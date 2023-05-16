@@ -1,9 +1,8 @@
 import { PublicKey } from "@solana/web3.js";
-import type BN from "bn.js";
 import { TOKEN_METADATA_PROGRAM_ID } from "./constants";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 
-const enum Seeds {
+export const enum Seeds {
   GAME = "game",
   LEADER = "leaderboard",
   ACHIEVEMENT = "achievement",
@@ -13,77 +12,6 @@ const enum Seeds {
   REWARD = "reward",
   LEADER_TOP_ENTRIES = "top-scores",
 }
-
-export const deriveLeaderBoardAddress = (
-  id: BN,
-  game: PublicKey,
-  programId: PublicKey
-): [PublicKey, number] =>
-  PublicKey.findProgramAddressSync(
-    [Buffer.from(Seeds.LEADER), game.toBuffer(), id.toBuffer("le", 8)],
-    programId
-  );
-
-export const deriveLeaderTopEntriesAddress = (
-  leaderboard: PublicKey,
-  programId: PublicKey
-): [PublicKey, number] =>
-  PublicKey.findProgramAddressSync(
-    [Buffer.from(Seeds.LEADER), leaderboard.toBuffer()],
-    programId
-  );
-
-export const deriveAchievementAddress = (
-  game: PublicKey,
-  title: string,
-  programId: PublicKey
-): [PublicKey, number] =>
-  PublicKey.findProgramAddressSync(
-    [Buffer.from(Seeds.ACHIEVEMENT), game.toBuffer(), Buffer.from(title)],
-    programId
-  );
-
-export const derivePlayerAddress = (
-  user: PublicKey,
-  programId: PublicKey
-): [PublicKey, number] =>
-  PublicKey.findProgramAddressSync(
-    [Buffer.from(Seeds.PLAYER), user.toBuffer()],
-    programId
-  );
-
-export const derivePlayerEntryListAddress = (
-  playerInfo: PublicKey,
-  leaderboard: PublicKey,
-  programId: PublicKey
-): [PublicKey, number] =>
-  PublicKey.findProgramAddressSync(
-    [Buffer.from(Seeds.ENTRY), playerInfo.toBuffer(), leaderboard.toBuffer()],
-    programId
-  );
-
-export const derivePlayerAchievementAddress = (
-  player: PublicKey,
-  achievement: PublicKey,
-  programId: PublicKey
-): [PublicKey, number] =>
-  PublicKey.findProgramAddressSync(
-    [
-      Buffer.from(Seeds.PLAYER_ACHIEVEMENT),
-      player.toBuffer(),
-      achievement.toBuffer(),
-    ],
-    programId
-  );
-
-export const deriveRewardAddress = (
-  achievement: PublicKey,
-  programId: PublicKey
-): [PublicKey, number] =>
-  PublicKey.findProgramAddressSync(
-    [Buffer.from(Seeds.REWARD), achievement.toBuffer()],
-    programId
-  );
 
 export const deriveMetadataAddress = (mint: PublicKey): [PublicKey, number] => {
   return PublicKey.findProgramAddressSync(

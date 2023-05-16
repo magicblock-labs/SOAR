@@ -39,7 +39,7 @@ pub fn handler(ctx: Context<SubmitScore>, score: u64) -> Result<()> {
 
         resize_account(
             &player_entries.to_account_info(),
-            &ctx.accounts.user.to_account_info(),
+            &ctx.accounts.payer.to_account_info(),
             &ctx.accounts.system_program.to_account_info(),
             new_size,
         )?;

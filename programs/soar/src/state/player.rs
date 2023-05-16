@@ -5,13 +5,12 @@ impl Player {
     pub const MAX_USERNAME_LEN: usize = 100;
 
     pub const SIZE: usize = 8 + // discriminator                
-        32 + Self::MAX_USERNAME_LEN + 8 + 32;
+        32 + Self::MAX_USERNAME_LEN + 32;
 
     pub fn new(username: String, nft_meta: Pubkey, user: Pubkey) -> Self {
         Player {
             user,
             username,
-            rank: 0,
             nft_meta,
         }
     }

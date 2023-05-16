@@ -109,7 +109,7 @@ export type Soar = {
       "accounts": [
         {
           "name": "authority",
-          "isMut": true,
+          "isMut": false,
           "isSigner": true
         },
         {
@@ -156,7 +156,7 @@ export type Soar = {
       "accounts": [
         {
           "name": "authority",
-          "isMut": true,
+          "isMut": false,
           "isSigner": true
         },
         {
@@ -199,7 +199,7 @@ export type Soar = {
       "accounts": [
         {
           "name": "authority",
-          "isMut": true,
+          "isMut": false,
           "isSigner": true
         },
         {
@@ -244,8 +244,13 @@ export type Soar = {
       ],
       "accounts": [
         {
-          "name": "user",
+          "name": "payer",
           "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "user",
+          "isMut": false,
           "isSigner": true
         },
         {
@@ -310,8 +315,13 @@ export type Soar = {
       ],
       "accounts": [
         {
-          "name": "user",
+          "name": "payer",
           "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "user",
+          "isMut": false,
           "isSigner": true
         },
         {
@@ -351,6 +361,11 @@ export type Soar = {
       "accounts": [
         {
           "name": "user",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "payer",
           "isMut": true,
           "isSigner": true
         },
@@ -406,8 +421,13 @@ export type Soar = {
       ],
       "accounts": [
         {
-          "name": "user",
+          "name": "payer",
           "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "user",
+          "isMut": false,
           "isSigner": true
         },
         {
@@ -436,7 +456,7 @@ export type Soar = {
       "accounts": [
         {
           "name": "user",
-          "isMut": true,
+          "isMut": false,
           "isSigner": true
         },
         {
@@ -465,8 +485,13 @@ export type Soar = {
           "isSigner": true
         },
         {
-          "name": "user",
+          "name": "payer",
           "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "user",
+          "isMut": false,
           "isSigner": true
         },
         {
@@ -765,9 +790,18 @@ export type Soar = {
             }
           },
           {
-            "name": "leaderboard",
+            "name": "leaderboardCount",
             "docs": [
-              "The id of the currently active leaderboard."
+              "Number of leaderboards this game has created. Used both in determining the",
+              "most recent leaderboard address, and as a seed for the next leaderboard."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "achievementCount",
+            "docs": [
+              "Number of achievements that exist for this game. Used in determining",
+              "the u64 index for the next achievement."
             ],
             "type": "u64"
           },
@@ -1007,13 +1041,6 @@ export type Soar = {
               "The player's username."
             ],
             "type": "string"
-          },
-          {
-            "name": "rank",
-            "docs": [
-              "The player's ranking."
-            ],
-            "type": "u64"
           },
           {
             "name": "nftMeta",
@@ -1552,7 +1579,7 @@ export const IDL: Soar = {
       "accounts": [
         {
           "name": "authority",
-          "isMut": true,
+          "isMut": false,
           "isSigner": true
         },
         {
@@ -1599,7 +1626,7 @@ export const IDL: Soar = {
       "accounts": [
         {
           "name": "authority",
-          "isMut": true,
+          "isMut": false,
           "isSigner": true
         },
         {
@@ -1642,7 +1669,7 @@ export const IDL: Soar = {
       "accounts": [
         {
           "name": "authority",
-          "isMut": true,
+          "isMut": false,
           "isSigner": true
         },
         {
@@ -1687,8 +1714,13 @@ export const IDL: Soar = {
       ],
       "accounts": [
         {
-          "name": "user",
+          "name": "payer",
           "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "user",
+          "isMut": false,
           "isSigner": true
         },
         {
@@ -1753,8 +1785,13 @@ export const IDL: Soar = {
       ],
       "accounts": [
         {
-          "name": "user",
+          "name": "payer",
           "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "user",
+          "isMut": false,
           "isSigner": true
         },
         {
@@ -1794,6 +1831,11 @@ export const IDL: Soar = {
       "accounts": [
         {
           "name": "user",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "payer",
           "isMut": true,
           "isSigner": true
         },
@@ -1849,8 +1891,13 @@ export const IDL: Soar = {
       ],
       "accounts": [
         {
-          "name": "user",
+          "name": "payer",
           "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "user",
+          "isMut": false,
           "isSigner": true
         },
         {
@@ -1879,7 +1926,7 @@ export const IDL: Soar = {
       "accounts": [
         {
           "name": "user",
-          "isMut": true,
+          "isMut": false,
           "isSigner": true
         },
         {
@@ -1908,8 +1955,13 @@ export const IDL: Soar = {
           "isSigner": true
         },
         {
-          "name": "user",
+          "name": "payer",
           "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "user",
+          "isMut": false,
           "isSigner": true
         },
         {
@@ -2208,9 +2260,18 @@ export const IDL: Soar = {
             }
           },
           {
-            "name": "leaderboard",
+            "name": "leaderboardCount",
             "docs": [
-              "The id of the currently active leaderboard."
+              "Number of leaderboards this game has created. Used both in determining the",
+              "most recent leaderboard address, and as a seed for the next leaderboard."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "achievementCount",
+            "docs": [
+              "Number of achievements that exist for this game. Used in determining",
+              "the u64 index for the next achievement."
             ],
             "type": "u64"
           },
@@ -2450,13 +2511,6 @@ export const IDL: Soar = {
               "The player's username."
             ],
             "type": "string"
-          },
-          {
-            "name": "rank",
-            "docs": [
-              "The player's ranking."
-            ],
-            "type": "u64"
           },
           {
             "name": "nftMeta",

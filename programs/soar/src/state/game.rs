@@ -3,7 +3,7 @@ use crate::SoarError;
 
 impl Game {
     pub const SIZE_WITHOUT_AUTHS: usize = 8 + // discriminator 
-        GameMeta::SIZE + 8;
+        GameMeta::SIZE + 8 + 8;
 
     pub fn size_with_auths(auth_len: usize) -> usize {
         Self::SIZE_WITHOUT_AUTHS + 4 + (auth_len * 32)

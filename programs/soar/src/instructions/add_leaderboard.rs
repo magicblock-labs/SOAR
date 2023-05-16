@@ -10,12 +10,12 @@ pub fn handler(ctx: Context<AddLeaderBoard>, input: RegisterLeaderBoardInput) ->
     input.check_field_lengths()?;
 
     let game = &ctx.accounts.game;
-    let id = crate::next_leaderboard_id(game);
+    let new_count = crate::next_leaderboard(game);
 
     let retain_count = input.scores_to_retain;
     let order = input.scores_order;
 
-    let leaderboard = input.into_leaderboard(game.key(), id);
+    let leaderboard = input.into_leaderboard(game.key(), new_count);
     ctx.accounts.leaderboard.set_inner(leaderboard);
 
     if retain_count > 0 {
@@ -52,6 +52,6 @@ pub fn handler(ctx: Context<AddLeaderBoard>, input: RegisterLeaderBoardInput) ->
         ctx.accounts.leaderboard.top_entries = Some(top_entries.key());
     }
 
-    ctx.accounts.game.leaderboard = id;
+    ctx.accounts.game.leaderboard_count = new_count;
     Ok(())
 }

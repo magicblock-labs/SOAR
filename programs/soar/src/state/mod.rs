@@ -18,8 +18,12 @@ pub const MAX_DESCRIPTION_LEN: usize = 200;
 pub struct Game {
     /// Game information.
     pub meta: GameMeta,
-    /// The id of the currently active leaderboard.
-    pub leaderboard: u64,
+    /// Number of leaderboards this game has created. Used both in determining the
+    /// most recent leaderboard address, and as a seed for the next leaderboard.
+    pub leaderboard_count: u64,
+    /// Number of achievements that exist for this game. Used in determining
+    /// the u64 index for the next achievement.
+    pub achievement_count: u64,
     /// A collection of pubkeys which are valid authorities for the game.
     pub auth: Vec<Pubkey>,
 }
@@ -122,8 +126,6 @@ pub struct Player {
     pub user: Pubkey,
     /// The player's username.
     pub username: String,
-    /// The player's ranking.
-    pub rank: u64,
     /// Metadata to represent this player.
     pub nft_meta: Pubkey,
 }

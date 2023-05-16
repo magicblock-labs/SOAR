@@ -1,7 +1,6 @@
 import { type Program } from "@coral-xyz/anchor";
 import {
   type AccountMeta,
-  type Keypair,
   type PublicKey,
   type TransactionInstruction,
   SystemProgram,
@@ -11,19 +10,20 @@ import { type Soar } from "../idl/soar";
 export const initiateMergeInstruction = async (
   program: Program<Soar>,
   user: PublicKey,
+  payer: PublicKey,
   userPlayerAccount: PublicKey,
-  newMergeAccount: Keypair,
+  newMergeAccount: PublicKey,
   others: AccountMeta[]
 ): Promise<TransactionInstruction> => {
   return program.methods
     .initiateMerge()
     .accounts({
       user,
+      payer,
       playerInfo: userPlayerAccount,
-      mergeAccount: newMergeAccount.publicKey,
+      mergeAccount: newMergeAccount,
       systemProgram: SystemProgram.programId,
     })
     .remainingAccounts(others)
-    .signers([newMergeAccount])
     .instruction();
 };

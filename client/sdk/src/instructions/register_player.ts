@@ -9,6 +9,7 @@ import { type Soar } from "../idl/soar";
 export const registerPlayerEntryInstruction = async (
   program: Program<Soar>,
   user: PublicKey,
+  payer: PublicKey,
   userPlayerAccount: PublicKey,
   newEntryList: PublicKey,
   gameAddress: PublicKey,
@@ -18,6 +19,7 @@ export const registerPlayerEntryInstruction = async (
     .registerPlayer()
     .accounts({
       user,
+      payer,
       playerInfo: userPlayerAccount,
       game: gameAddress,
       leaderboard,

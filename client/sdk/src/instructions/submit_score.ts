@@ -10,6 +10,7 @@ import type BN from "bn.js";
 export const submitScoreInstruction = async (
   program: Program<Soar>,
   user: PublicKey,
+  payer: PublicKey,
   userPlayerAccount: PublicKey,
   authority: PublicKey,
   game: PublicKey,
@@ -23,6 +24,7 @@ export const submitScoreInstruction = async (
     .submitScore(score)
     .accounts({
       user,
+      payer,
       authority,
       playerInfo: userPlayerAccount,
       game,

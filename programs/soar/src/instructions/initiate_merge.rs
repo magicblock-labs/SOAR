@@ -18,17 +18,17 @@ pub fn handler<'a>(ctx: Context<'_, '_, '_, 'a, InitiateMerge<'a>>) -> Result<()
         .collect();
 
     let merge_account = &ctx.accounts.merge_account;
-    let user = &ctx.accounts.user;
+    let payer = &ctx.accounts.payer;
     let system_program = &ctx.accounts.system_program;
 
     let create_size = Merged::size(keys.len());
-    create_account(create_size, merge_account, user, system_program, None)?;
+    create_account(create_size, merge_account, payer, system_program, None)?;
     // Serialize account discriminator.
     let discriminator = Merged::discriminator();
     discriminator.serialize(&mut &mut merge_account.data.borrow_mut()[..8])?;
 
     let mut merge_account = Account::<'_, Merged>::try_from(merge_account)?;
-    merge_account.initiator = user.key();
+    merge_account.initiator = ctx.accounts.user.key();
     merge_account.others = keys.into_iter().map(MergeInfo::new).collect();
     merge_account.merge_complete = merge_account.others.is_empty();
 

@@ -9,7 +9,7 @@ import { type GameType, type Genre } from "../state/game";
 
 export const initializeGameInstruction = async (
   program: Program<Soar>,
-  newGameAddress: PublicKey,
+  newGame: PublicKey,
   creator: PublicKey,
   title: string,
   description: string,
@@ -25,7 +25,7 @@ export const initializeGameInstruction = async (
     )
     .accounts({
       creator,
-      game: newGameAddress,
+      game: newGame,
       systemProgram: SystemProgram.programId,
     })
     .instruction();

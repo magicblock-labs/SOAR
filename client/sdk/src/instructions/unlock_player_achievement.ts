@@ -9,6 +9,7 @@ import { type Soar } from "../idl/soar";
 export const unlockPlayerAchievementInstruction = async (
   program: Program<Soar>,
   user: PublicKey,
+  payer: PublicKey,
   userPlayerAccount: PublicKey,
   userEntryListAccount: PublicKey,
   game: PublicKey,
@@ -22,6 +23,7 @@ export const unlockPlayerAchievementInstruction = async (
     .accounts({
       authority,
       user,
+      payer,
       playerInfo: userPlayerAccount,
       playerEntry: userEntryListAccount,
       leaderboard,

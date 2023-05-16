@@ -1,8 +1,7 @@
 import { type AnchorProvider, type IdlTypes } from "@coral-xyz/anchor";
-import { type PublicKey, type Transaction } from "@solana/web3.js";
+import { Keypair, type PublicKey, type Transaction } from "@solana/web3.js";
 import { type Soar } from "./idl/soar";
 import type BN from "bn.js";
-import { deriveLeaderBoardAddress, derivePlayerAddress } from "./utils";
 import { type InstructionResult } from "./types";
 import { SoarProgram } from "./soar.program";
 import {
@@ -48,7 +47,9 @@ export class Game {
     nftMeta: PublicKey,
     auths: PublicKey[]
   ): Promise<Game> {
+    const game = Keypair.generate();
     const { gameAddress, transaction } = await program.initializeNewGame(
+      game,
       title,
       description,
       genre,
@@ -57,11 +58,11 @@ export class Game {
       auths
     );
 
-    await program.sendAndConfirmTransaction(transaction);
-    const game = new Game(gameAddress, program);
+    await program.sendAndConfirmTransaction(transaction, [game]);
+    const obj = new Game(gameAddress, program);
 
-    await game.init();
-    return game;
+    await obj.init();
+    return obj;
   }
 
   public async init(): Promise<void> {
@@ -73,25 +74,17 @@ export class Game {
     const account = await this.soar.program.account.game.fetch(this.address);
     const details = gameInfoFromIdlAccount(account, this.address);
 
-    return details.leaderboardId;
+    return details.leaderboardCount;
   }
 
   public async currentLeaderBoardAddress(): Promise<PublicKey> {
     const id = await this.currentLeaderBoardId();
-    return deriveLeaderBoardAddress(
-      id,
-      this.address,
-      this.soar.program.programId
-    )[0];
+    return this.soar.deriveLeaderBoardAddress(id, this.address)[0];
   }
 
   public async nextLeaderBoardAddress(): Promise<PublicKey> {
     const id = (await this.currentLeaderBoardId()).addn(1);
-    return deriveLeaderBoardAddress(
-      id,
-      this.address,
-      this.soar.program.programId
-    )[0];
+    return this.soar.deriveLeaderBoardAddress(id, this.address)[0];
   }
 
   public async update(
@@ -147,20 +140,25 @@ export class Game {
     );
   }
 
-  public async registerPlayer(): Promise<InstructionResult.RegisterPlayerEntry> {
+  public async registerPlayer(
+    user: PublicKey
+  ): Promise<InstructionResult.RegisterPlayerEntry> {
     const leaderboard = await this.currentLeaderBoardAddress();
     return this.soar.registerPlayerEntryForLeaderBoard(
+      user,
       leaderboard,
       this.address
     );
   }
 
   public async submitScore(
+    user: PublicKey,
     authority: PublicKey,
     score: BN
   ): Promise<InstructionResult.SubmitScore> {
     const leaderboard = await this.currentLeaderBoardAddress();
     return this.soar.submitScoreToLeaderBoard(
+      user,
       authority,
       this.address,
       leaderboard,
@@ -218,10 +216,7 @@ export class Game {
   public async fetchPlayerScores(
     player: PublicKey
   ): Promise<PlayerEntryListAccountInfo[]> {
-    const playerInfo = derivePlayerAddress(
-      player,
-      this.soar.program.programId
-    )[0];
+    const playerInfo = this.soar.derivePlayerAddress(player)[0];
     const leaderboard = await this.currentLeaderBoardAddress();
     const results = await this.soar.program.account.playerEntryList.all([
       {

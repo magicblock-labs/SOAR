@@ -10,6 +10,7 @@ export const createPlayerInstruction = async (
   program: Program<Soar>,
   newPlayerInfo: PublicKey,
   user: PublicKey,
+  payer: PublicKey,
   username: string,
   nftMeta: PublicKey
 ): Promise<TransactionInstruction> => {
@@ -17,6 +18,7 @@ export const createPlayerInstruction = async (
     .createPlayer(username, nftMeta)
     .accounts({
       user,
+      payer,
       playerInfo: newPlayerInfo,
       systemProgram: SystemProgram.programId,
     })

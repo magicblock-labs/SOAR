@@ -13,7 +13,7 @@ mod seeds;
 mod state;
 mod utils;
 
-use error::CrateError;
+use error::SoarError;
 use instructions::*;
 use state::*;
 
@@ -93,7 +93,7 @@ pub mod soar {
 
     /// Submit a score for a player and have it timestamped and added to the [PlayerEntryList].
     /// Optionally increase the player's rank if needed.
-    pub fn submit_score(ctx: Context<SubmitScore>, score: u64, _rank: Option<u64>) -> Result<()> {
+    pub fn submit_score(ctx: Context<SubmitScore>, score: u64) -> Result<()> {
         submit_score::handler(ctx, score)
     }
 
@@ -153,7 +153,7 @@ pub struct InitializeGame<'info> {
 pub struct UpdateGame<'info> {
     #[account(
         constraint = game.check_signer_is_authority(authority.key)
-        @ CrateError::InvalidAuthority
+        @ SoarError::InvalidAuthority
     )]
     pub authority: Signer<'info>,
     #[account(mut)]
@@ -169,7 +169,7 @@ pub struct AddAchievement<'info> {
     #[account(
         mut,
         constraint = game.check_signer_is_authority(authority.key)
-        @ CrateError::InvalidAuthority
+        @ SoarError::InvalidAuthority
     )]
     pub authority: Signer<'info>,
     #[account(mut)]
@@ -191,7 +191,7 @@ pub struct UpdateAchievement<'info> {
     #[account(
         mut,
         constraint = game.check_signer_is_authority(authority.key)
-        @ CrateError::InvalidAuthority
+        @ SoarError::InvalidAuthority
     )]
     pub authority: Signer<'info>,
     pub game: Account<'info, Game>,
@@ -204,14 +204,13 @@ pub struct AddLeaderBoard<'info> {
     #[account(
         mut,
         constraint = game.check_signer_is_authority(authority.key)
-        @ CrateError::InvalidAuthority
+        @ SoarError::InvalidAuthority
     )]
     pub authority: Signer<'info>,
     #[account(mut)]
     pub payer: Signer<'info>,
     #[account(mut)]
     pub game: Account<'info, Game>,
-    /// TODO: Close previous leaderboard account?
     #[account(
         init,
         payer = payer,
@@ -220,6 +219,13 @@ pub struct AddLeaderBoard<'info> {
         bump,
     )]
     pub leaderboard: Account<'info, LeaderBoard>,
+    /// CHECK: The [LeaderTopEntries] account that is `optionally` created in handler.
+    #[account(
+        // mut,
+        seeds = [seeds::LEADER_TOP_ENTRIES, leaderboard.key().as_ref()],
+        bump,
+    )]
+    pub top_entries: UncheckedAccount<'info>,
     pub system_program: Program<'info, System>,
 }
 
@@ -242,13 +248,13 @@ pub struct NewPlayer<'info> {
     pub system_program: Program<'info, System>,
 }
 
+/// TODO: Players should be able to register against **any** leaderboard.
 #[derive(Accounts)]
 pub struct RegisterPlayer<'info> {
     #[account(mut)]
     pub user: Signer<'info>,
     #[account(has_one = user)]
     pub player_info: Account<'info, Player>,
-    #[account(constraint = game.leaderboard == leaderboard.id)]
     pub game: Account<'info, Game>,
     #[account(has_one = game)]
     pub leaderboard: Account<'info, LeaderBoard>,
@@ -271,7 +277,6 @@ pub struct UpdatePlayer<'info> {
 }
 
 #[derive(Accounts)]
-// TODO: Optionally update rank here or use a separate ix for that.
 pub struct SubmitScore<'info> {
     #[account(mut)]
     pub user: Signer<'info>,
@@ -282,6 +287,7 @@ pub struct SubmitScore<'info> {
     pub game: Account<'info, Game>,
     #[account(has_one = game)]
     pub leaderboard: Account<'info, LeaderBoard>,
+    pub top_entries: Option<Account<'info, LeaderTopEntries>>,
     #[account(has_one = player_info, has_one = leaderboard)]
     pub player_entries: Account<'info, PlayerEntryList>,
     pub system_program: Program<'info, System>,

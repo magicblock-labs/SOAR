@@ -1,5 +1,5 @@
 use super::*;
-use crate::CrateError;
+use crate::SoarError;
 
 impl Achievement {
     pub const SIZE: usize = 8 + // discriminator
@@ -17,7 +17,7 @@ impl Achievement {
 
     pub fn check_field_lengths(&self) -> Result<()> {
         if self.title.len() > MAX_TITLE_LEN || self.description.len() > MAX_DESCRIPTION_LEN {
-            return Err(CrateError::InvalidFieldLength.into());
+            return Err(SoarError::InvalidFieldLength.into());
         }
 
         Ok(())
@@ -39,7 +39,7 @@ impl Reward {
             || self.name.len() > Self::MAX_NAME_LENGTH
             || self.symbol.len() > Self::MAX_SYMBOL_LENGTH
         {
-            return Err(CrateError::InvalidFieldLength.into());
+            return Err(SoarError::InvalidFieldLength.into());
         }
         Ok(())
     }

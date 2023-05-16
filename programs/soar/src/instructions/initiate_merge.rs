@@ -1,7 +1,7 @@
-use crate::state::{MergeInfo, Merged};
+use crate::state::{MergeInfo, Merged, Player};
 use crate::utils::create_account;
-use crate::{state::Player, InitiateMerge};
-use anchor_lang::prelude::*;
+use crate::InitiateMerge;
+use anchor_lang::{prelude::*, Discriminator};
 use std::collections::HashSet;
 
 pub fn handler<'a>(ctx: Context<'_, '_, '_, 'a, InitiateMerge<'a>>) -> Result<()> {
@@ -9,7 +9,7 @@ pub fn handler<'a>(ctx: Context<'_, '_, '_, 'a, InitiateMerge<'a>>) -> Result<()
 
     let keys: Vec<Pubkey> = accounts_to_merge
         .map(|account| {
-            // Guarantee that it is a valid [Player] account.
+            // Guarantee that it is a valid `Player` account.
             let _ = Account::<'a, Player>::try_from(account).ok();
             account.key()
         })
@@ -22,7 +22,10 @@ pub fn handler<'a>(ctx: Context<'_, '_, '_, 'a, InitiateMerge<'a>>) -> Result<()
     let system_program = &ctx.accounts.system_program;
 
     let create_size = Merged::size(keys.len());
-    create_account(create_size, merge_account, user, system_program)?;
+    create_account(create_size, merge_account, user, system_program, None)?;
+    // Serialize account discriminator.
+    let discriminator = Merged::discriminator();
+    discriminator.serialize(&mut &mut merge_account.data.borrow_mut()[..8])?;
 
     let mut merge_account = Account::<'_, Merged>::try_from(merge_account)?;
     merge_account.initiator = user.key();

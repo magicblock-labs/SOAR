@@ -15,19 +15,22 @@ export const submitScoreInstruction = async (
   game: PublicKey,
   leaderboard: PublicKey,
   playerEntryListAddress: PublicKey,
+  topEntries: PublicKey,
   score: BN,
-  rank: BN | null
+  preInstructions: TransactionInstruction[]
 ): Promise<TransactionInstruction> => {
   return program.methods
-    .submitScore(score, rank)
+    .submitScore(score)
     .accounts({
       user,
       authority,
       playerInfo: userPlayerAccount,
       game,
       leaderboard,
+      topEntries, // TODO:
       playerEntries: playerEntryListAddress,
       systemProgram: SystemProgram.programId,
     })
+    .preInstructions(preInstructions)
     .instruction();
 };

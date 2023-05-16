@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 
 #[error_code]
-pub enum CrateError {
+pub enum SoarError {
     /// Returned if the length of a parameter exceeds its allowed limits.
     #[msg("Exceeded max length for field.")]
     InvalidFieldLength,
@@ -19,4 +19,7 @@ pub enum CrateError {
 
     #[msg("The merge account does not include this player account")]
     AccountNotPartOfMerge,
+
+    #[msg("Tried to input score that is below the minimum or above the maximum")]
+    ScoreNotWithinBounds,
 }

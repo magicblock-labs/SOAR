@@ -110,7 +110,12 @@ export class Game {
   public async addLeaderBoard(
     authority: PublicKey,
     description: string,
-    nftMeta: PublicKey
+    nftMeta: PublicKey,
+    scoresToRetain: number | null,
+    scoresOrder: boolean | null,
+    decimals: number | null,
+    minScore: BN | null,
+    maxScore: BN | null
   ): Promise<InstructionResult.AddLeaderBoard> {
     const next = await this.nextLeaderBoardAddress();
     return this.soar.addNewGameLeaderBoard(
@@ -118,7 +123,12 @@ export class Game {
       next,
       authority,
       description,
-      nftMeta
+      nftMeta,
+      scoresToRetain,
+      scoresOrder,
+      decimals,
+      minScore,
+      maxScore
     );
   }
 
@@ -141,24 +151,20 @@ export class Game {
     const leaderboard = await this.currentLeaderBoardAddress();
     return this.soar.registerPlayerEntryForLeaderBoard(
       leaderboard,
-      this.address,
-      leaderboard
+      this.address
     );
   }
 
   public async submitScore(
-    player: PublicKey,
     authority: PublicKey,
-    score: BN,
-    rank: BN | null
+    score: BN
   ): Promise<InstructionResult.SubmitScore> {
     const leaderboard = await this.currentLeaderBoardAddress();
     return this.soar.submitScoreToLeaderBoard(
       authority,
       this.address,
       leaderboard,
-      score,
-      rank
+      score
     );
   }
 

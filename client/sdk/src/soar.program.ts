@@ -5,6 +5,7 @@ import {
   Keypair,
   type PublicKey,
   type Signer,
+  type TransactionInstruction,
   Transaction,
 } from "@solana/web3.js";
 import { IDL, type Soar } from "./idl/soar";
@@ -37,6 +38,7 @@ import {
   deriveEditionAddress,
   deriveMetadataAddress,
   deriveAssociatedTokenAddress,
+  deriveLeaderTopEntriesAddress,
   zip,
 } from "./utils";
 import { type InstructionResult } from "./types";
@@ -255,7 +257,12 @@ export class SoarProgram {
     leaderboard: PublicKey | null,
     authority: PublicKey,
     description: string,
-    nftMeta: PublicKey
+    nftMeta: PublicKey,
+    scoresToRetain: number | null,
+    scoresOrder: boolean | null,
+    decimals: number | null,
+    minScore: BN | null,
+    maxScore: BN | null
   ): Promise<InstructionResult.AddLeaderBoard> {
     const transaction = new Transaction();
 
@@ -272,14 +279,25 @@ export class SoarProgram {
       )[0];
     }
 
+    const topEntries = deriveLeaderTopEntriesAddress(
+      newLeaderBoard,
+      this.program.programId
+    )[0];
+
     const addBoard = await addLeaderBoardInstruction(
       this.program,
       newLeaderBoard,
       this.provider.publicKey,
       gameAddress,
+      topEntries,
       authority,
       description,
-      nftMeta
+      nftMeta,
+      scoresToRetain ?? 0,
+      scoresOrder ?? true,
+      decimals,
+      minScore,
+      maxScore
     );
     transaction.add(addBoard);
 
@@ -288,8 +306,7 @@ export class SoarProgram {
 
   public async registerPlayerEntryForLeaderBoard(
     leaderboard: PublicKey,
-    game: PublicKey | null,
-    leaderboardAddress: PublicKey
+    game: PublicKey | null
   ): Promise<InstructionResult.RegisterPlayerEntry> {
     const transaction = new Transaction();
 
@@ -302,7 +319,7 @@ export class SoarProgram {
     )[0];
     const newList = derivePlayerEntryListAddress(
       playerInfo,
-      leaderboardAddress,
+      leaderboard,
       this.program.programId
     )[0];
 
@@ -312,7 +329,7 @@ export class SoarProgram {
       playerInfo,
       newList,
       gameAddress,
-      leaderboardAddress
+      leaderboard
     );
     transaction.add(register);
 
@@ -323,16 +340,13 @@ export class SoarProgram {
     authority: PublicKey,
     game: PublicKey | null,
     leaderboard: PublicKey,
-    score: BN,
-    rank: BN | null
+    score: BN
   ): Promise<InstructionResult.SubmitScore> {
     const transaction = new Transaction();
 
     const gameAddress =
       game ?? (await this.program.account.leaderBoard.fetch(leaderboard)).game;
 
-    // TODO: Add a pre-instruction that registers the player to the current leaderboard if
-    // they aren't already registered?
     const playerInfo = derivePlayerAddress(
       this.provider.publicKey,
       this.program.programId
@@ -342,6 +356,26 @@ export class SoarProgram {
       leaderboard,
       this.program.programId
     )[0];
+    const topEntries = deriveLeaderTopEntriesAddress(
+      leaderboard,
+      this.program.programId
+    )[0];
+
+    const preInstructions = new Array<TransactionInstruction>();
+    const playerEntryInfo = await this.program.account.playerEntryList.fetch(
+      playerEntryList
+    );
+    if (playerEntryInfo === null) {
+      const register = await registerPlayerEntryInstruction(
+        this.program,
+        this.provider.publicKey,
+        playerInfo,
+        playerEntryList,
+        gameAddress,
+        leaderboard
+      );
+      preInstructions.push(register);
+    }
 
     const submit = await submitScoreInstruction(
       this.program,
@@ -351,8 +385,9 @@ export class SoarProgram {
       gameAddress,
       leaderboard,
       playerEntryList,
+      topEntries,
       score,
-      rank
+      preInstructions
     );
     transaction.add(submit);
 

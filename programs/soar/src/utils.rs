@@ -13,6 +13,7 @@ pub fn create_account<'a>(
     to_create: &AccountInfo<'a>,
     payer: &AccountInfo<'a>,
     system_program: &AccountInfo<'a>,
+    signer_seeds: Option<&[&[&[u8]]]>,
 ) -> Result<()> {
     let lamports = Rent::default().minimum_balance(size);
     let create_ix = system_instruction::create_account(
@@ -23,10 +24,13 @@ pub fn create_account<'a>(
         &crate::ID,
     );
 
-    invoke(
-        &create_ix,
-        &[to_create.clone(), payer.clone(), system_program.clone()],
-    )?;
+    let accounts = [to_create.clone(), payer.clone(), system_program.clone()];
+
+    if let Some(signature) = signer_seeds {
+        invoke_signed(&create_ix, &accounts, signature)?;
+    } else {
+        invoke(&create_ix, &accounts)?;
+    }
 
     Ok(())
 }

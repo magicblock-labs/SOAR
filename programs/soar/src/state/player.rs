@@ -1,5 +1,5 @@
 use super::*;
-use crate::CrateError;
+use crate::SoarError;
 
 impl Player {
     pub const MAX_USERNAME_LEN: usize = 100;
@@ -18,7 +18,7 @@ impl Player {
 
     pub fn check_field_lengths(&self) -> Result<()> {
         if self.username.len() > Self::MAX_USERNAME_LEN {
-            return Err(CrateError::InvalidFieldLength.into());
+            return Err(SoarError::InvalidFieldLength.into());
         }
 
         Ok(())

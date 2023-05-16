@@ -215,10 +215,12 @@ export type Soar = {
         {
           "name": "leaderboard",
           "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "TODO: Close previous leaderboard account?"
-          ]
+          "isSigner": false
+        },
+        {
+          "name": "topEntries",
+          "isMut": false,
+          "isSigner": false
         },
         {
           "name": "systemProgram",
@@ -373,6 +375,12 @@ export type Soar = {
           "isSigner": false
         },
         {
+          "name": "topEntries",
+          "isMut": false,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
           "name": "playerEntries",
           "isMut": false,
           "isSigner": false
@@ -387,12 +395,6 @@ export type Soar = {
         {
           "name": "score",
           "type": "u64"
-        },
-        {
-          "name": "rank",
-          "type": {
-            "option": "u64"
-          }
         }
       ]
     },
@@ -801,7 +803,7 @@ export type Soar = {
           {
             "name": "game",
             "docs": [
-              "The game this leaderboard belongs to"
+              "The game this leaderboard belongs to."
             ],
             "type": "publicKey"
           },
@@ -818,6 +820,64 @@ export type Soar = {
               "Metadata to represent the leaderboard."
             ],
             "type": "publicKey"
+          },
+          {
+            "name": "decimals",
+            "docs": [
+              "Interpreted as a factor of 10 and used as a divisor for contextualizing scores."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "minScore",
+            "docs": [
+              "Minimum possible score for this leaderboard."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "maxScore",
+            "docs": [
+              "Maximum possible score for this leaderboard."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "topEntries",
+            "type": {
+              "option": "publicKey"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "leaderTopEntries",
+      "docs": [
+        "Extra leaderboard details for keeping track of scores.",
+        "",
+        "Seeds = [b\"top-scores\", leaderboard.key().as_ref()]"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "isAscending",
+            "docs": [
+              "Arrangement order."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "topScores",
+            "docs": [
+              "Top scores."
+            ],
+            "type": {
+              "vec": {
+                "defined": "LeaderBoardScore"
+              }
+            }
           }
         ]
       }
@@ -995,7 +1055,7 @@ export type Soar = {
           {
             "name": "mergeComplete",
             "docs": [
-              "Whether or not full permissions are granted and, by effect, the merge complete."
+              "Whether or not full permissions are granted and the merge complete."
             ],
             "type": "bool"
           }
@@ -1146,6 +1206,24 @@ export type Soar = {
       }
     },
     {
+      "name": "LeaderBoardScore",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "publicKey"
+          },
+          {
+            "name": "entry",
+            "type": {
+              "defined": "ScoreEntry"
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "MergeInfo",
       "docs": [
         "Represents a [Player] account that's included in the merge and indicates",
@@ -1200,11 +1278,58 @@ export type Soar = {
         "fields": [
           {
             "name": "description",
+            "docs": [
+              "Leaderboard description."
+            ],
             "type": "string"
           },
           {
             "name": "nftMeta",
+            "docs": [
+              "Nft metadata representing the leaderboard."
+            ],
             "type": "publicKey"
+          },
+          {
+            "name": "decimals",
+            "docs": [
+              "Specify the decimals score values are represented in. Defaults to `0` if [None]."
+            ],
+            "type": {
+              "option": "u8"
+            }
+          },
+          {
+            "name": "minScore",
+            "docs": [
+              "Specifies minimum allowed score. Defaults to `u64::MIN` if [None]."
+            ],
+            "type": {
+              "option": "u64"
+            }
+          },
+          {
+            "name": "maxScore",
+            "docs": [
+              "Specifies maximum allowed score. Defaults to `u64::MAX` if [None]."
+            ],
+            "type": {
+              "option": "u64"
+            }
+          },
+          {
+            "name": "scoresToRetain",
+            "docs": [
+              "Number of top scores to store on-chain."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "scoresOrder",
+            "docs": [
+              "Order by which scores are stored. `true` for ascending, `false` for descending."
+            ],
+            "type": "bool"
           }
         ]
       }
@@ -1258,10 +1383,10 @@ export type Soar = {
         "kind": "enum",
         "variants": [
           {
-            "name": "RPG"
+            "name": "Rpg"
           },
           {
-            "name": "MMO"
+            "name": "Mmo"
           },
           {
             "name": "Action"
@@ -1307,6 +1432,11 @@ export type Soar = {
       "code": 6004,
       "name": "AccountNotPartOfMerge",
       "msg": "The merge account does not include this player account"
+    },
+    {
+      "code": 6005,
+      "name": "ScoreNotWithinBounds",
+      "msg": "Tried to input score that is below the minimum or above the maximum"
     }
   ]
 };
@@ -1528,10 +1658,12 @@ export const IDL: Soar = {
         {
           "name": "leaderboard",
           "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "TODO: Close previous leaderboard account?"
-          ]
+          "isSigner": false
+        },
+        {
+          "name": "topEntries",
+          "isMut": false,
+          "isSigner": false
         },
         {
           "name": "systemProgram",
@@ -1686,6 +1818,12 @@ export const IDL: Soar = {
           "isSigner": false
         },
         {
+          "name": "topEntries",
+          "isMut": false,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
           "name": "playerEntries",
           "isMut": false,
           "isSigner": false
@@ -1700,12 +1838,6 @@ export const IDL: Soar = {
         {
           "name": "score",
           "type": "u64"
-        },
-        {
-          "name": "rank",
-          "type": {
-            "option": "u64"
-          }
         }
       ]
     },
@@ -2114,7 +2246,7 @@ export const IDL: Soar = {
           {
             "name": "game",
             "docs": [
-              "The game this leaderboard belongs to"
+              "The game this leaderboard belongs to."
             ],
             "type": "publicKey"
           },
@@ -2131,6 +2263,64 @@ export const IDL: Soar = {
               "Metadata to represent the leaderboard."
             ],
             "type": "publicKey"
+          },
+          {
+            "name": "decimals",
+            "docs": [
+              "Interpreted as a factor of 10 and used as a divisor for contextualizing scores."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "minScore",
+            "docs": [
+              "Minimum possible score for this leaderboard."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "maxScore",
+            "docs": [
+              "Maximum possible score for this leaderboard."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "topEntries",
+            "type": {
+              "option": "publicKey"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "leaderTopEntries",
+      "docs": [
+        "Extra leaderboard details for keeping track of scores.",
+        "",
+        "Seeds = [b\"top-scores\", leaderboard.key().as_ref()]"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "isAscending",
+            "docs": [
+              "Arrangement order."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "topScores",
+            "docs": [
+              "Top scores."
+            ],
+            "type": {
+              "vec": {
+                "defined": "LeaderBoardScore"
+              }
+            }
           }
         ]
       }
@@ -2308,7 +2498,7 @@ export const IDL: Soar = {
           {
             "name": "mergeComplete",
             "docs": [
-              "Whether or not full permissions are granted and, by effect, the merge complete."
+              "Whether or not full permissions are granted and the merge complete."
             ],
             "type": "bool"
           }
@@ -2459,6 +2649,24 @@ export const IDL: Soar = {
       }
     },
     {
+      "name": "LeaderBoardScore",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "publicKey"
+          },
+          {
+            "name": "entry",
+            "type": {
+              "defined": "ScoreEntry"
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "MergeInfo",
       "docs": [
         "Represents a [Player] account that's included in the merge and indicates",
@@ -2513,11 +2721,58 @@ export const IDL: Soar = {
         "fields": [
           {
             "name": "description",
+            "docs": [
+              "Leaderboard description."
+            ],
             "type": "string"
           },
           {
             "name": "nftMeta",
+            "docs": [
+              "Nft metadata representing the leaderboard."
+            ],
             "type": "publicKey"
+          },
+          {
+            "name": "decimals",
+            "docs": [
+              "Specify the decimals score values are represented in. Defaults to `0` if [None]."
+            ],
+            "type": {
+              "option": "u8"
+            }
+          },
+          {
+            "name": "minScore",
+            "docs": [
+              "Specifies minimum allowed score. Defaults to `u64::MIN` if [None]."
+            ],
+            "type": {
+              "option": "u64"
+            }
+          },
+          {
+            "name": "maxScore",
+            "docs": [
+              "Specifies maximum allowed score. Defaults to `u64::MAX` if [None]."
+            ],
+            "type": {
+              "option": "u64"
+            }
+          },
+          {
+            "name": "scoresToRetain",
+            "docs": [
+              "Number of top scores to store on-chain."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "scoresOrder",
+            "docs": [
+              "Order by which scores are stored. `true` for ascending, `false` for descending."
+            ],
+            "type": "bool"
           }
         ]
       }
@@ -2571,10 +2826,10 @@ export const IDL: Soar = {
         "kind": "enum",
         "variants": [
           {
-            "name": "RPG"
+            "name": "Rpg"
           },
           {
-            "name": "MMO"
+            "name": "Mmo"
           },
           {
             "name": "Action"
@@ -2620,6 +2875,11 @@ export const IDL: Soar = {
       "code": 6004,
       "name": "AccountNotPartOfMerge",
       "msg": "The merge account does not include this player account"
+    },
+    {
+      "code": 6005,
+      "name": "ScoreNotWithinBounds",
+      "msg": "Tried to input score that is below the minimum or above the maximum"
     }
   ]
 };

@@ -11,6 +11,7 @@ const enum Seeds {
   ENTRY = "entry",
   PLAYER_ACHIEVEMENT = "player_achievement",
   REWARD = "reward",
+  LEADER_TOP_ENTRIES = "top-scores",
 }
 
 export const deriveLeaderBoardAddress = (
@@ -20,6 +21,15 @@ export const deriveLeaderBoardAddress = (
 ): [PublicKey, number] =>
   PublicKey.findProgramAddressSync(
     [Buffer.from(Seeds.LEADER), game.toBuffer(), id.toBuffer("le", 8)],
+    programId
+  );
+
+export const deriveLeaderTopEntriesAddress = (
+  leaderboard: PublicKey,
+  programId: PublicKey
+): [PublicKey, number] =>
+  PublicKey.findProgramAddressSync(
+    [Buffer.from(Seeds.LEADER), leaderboard.toBuffer()],
     programId
   );
 

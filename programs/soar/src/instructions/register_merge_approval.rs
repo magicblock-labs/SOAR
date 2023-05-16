@@ -1,4 +1,4 @@
-use crate::{error::CrateError, RegisterMergeApproval};
+use crate::{error::SoarError, RegisterMergeApproval};
 use anchor_lang::prelude::*;
 
 pub fn handler(ctx: Context<RegisterMergeApproval>) -> Result<()> {
@@ -11,7 +11,7 @@ pub fn handler(ctx: Context<RegisterMergeApproval>) -> Result<()> {
         .find(|other| other.key == player_account.key());
 
     if found.is_none() {
-        return Err(CrateError::AccountNotPartOfMerge.into());
+        return Err(SoarError::AccountNotPartOfMerge.into());
     }
 
     let merge = found.unwrap();

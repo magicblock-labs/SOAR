@@ -10,8 +10,8 @@ pub fn handler(ctx: Context<MintReward>) -> Result<()> {
     let token_program = &ctx.accounts.token_program.to_account_info();
     let rent = &ctx.accounts.rent.to_account_info();
 
-    // Only temporarily since mint authority will end up being transferred
-    // to the master-edition account.
+    // We make the active signer the mint authority. This is only temporary since authority
+    // will end up being transferred to the master-edition pda.
     let mint_authority = &ctx.accounts.authority.to_account_info();
 
     create_mint(

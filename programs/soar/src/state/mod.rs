@@ -46,12 +46,37 @@ pub struct GameMeta {
 pub struct LeaderBoard {
     /// The leaderboard's id, used in deriving its address from the game.
     pub id: u64,
-    /// The game this leaderboard belongs to
+    /// The game this leaderboard belongs to.
     pub game: Pubkey,
     /// Leaderboard description.
     pub description: String,
     /// Metadata to represent the leaderboard.
     pub nft_meta: Pubkey,
+    /// Interpreted as a factor of 10 and used as a divisor for contextualizing scores.
+    pub decimals: u8,
+    /// Minimum possible score for this leaderboard.
+    pub min_score: u64,
+    /// Maximum possible score for this leaderboard.
+    pub max_score: u64,
+    // Top entries for a leaderboard.
+    pub top_entries: Option<Pubkey>,
+}
+
+/// Extra leaderboard details for keeping track of scores.
+///
+/// Seeds = [b"top-scores", leaderboard.key().as_ref()]
+#[account]
+pub struct LeaderTopEntries {
+    /// Arrangement order.
+    pub is_ascending: bool,
+    /// Top scores.
+    pub top_scores: Vec<LeaderBoardScore>,
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Default)]
+pub struct LeaderBoardScore {
+    pub user: Pubkey,
+    pub entry: ScoreEntry,
 }
 
 /// Represents a single achievement for a [Game].
@@ -144,7 +169,7 @@ pub struct PlayerEntryList {
 }
 
 /// A single score entry for a player.
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Default)]
+#[derive(AnchorSerialize, AnchorDeserialize, Copy, Clone, Default)]
 pub struct ScoreEntry {
     /// The player's score for this entry.
     pub score: u64,
@@ -173,8 +198,20 @@ pub struct PlayerAchievement {
 /// Parameters needed when registering a leaderboard.
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Default)]
 pub struct RegisterLeaderBoardInput {
+    /// Leaderboard description.
     pub description: String,
+    /// Nft metadata representing the leaderboard.
     pub nft_meta: Pubkey,
+    /// Specify the decimals score values are represented in. Defaults to `0` if [None].
+    pub decimals: Option<u8>,
+    /// Specifies minimum allowed score. Defaults to `u64::MIN` if [None].
+    pub min_score: Option<u64>,
+    /// Specifies maximum allowed score. Defaults to `u64::MAX` if [None].
+    pub max_score: Option<u64>,
+    /// Number of top scores to store on-chain.
+    pub scores_to_retain: u8,
+    /// Order by which scores are stored. `true` for ascending, `false` for descending.
+    pub scores_order: bool,
 }
 
 /// Parameters used for registering metadata information for an nft reward.

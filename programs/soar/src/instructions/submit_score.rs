@@ -1,10 +1,16 @@
-use crate::state::{PlayerEntryList, ScoreEntry};
+use crate::error::SoarError;
+use crate::state::{LeaderBoardScore, PlayerEntryList, ScoreEntry};
 use crate::utils::resize_account;
 use crate::SubmitScore;
 use anchor_lang::prelude::*;
 
 pub fn handler(ctx: Context<SubmitScore>, score: u64) -> Result<()> {
     let player_entries = &mut ctx.accounts.player_entries;
+    let leaderboard = &ctx.accounts.leaderboard;
+
+    if score < leaderboard.min_score || score > leaderboard.max_score {
+        return Err(SoarError::ScoreNotWithinBounds.into());
+    }
 
     let clock = Clock::get().unwrap();
     let entry = ScoreEntry::new(score, clock.unix_timestamp);
@@ -41,6 +47,24 @@ pub fn handler(ctx: Context<SubmitScore>, score: u64) -> Result<()> {
 
     player_entries.scores.push(entry);
     player_entries.score_count = count.checked_add(1).unwrap();
+
+    let user_key = ctx.accounts.user.key();
+
+    if let Some(top_entries) = &mut ctx.accounts.top_entries {
+        require_keys_eq!(leaderboard.top_entries.unwrap(), top_entries.key());
+        let top_scores_entry = LeaderBoardScore::new(user_key, entry);
+        let is_ascending = top_entries.is_ascending;
+        let last_index = top_entries.top_scores.len() - 1;
+
+        let scores = &mut top_entries.top_scores;
+        if is_ascending && entry.score > scores[0].entry.score {
+            scores[0] = top_scores_entry;
+            scores.sort_by(|a, b| a.entry.score.cmp(&b.entry.score));
+        } else if !is_ascending && entry.score > scores[last_index].entry.score {
+            scores[last_index - 1] = top_scores_entry;
+            scores.sort_by(|a, b| b.entry.score.cmp(&a.entry.score));
+        }
+    }
 
     Ok(())
 }

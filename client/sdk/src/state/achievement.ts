@@ -2,16 +2,43 @@ import { type PublicKey } from "@solana/web3.js";
 import { type IdlAccounts } from "@coral-xyz/anchor";
 import { type Soar } from "../idl/soar";
 
-type IDLAchievementAccount = IdlAccounts<Soar>["achievement"];
-export interface AchievementAccountInfo {
-  address: PublicKey;
-  game: PublicKey;
-  title: string;
-  description: string;
-  nftMeta: PublicKey;
-  reward: PublicKey | null;
+export class AchievementAccount {
+  constructor(
+    public readonly address: PublicKey,
+    public readonly game: PublicKey,
+    public readonly title: string,
+    public readonly description: string,
+    public readonly nftMeta: PublicKey,
+    public readonly reward: PublicKey | null
+  ) {}
+
+  public static fromIdlAccount(
+    account: IdlAccounts<Soar>["achievement"],
+    address: PublicKey
+  ): AchievementAccount {
+    return new AchievementAccount(
+      address,
+      account.game,
+      account.title,
+      account.description,
+      account.nftMeta,
+      account.reward
+    );
+  }
+
+  public print(): ReadableAchievementAccountInfo {
+    return {
+      address: this.address.toBase58(),
+      game: this.game.toBase58(),
+      title: this.title,
+      description: this.description,
+      nftMeta: this.nftMeta.toBase58(),
+      reward: this.reward !== null ? this.reward.toBase58() : this.reward,
+    };
+  }
 }
-export interface ReadableAchievementInfo {
+
+interface ReadableAchievementAccountInfo {
   address: string;
   game: string;
   title: string;
@@ -19,24 +46,3 @@ export interface ReadableAchievementInfo {
   nftMeta: string;
   reward: string | null;
 }
-export const achievementFromIdlAccount = (
-  account: IDLAchievementAccount,
-  address: PublicKey
-): AchievementAccountInfo => {
-  return {
-    address,
-    ...account,
-  };
-};
-export const printAchievementInfo = (
-  info: AchievementAccountInfo
-): ReadableAchievementInfo => {
-  return {
-    address: info.address.toBase58(),
-    game: info.game.toBase58(),
-    title: info.title,
-    description: info.description,
-    nftMeta: info.nftMeta.toBase58(),
-    reward: info.reward !== null ? info.reward.toBase58() : info.reward,
-  };
-};

@@ -3,17 +3,49 @@ import type BN from "bn.js";
 import { type IdlAccounts } from "@coral-xyz/anchor";
 import { type Soar } from "../idl/soar";
 
-type IDLRewardAccount = IdlAccounts<Soar>["reward"];
-export interface RewardAccountInfo {
-  address: PublicKey;
-  achievement: PublicKey;
-  uri: string;
-  name: string;
-  symbol: string;
-  minted: BN;
-  collectionMint: PublicKey | null;
+export class RewardAccount {
+  constructor(
+    public readonly address: PublicKey,
+    public readonly achievement: PublicKey,
+    public readonly uri: string,
+    public readonly name: string,
+    public readonly symbol: string,
+    public readonly minted: BN,
+    public readonly collectionMint: PublicKey | null
+  ) {}
+
+  public static fromIdlAccount(
+    account: IdlAccounts<Soar>["reward"],
+    address: PublicKey
+  ): RewardAccount {
+    return new RewardAccount(
+      address,
+      account.achievement,
+      account.uri,
+      account.name,
+      account.symbol,
+      account.minted,
+      account.collectionMint
+    );
+  }
+
+  public print(): ReadableRewardAccountInfo {
+    return {
+      address: this.address.toBase58(),
+      achievement: this.achievement.toBase58(),
+      uri: this.uri,
+      name: this.name,
+      symbol: this.symbol,
+      minted: this.minted.toString(),
+      collectionMint:
+        this.collectionMint !== null
+          ? this.collectionMint.toBase58()
+          : this.collectionMint,
+    };
+  }
 }
-export interface ReadableRewardAccountInfo {
+
+interface ReadableRewardAccountInfo {
   address: string;
   achievement: string;
   uri: string;
@@ -22,28 +54,3 @@ export interface ReadableRewardAccountInfo {
   minted: string;
   collectionMint: string | null;
 }
-export const rewardInfoFromIdlAccount = (
-  account: IDLRewardAccount,
-  address: PublicKey
-): RewardAccountInfo => {
-  return {
-    address,
-    ...account,
-  };
-};
-export const printRewardAccountInfo = (
-  info: RewardAccountInfo
-): ReadableRewardAccountInfo => {
-  return {
-    address: info.address.toBase58(),
-    achievement: info.achievement.toBase58(),
-    uri: info.uri,
-    name: info.name,
-    symbol: info.symbol,
-    minted: info.minted.toString(),
-    collectionMint:
-      info.collectionMint !== null
-        ? info.collectionMint.toBase58()
-        : info.collectionMint,
-  };
-};

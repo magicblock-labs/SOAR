@@ -221,7 +221,7 @@ pub struct AddLeaderBoard<'info> {
     pub leaderboard: Account<'info, LeaderBoard>,
     /// CHECK: The [LeaderTopEntries] account that is `optionally` created in handler.
     #[account(
-        // mut,
+        mut,
         seeds = [seeds::LEADER_TOP_ENTRIES, leaderboard.key().as_ref()],
         bump,
     )]
@@ -319,6 +319,7 @@ pub struct InitiateMerge<'info> {
     #[account(has_one = user)]
     pub player_info: Account<'info, Player>,
     /// CHECK: Account to be initialized in handler.
+    #[account(mut)]
     pub merge_account: UncheckedAccount<'info>,
     pub system_program: Program<'info, System>,
 }

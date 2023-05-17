@@ -40,12 +40,15 @@ import { Game } from "./soar.game";
 import {
   type GameType,
   type Genre,
-  type GameAccountInfo,
-  gameInfoFromIdlAccount,
-  type PlayerAccountInfo,
-  playerInfoFromIdlAccount,
-  type PlayerAchievementAccountInfo,
-  playerAchievementFromIdlAccount,
+  GameAccount,
+  AchievementAccount,
+  PlayerAccount,
+  LeaderBoardAccount,
+  TopEntriesAccount,
+  MergedAccount,
+  PlayerEntryListAccount,
+  PlayerAchievementAccount,
+  RewardAccount,
 } from "./state";
 import bs58 from "bs58";
 
@@ -120,7 +123,7 @@ export class SoarProgram {
     authority: PublicKey,
     newMeta: IdlTypes<Soar>["GameMeta"],
     newAuths: PublicKey[] | null
-  ): Promise<Transaction> {
+  ): Promise<InstructionResult.UpdateGame> {
     const transaction = new Transaction();
 
     const update = await updateGameInstruction(
@@ -131,8 +134,9 @@ export class SoarProgram {
       newMeta,
       newAuths
     );
+    transaction.add(update);
 
-    return transaction.add(update);
+    return { transaction };
   }
 
   public async updatePlayerAccount(
@@ -276,7 +280,7 @@ export class SoarProgram {
     );
     transaction.add(addBoard);
 
-    return { newLeaderBoard, transaction };
+    return { newLeaderBoard, topEntries, transaction };
   }
 
   public async registerPlayerEntryForLeaderBoard(
@@ -642,7 +646,7 @@ export class SoarProgram {
     leaderboard: PublicKey
   ): [PublicKey, number] {
     return PublicKey.findProgramAddressSync(
-      [Buffer.from(Seeds.LEADER), leaderboard.toBuffer()],
+      [Buffer.from(Seeds.LEADER_TOP_ENTRIES), leaderboard.toBuffer()],
       this.program.programId
     );
   }
@@ -688,6 +692,61 @@ export class SoarProgram {
     );
   }
 
+  public async fetchAchievementAccount(
+    address: PublicKey
+  ): Promise<AchievementAccount> {
+    const info = await this.program.account.achievement.fetch(address);
+    return AchievementAccount.fromIdlAccount(info, address);
+  }
+
+  public async fetchGameAccount(address: PublicKey): Promise<GameAccount> {
+    const info = await this.program.account.game.fetch(address);
+    return GameAccount.fromIdlAccount(info, address);
+  }
+
+  public async fetchLeaderBoardAccount(
+    address: PublicKey
+  ): Promise<LeaderBoardAccount> {
+    const info = await this.program.account.leaderBoard.fetch(address);
+    return LeaderBoardAccount.fromIdlAccount(info, address);
+  }
+
+  public async fetchLeaderBoardTopEntriesAccount(
+    address: PublicKey
+  ): Promise<TopEntriesAccount> {
+    const info = await this.program.account.leaderTopEntries.fetch(address);
+    return TopEntriesAccount.fromIdlAccount(info, address);
+  }
+
+  public async fetchMergedAccount(address: PublicKey): Promise<MergedAccount> {
+    const info = await this.program.account.merged.fetch(address);
+    return MergedAccount.fromIdlAccount(info, address);
+  }
+
+  public async fetchPlayerAchievementAccount(
+    address: PublicKey
+  ): Promise<PlayerAchievementAccount> {
+    const info = await this.program.account.playerAchievement.fetch(address);
+    return PlayerAchievementAccount.fromIdlAccount(info, address);
+  }
+
+  public async fetchPlayerEntryListAccount(
+    address: PublicKey
+  ): Promise<PlayerEntryListAccount> {
+    const info = await this.program.account.playerEntryList.fetch(address);
+    return PlayerEntryListAccount.fromIdlAccount(info, address);
+  }
+
+  public async fetchPlayerAccount(address: PublicKey): Promise<PlayerAccount> {
+    const info = await this.program.account.player.fetch(address);
+    return PlayerAccount.fromIdlAccount(info, address);
+  }
+
+  public async fetchRewardAccount(address: PublicKey): Promise<RewardAccount> {
+    const info = await this.program.account.reward.fetch(address);
+    return RewardAccount.fromIdlAccount(info, address);
+  }
+
   public deriveRewardAddress(achievement: PublicKey): [PublicKey, number] {
     return PublicKey.findProgramAddressSync(
       [Buffer.from(Seeds.REWARD), achievement.toBuffer()],
@@ -695,25 +754,25 @@ export class SoarProgram {
     );
   }
 
-  public async fetchAllGameAccountsInfo(): Promise<GameAccountInfo[]> {
+  public async fetchAllGameAccountsInfo(): Promise<GameAccount[]> {
     const games = await this.program.account.game.all();
 
     return games.map((game) =>
-      gameInfoFromIdlAccount(game.account, game.publicKey)
+      GameAccount.fromIdlAccount(game.account, game.publicKey)
     );
   }
 
-  public async fetchAllPlayerAccountsInfo(): Promise<PlayerAccountInfo[]> {
+  public async fetchAllPlayerAccountsInfo(): Promise<PlayerAccount[]> {
     const players = await this.program.account.player.all();
 
     return players.map((player) =>
-      playerInfoFromIdlAccount(player.account, player.publicKey)
+      PlayerAccount.fromIdlAccount(player.account, player.publicKey)
     );
   }
 
   public async fetchGameAccountsInfoByGenre(
     genre: string
-  ): Promise<GameAccountInfo[]> {
+  ): Promise<GameAccount[]> {
     const games = await this.program.account.game.all([
       {
         memcmp: {
@@ -723,13 +782,13 @@ export class SoarProgram {
       },
     ]);
     return games.map((game) =>
-      gameInfoFromIdlAccount(game.account, game.publicKey)
+      GameAccount.fromIdlAccount(game.account, game.publicKey)
     );
   }
 
   public async fetchUserAchievementInfo(
     user: PublicKey
-  ): Promise<PlayerAchievementAccountInfo[]> {
+  ): Promise<PlayerAchievementAccount[]> {
     const player = this.derivePlayerAddress(user)[0];
     const achievements = await this.program.account.playerAchievement.all([
       {
@@ -741,7 +800,7 @@ export class SoarProgram {
     ]);
 
     return achievements.map((achievement) =>
-      playerAchievementFromIdlAccount(
+      PlayerAchievementAccount.fromIdlAccount(
         achievement.account,
         achievement.publicKey
       )

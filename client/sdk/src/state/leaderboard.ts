@@ -3,19 +3,52 @@ import type BN from "bn.js";
 import { type IdlAccounts } from "@coral-xyz/anchor";
 import { type Soar } from "../idl/soar";
 
-type IDLLeaderBoardAccount = IdlAccounts<Soar>["leaderBoard"];
-export interface LeaderBoardAccountInfo {
-  address: PublicKey;
-  id: BN;
-  game: PublicKey;
-  description: string;
-  nftMeta: PublicKey;
-  decimals: number;
-  minScore: BN;
-  maxScore: BN;
-  topEntries: PublicKey | null;
+export class LeaderBoardAccount {
+  constructor(
+    public readonly address: PublicKey,
+    public readonly id: BN,
+    public readonly game: PublicKey,
+    public readonly description: string,
+    public readonly nftMeta: PublicKey,
+    public readonly decimals: number,
+    public readonly minScore: BN,
+    public readonly maxScore: BN,
+    public readonly topEntries: PublicKey | null
+  ) {}
+
+  public static fromIdlAccount(
+    account: IdlAccounts<Soar>["leaderBoard"],
+    address: PublicKey
+  ): LeaderBoardAccount {
+    return new LeaderBoardAccount(
+      address,
+      account.id,
+      account.game,
+      account.description,
+      account.nftMeta,
+      account.decimals,
+      account.minScore,
+      account.maxScore,
+      account.topEntries
+    );
+  }
+
+  public print(): ReadableLeaderBoardAccountInfo {
+    return {
+      address: this.address.toBase58(),
+      id: this.id.toString(),
+      game: this.game.toBase58(),
+      description: this.description,
+      nftMeta: this.nftMeta.toBase58(),
+      decimals: this.decimals,
+      minScore: this.minScore.toString(),
+      maxScore: this.maxScore.toString(),
+      topEntries: this.topEntries ? this.topEntries.toBase58() : null,
+    };
+  }
 }
-export interface ReadableLeaderBoardAccountInfo {
+
+interface ReadableLeaderBoardAccountInfo {
   address: string;
   id: string;
   game: string;
@@ -26,81 +59,3 @@ export interface ReadableLeaderBoardAccountInfo {
   maxScore: string;
   topEntries: string | null;
 }
-export const leaderBoardInfoFromIdlAccount = (
-  account: IDLLeaderBoardAccount,
-  address: PublicKey
-): LeaderBoardAccountInfo => {
-  return {
-    address,
-    ...account,
-  };
-};
-export const printLeaderBoardInfo = (
-  info: LeaderBoardAccountInfo
-): ReadableLeaderBoardAccountInfo => {
-  return {
-    address: info.address.toBase58(),
-    id: info.id.toString(),
-    game: info.game.toBase58(),
-    description: info.description,
-    nftMeta: info.nftMeta.toBase58(),
-    decimals: info.decimals,
-    minScore: info.minScore.toString(),
-    maxScore: info.maxScore.toString(),
-    topEntries: info.topEntries ? info.topEntries.toBase58() : null,
-  };
-};
-
-type IDLLeaderTopEntriesAccount = IdlAccounts<Soar>["leaderTopEntries"];
-export interface LeaderTopEntriesAccountInfo {
-  address: PublicKey;
-  isAscending: boolean;
-  topScores: LeaderboardScore[];
-}
-export interface ReadableLeaderTopEntriesAccountInfo {
-  address: string;
-  isAscending: boolean;
-  topScores: ReadableLeaderboardScore[];
-}
-interface LeaderboardScore {
-  user: PublicKey;
-  entry: {
-    score: BN;
-    timestamp: BN;
-  };
-}
-interface ReadableLeaderboardScore {
-  user: string;
-  entry: {
-    score: string;
-    timestamp: string;
-  };
-}
-const toReadable = (raw: LeaderboardScore): ReadableLeaderboardScore => {
-  return {
-    user: raw.user.toBase58(),
-    entry: {
-      score: raw.entry.score.toString(),
-      timestamp: raw.entry.score.toString(),
-    },
-  };
-};
-
-export const leaderTopEntriesFromIdlAccount = (
-  account: IDLLeaderTopEntriesAccount,
-  address: PublicKey
-): LeaderTopEntriesAccountInfo => {
-  return {
-    address,
-    ...account,
-  };
-};
-export const printLeaderTopEntriesInfo = (
-  info: LeaderTopEntriesAccountInfo
-): ReadableLeaderTopEntriesAccountInfo => {
-  return {
-    address: info.address.toBase58(),
-    isAscending: info.isAscending,
-    topScores: info.topScores.map((score) => toReadable(score)),
-  };
-};

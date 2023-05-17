@@ -1,40 +1,40 @@
 import { type PublicKey } from "@solana/web3.js";
-import type BN from "bn.js";
 import { type IdlAccounts } from "@coral-xyz/anchor";
 import { type Soar } from "../idl/soar";
 
-type IDLPlayerAccount = IdlAccounts<Soar>["player"];
-export interface PlayerAccountInfo {
-  address: PublicKey;
-  user: PublicKey;
-  username: string;
-  rank: BN;
-  nftMeta: PublicKey;
+export class PlayerAccount {
+  constructor(
+    public readonly address: PublicKey,
+    public readonly user: PublicKey,
+    public readonly username: string,
+    public readonly nftMeta: PublicKey
+  ) {}
+
+  public static fromIdlAccount(
+    account: IdlAccounts<Soar>["player"],
+    address: PublicKey
+  ): PlayerAccount {
+    return new PlayerAccount(
+      address,
+      account.user,
+      account.username,
+      account.nftMeta
+    );
+  }
+
+  public print(): ReadablePlayerAccountInfo {
+    return {
+      address: this.address.toBase58(),
+      user: this.user.toBase58(),
+      username: this.username,
+      nftMeta: this.nftMeta.toBase58(),
+    };
+  }
 }
-export interface ReadablePlayerAccountInfo {
+
+interface ReadablePlayerAccountInfo {
   address: string;
   user: string;
   username: string;
-  rank: string;
   nftMeta: string;
 }
-export const playerInfoFromIdlAccount = (
-  account: IDLPlayerAccount,
-  address: PublicKey
-): PlayerAccountInfo => {
-  return {
-    address,
-    ...account,
-  };
-};
-export const printPlayerInfo = (
-  info: PlayerAccountInfo
-): ReadablePlayerAccountInfo => {
-  return {
-    address: info.address.toBase58(),
-    user: info.user.toBase58(),
-    username: info.username,
-    rank: info.rank.toString(),
-    nftMeta: info.nftMeta.toBase58(),
-  };
-};

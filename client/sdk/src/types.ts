@@ -6,6 +6,9 @@ export module InstructionResult {
     gameAddress: PublicKey;
     transaction: Transaction;
   }
+  export interface UpdateGame {
+    transaction: Transaction;
+  }
   export interface CreatePlayer {
     newPlayer: PublicKey;
     transaction: Transaction;
@@ -19,6 +22,7 @@ export module InstructionResult {
   }
   export interface AddLeaderBoard {
     newLeaderBoard: PublicKey;
+    topEntries: PublicKey;
     transaction: Transaction;
   }
   export interface RegisterPlayerEntry {

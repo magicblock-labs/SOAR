@@ -3,51 +3,56 @@ import type BN from "bn.js";
 import { type IdlAccounts } from "@coral-xyz/anchor";
 import { type Soar } from "../idl/soar";
 
-type IDLPlayerEntryListAccount = IdlAccounts<Soar>["playerEntryList"];
-export interface PlayerEntryListAccountInfo {
-  address: PublicKey;
-  playerInfo: PublicKey;
-  leaderboard: PublicKey;
-  scoreCount: BN;
-  scores: ScoreEntry[];
+export class PlayerEntryListAccount {
+  constructor(
+    public readonly address: PublicKey,
+    public readonly playerInfo: PublicKey,
+    public readonly leaderboard: PublicKey,
+    public readonly scoreCount: BN,
+    public readonly scores: ScoreEntry[]
+  ) {}
+
+  public static fromIdlAccount(
+    account: IdlAccounts<Soar>["playerEntryList"],
+    address: PublicKey
+  ): PlayerEntryListAccount {
+    return new PlayerEntryListAccount(
+      address,
+      account.playerInfo,
+      account.leaderboard,
+      account.scoreCount,
+      account.scores
+    );
+  }
+
+  public print(): ReadablePlayerEntryListAccountInfo {
+    return {
+      address: this.address.toBase58(),
+      playerInfo: this.playerInfo.toBase58(),
+      leaderboard: this.leaderboard.toBase58(),
+      scoreCount: this.scoreCount.toString(),
+      scores: this.scores.map((score) => printScoreEntry(score)),
+    };
+  }
 }
-export interface ReadablePlayerEntryListInfo {
+
+interface ReadablePlayerEntryListAccountInfo {
   address: string;
   playerInfo: string;
   leaderboard: string;
   scoreCount: string;
   scores: ReadableScoreEntry[];
 }
-export const playerEntryListFromIdlAccount = (
-  account: IDLPlayerEntryListAccount,
-  address: PublicKey
-): PlayerEntryListAccountInfo => {
-  return {
-    address,
-    ...account,
-  };
-};
-export const printPlayerEntryListInfo = (
-  info: PlayerEntryListAccountInfo
-): ReadablePlayerEntryListInfo => {
-  return {
-    address: info.address.toBase58(),
-    playerInfo: info.playerInfo.toBase58(),
-    leaderboard: info.leaderboard.toBase58(),
-    scoreCount: info.scoreCount.toString(),
-    scores: info.scores.map((score) => printScoreEntry(score)),
-  };
-};
 
-export interface ScoreEntry {
+interface ScoreEntry {
   score: BN;
   timestamp: BN;
 }
-export interface ReadableScoreEntry {
+interface ReadableScoreEntry {
   score: string;
   timestamp: string;
 }
-export const printScoreEntry = (entry: ScoreEntry): ReadableScoreEntry => {
+const printScoreEntry = (entry: ScoreEntry): ReadableScoreEntry => {
   return {
     score: entry.score.toString(),
     timestamp: entry.timestamp.toString(),

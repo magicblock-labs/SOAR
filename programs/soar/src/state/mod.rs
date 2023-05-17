@@ -12,7 +12,7 @@ pub const MAX_TITLE_LEN: usize = 30;
 pub const MAX_DESCRIPTION_LEN: usize = 200;
 
 #[account]
-#[derive(Default)]
+#[derive(Debug, Default)]
 /// An account representing a single game.
 ///
 pub struct Game {
@@ -29,7 +29,7 @@ pub struct Game {
 }
 
 /// Parameters used together with a [Vec] of [Pubkey]s in initializing a [Game]
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Default)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug, Default)]
 pub struct GameMeta {
     /// The title of the game, max length = 30 bytes
     pub title: String,
@@ -44,6 +44,7 @@ pub struct GameMeta {
 }
 
 #[account]
+#[derive(Debug)]
 /// Represents a [Game]'s leaderboard.
 ///
 /// Seeds: `[b"leaderboard", game.key().as_ref()]`
@@ -70,6 +71,7 @@ pub struct LeaderBoard {
 ///
 /// Seeds = [b"top-scores", leaderboard.key().as_ref()]
 #[account]
+#[derive(Debug)]
 pub struct LeaderTopEntries {
     /// Arrangement order.
     pub is_ascending: bool,
@@ -77,7 +79,7 @@ pub struct LeaderTopEntries {
     pub top_scores: Vec<LeaderBoardScore>,
 }
 
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Default)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Default, Debug)]
 pub struct LeaderBoardScore {
     pub user: Pubkey,
     pub entry: ScoreEntry,
@@ -87,6 +89,7 @@ pub struct LeaderBoardScore {
 ///
 /// Seeds = `[b"achievement", game.key().as_ref(), title.as_bytes()]`
 #[account]
+#[derive(Debug)]
 pub struct Achievement {
     /// The game account it derives from.
     pub game: Pubkey,
@@ -102,6 +105,7 @@ pub struct Achievement {
 
 /// Contains details of a NFT reward.
 #[account]
+#[derive(Debug, Default)]
 pub struct Reward {
     pub achievement: Pubkey,
     /// URI of the NFT to be minted.
@@ -117,7 +121,7 @@ pub struct Reward {
 }
 
 #[account]
-#[derive(Default)]
+#[derive(Debug, Default)]
 /// An account representing a player.
 ///
 /// Seeds: `[b"player", user.key().as_ref()]`
@@ -133,6 +137,7 @@ pub struct Player {
 /// An account that represents a single user's ownership of
 /// multiple [Player] accounts.
 #[account]
+#[derive(Debug)]
 pub struct Merged {
     /// The user that initialized this merge.
     pub initiator: Pubkey,
@@ -144,14 +149,14 @@ pub struct Merged {
 
 /// Represents a [Player] account that's included in the merge and indicates
 /// if the authority of that account has granted permission.
-#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
 pub struct MergeInfo {
     pub key: Pubkey,
     pub approved: bool,
 }
 
 #[account]
-#[derive(Default)]
+#[derive(Debug, Default)]
 /// Represents a [Player]'s collection of score entries([Entry]) for a particular [LeaderBoard].
 ///
 /// Seeds: `[b"entry", player_info.key().as_ref(), leaderboard.key().as_ref()]`
@@ -171,7 +176,7 @@ pub struct PlayerEntryList {
 }
 
 /// A single score entry for a player.
-#[derive(AnchorSerialize, AnchorDeserialize, Copy, Clone, Default)]
+#[derive(AnchorSerialize, AnchorDeserialize, Copy, Clone, Debug, Default)]
 pub struct ScoreEntry {
     /// The player's score for this entry.
     pub score: u64,
@@ -180,7 +185,7 @@ pub struct ScoreEntry {
 }
 
 #[account]
-#[derive(Default)]
+#[derive(Debug, Default)]
 /// Represents a player's status for a particular [Achievement].
 ///
 /// Seeds = `[b"player-achievement", player.key().as_ref(), achievement.key().as_ref()]`.
@@ -198,7 +203,7 @@ pub struct PlayerAchievement {
 }
 
 /// Parameters needed when registering a leaderboard.
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Default)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug, Default)]
 pub struct RegisterLeaderBoardInput {
     /// Leaderboard description.
     pub description: String,
@@ -217,7 +222,7 @@ pub struct RegisterLeaderBoardInput {
 }
 
 /// Parameters used for registering metadata information for an nft reward.
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Default)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug, Default)]
 pub struct RegisterNewRewardInput {
     pub uri: String,
     pub name: String,

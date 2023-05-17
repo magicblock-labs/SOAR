@@ -219,7 +219,7 @@ export type Soar = {
         },
         {
           "name": "topEntries",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -437,7 +437,7 @@ export type Soar = {
         },
         {
           "name": "mergeAccount",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -1689,7 +1689,7 @@ export const IDL: Soar = {
         },
         {
           "name": "topEntries",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -1907,7 +1907,7 @@ export const IDL: Soar = {
         },
         {
           "name": "mergeAccount",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {

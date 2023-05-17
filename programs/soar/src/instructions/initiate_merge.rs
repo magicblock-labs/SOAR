@@ -27,10 +27,11 @@ pub fn handler<'a>(ctx: Context<'_, '_, '_, 'a, InitiateMerge<'a>>) -> Result<()
     let discriminator = Merged::discriminator();
     discriminator.serialize(&mut &mut merge_account.data.borrow_mut()[..8])?;
 
-    let mut merge_account = Account::<'_, Merged>::try_from(merge_account)?;
-    merge_account.initiator = ctx.accounts.user.key();
-    merge_account.others = keys.into_iter().map(MergeInfo::new).collect();
-    merge_account.merge_complete = merge_account.others.is_empty();
+    let mut merged = Account::<'_, Merged>::try_from(merge_account)?;
+    merged.initiator = ctx.accounts.user.key();
+    merged.others = keys.into_iter().map(MergeInfo::new).collect();
+    merged.merge_complete = merged.others.is_empty();
 
+    merged.serialize(&mut &mut merge_account.data.borrow_mut()[8..])?;
     Ok(())
 }

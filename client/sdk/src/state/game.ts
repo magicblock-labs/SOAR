@@ -3,61 +3,47 @@ import type BN from "bn.js";
 import { type IdlAccounts } from "@coral-xyz/anchor";
 import { type Soar } from "../idl/soar";
 
-type IDLGameAccount = IdlAccounts<Soar>["game"];
-export interface GameAccountInfo {
-  address: PublicKey;
-  title: string;
-  description: string;
-  genre: Genre;
-  gameType: GameType;
-  nftMeta: PublicKey;
-  achievementCount: BN;
-  leaderboardCount: BN;
-  auth: PublicKey[];
-}
-export interface ReadableGameAccountInfo {
-  address: string;
-  title: string;
-  description: string;
-  genre: Genre;
-  gameType: GameType;
-  nftMeta: string;
-  achievementCount: string;
-  leaderboardCount: string;
-  auth: string[];
-}
+export class GameAccount {
+  constructor(
+    public readonly address: PublicKey,
+    public readonly meta: {
+      title: string;
+      description: string;
+      genre: Genre;
+      gameType: GameType;
+      nftMeta: PublicKey;
+    },
+    public readonly achievementCount: BN,
+    public readonly leaderboardCount: BN,
+    public readonly auth: PublicKey[]
+  ) {}
 
-export const gameInfoFromIdlAccount = (
-  account: IDLGameAccount,
-  address: PublicKey
-): GameAccountInfo => {
-  return {
-    address,
-    title: account.meta.title,
-    description: account.meta.description,
-    genre: account.meta.genre,
-    gameType: account.meta.gameType,
-    nftMeta: account.meta.nftMeta,
-    achievementCount: account.achievementCount,
-    leaderboardCount: account.leaderboardCount,
-    auth: account.auth,
-  };
-};
-export const printGameInfo = (
-  info: GameAccountInfo
-): ReadableGameAccountInfo => {
-  return {
-    address: info.address.toBase58(),
-    title: info.title,
-    description: info.description,
-    genre: info.genre,
-    gameType: info.gameType,
-    nftMeta: info.nftMeta.toBase58(),
-    achievementCount: info.achievementCount.toString(),
-    leaderboardCount: info.leaderboardCount.toString(),
-    auth: info.auth.map((auth) => auth.toBase58()),
-  };
-};
+  public static fromIdlAccount(
+    account: IdlAccounts<Soar>["game"],
+    address: PublicKey
+  ): GameAccount {
+    return new GameAccount(
+      address,
+      account.meta,
+      account.achievementCount,
+      account.leaderboardCount,
+      account.auth
+    );
+  }
+
+  public print(): ReadableGameAccountInfo {
+    return {
+      address: this.address.toBase58(),
+      meta: {
+        ...this.meta,
+        nftMeta: this.meta.nftMeta.toBase58(),
+      },
+      achievementCount: this.achievementCount.toString(),
+      leaderboardCount: this.leaderboardCount.toString(),
+      auth: this.auth.map((auth) => auth.toBase58()),
+    };
+  }
+}
 
 export const enum GameType {
   Mobile = 0,
@@ -74,4 +60,18 @@ export const enum Genre {
   Puzzle = 4,
   Casual = 5,
   Unspecified = 255,
+}
+
+interface ReadableGameAccountInfo {
+  address: string;
+  meta: {
+    title: string;
+    description: string;
+    genre: Genre;
+    gameType: GameType;
+    nftMeta: string;
+  };
+  achievementCount: string;
+  leaderboardCount: string;
+  auth: string[];
 }

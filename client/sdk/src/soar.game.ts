@@ -1,5 +1,5 @@
 import { type AnchorProvider, type IdlTypes } from "@coral-xyz/anchor";
-import { Keypair, type PublicKey, type Transaction } from "@solana/web3.js";
+import { Keypair, type PublicKey } from "@solana/web3.js";
 import { type Soar } from "./idl/soar";
 import type BN from "bn.js";
 import { type InstructionResult } from "./types";
@@ -7,20 +7,16 @@ import { SoarProgram } from "./soar.program";
 import {
   type GameType,
   type Genre,
-  type AchievementAccountInfo,
-  achievementFromIdlAccount,
-  type GameAccountInfo,
-  gameInfoFromIdlAccount,
-  type LeaderBoardAccountInfo,
-  leaderBoardInfoFromIdlAccount,
-  type PlayerEntryListAccountInfo,
-  playerEntryListFromIdlAccount,
+  AchievementAccount,
+  GameAccount,
+  LeaderBoardAccount,
+  PlayerEntryListAccount,
 } from "./state";
 
 export class Game {
   readonly soar: SoarProgram;
   address: PublicKey;
-  state: GameAccountInfo | null;
+  state: GameAccount | null;
 
   private constructor(address: PublicKey, readonly soarProgram: SoarProgram) {
     this.address = address;
@@ -35,6 +31,7 @@ export class Game {
     const soarClient = SoarProgram.get(provider);
     const game = new Game(address, soarClient);
     await game.init();
+    console.log("soar.game: get");
     return game;
   }
 
@@ -67,14 +64,19 @@ export class Game {
 
   public async init(): Promise<void> {
     const account = await this.soar.program.account.game.fetch(this.address);
-    this.state = gameInfoFromIdlAccount(account, this.address);
+    this.state = GameAccount.fromIdlAccount(account, this.address);
+    console.log("soar.game: init");
+  }
+
+  public async refresh(): Promise<void> {
+    await this.init();
   }
 
   public async currentLeaderBoardId(): Promise<BN> {
-    const account = await this.soar.program.account.game.fetch(this.address);
-    const details = gameInfoFromIdlAccount(account, this.address);
-
-    return details.leaderboardCount;
+    if (this.state === null) {
+      throw new Error("Init() not called");
+    }
+    return this.state.leaderboardCount;
   }
 
   public async currentLeaderBoardAddress(): Promise<PublicKey> {
@@ -91,7 +93,7 @@ export class Game {
     authority: PublicKey,
     newMeta: IdlTypes<Soar>["GameMeta"],
     newAuths: PublicKey[] | null
-  ): Promise<Transaction> {
+  ): Promise<InstructionResult.UpdateGame> {
     return this.soar.updateGameAccount(
       this.address,
       authority,
@@ -183,9 +185,7 @@ export class Game {
     );
   }
 
-  public async fetchAllLeaderBoardAccounts(): Promise<
-    LeaderBoardAccountInfo[]
-  > {
+  public async fetchAllLeaderBoardAccounts(): Promise<LeaderBoardAccount[]> {
     const results = await this.soar.program.account.leaderBoard.all([
       {
         memcmp: {
@@ -195,11 +195,11 @@ export class Game {
       },
     ]);
     return results.map((board) =>
-      leaderBoardInfoFromIdlAccount(board.account, board.publicKey)
+      LeaderBoardAccount.fromIdlAccount(board.account, board.publicKey)
     );
   }
 
-  public async fetchAllAchievements(): Promise<AchievementAccountInfo[]> {
+  public async fetchAllAchievements(): Promise<AchievementAccount[]> {
     const results = await this.soar.program.account.achievement.all([
       {
         memcmp: {
@@ -209,13 +209,16 @@ export class Game {
       },
     ]);
     return results.map((achievement) =>
-      achievementFromIdlAccount(achievement.account, achievement.publicKey)
+      AchievementAccount.fromIdlAccount(
+        achievement.account,
+        achievement.publicKey
+      )
     );
   }
 
   public async fetchPlayerScores(
     player: PublicKey
-  ): Promise<PlayerEntryListAccountInfo[]> {
+  ): Promise<PlayerEntryListAccount[]> {
     const playerInfo = this.soar.derivePlayerAddress(player)[0];
     const leaderboard = await this.currentLeaderBoardAddress();
     const results = await this.soar.program.account.playerEntryList.all([
@@ -234,7 +237,7 @@ export class Game {
     ]);
 
     return results.map((list) =>
-      playerEntryListFromIdlAccount(list.account, list.publicKey)
+      PlayerEntryListAccount.fromIdlAccount(list.account, list.publicKey)
     );
   }
 }

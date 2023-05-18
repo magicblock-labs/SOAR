@@ -18,15 +18,16 @@ export const initializeGameInstruction = async (
   nftMeta: PublicKey,
   authorities: PublicKey[]
 ): Promise<TransactionInstruction> => {
+  const accounts = {
+    creator,
+    game: newGame,
+    systemProgram: SystemProgram.programId,
+  };
   return program.methods
     .initializeGame(
       { title, description, genre, gameType, nftMeta },
       authorities
     )
-    .accounts({
-      creator,
-      game: newGame,
-      systemProgram: SystemProgram.programId,
-    })
+    .accounts(accounts)
     .instruction();
 };

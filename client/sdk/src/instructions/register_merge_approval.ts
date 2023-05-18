@@ -8,12 +8,13 @@ export const registerMergeApprovalInstruction = async (
   userPlayerAccount: PublicKey,
   mergeAccount: PublicKey
 ): Promise<TransactionInstruction> => {
+  const accounts = {
+    user,
+    playerInfo: userPlayerAccount,
+    mergeAccount,
+  };
   return program.methods
     .registerMergeApproval()
-    .accounts({
-      user,
-      playerInfo: userPlayerAccount,
-      mergeAccount,
-    })
+    .accounts(accounts)
     .instruction();
 };

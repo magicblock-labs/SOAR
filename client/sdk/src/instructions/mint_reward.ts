@@ -28,27 +28,28 @@ export const mintRewardInstruction = async (
   newMasterEdition: PublicKey,
   mintNftTo: PublicKey
 ): Promise<TransactionInstruction> => {
+  const accounts = {
+    payer,
+    authority,
+    user,
+    game: gameAccount,
+    achievement: achievementAccount,
+    reward: rewardAccount,
+    player: userPlayerAccount,
+    playerAchievement: playerAchievementAccount,
+    mint: newMint.publicKey,
+    metadata: newMetadata,
+    masterEdition: newMasterEdition,
+    mintNftTo,
+    tokenProgram: TOKEN_PROGRAM_ID,
+    associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+    systemProgram: SystemProgram.programId,
+    tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+    rent: SYSVAR_RENT_PUBKEY,
+  };
   return program.methods
     .mintReward()
-    .accounts({
-      payer,
-      authority,
-      user,
-      game: gameAccount,
-      achievement: achievementAccount,
-      reward: rewardAccount,
-      player: userPlayerAccount,
-      playerAchievement: playerAchievementAccount,
-      mint: newMint.publicKey,
-      metadata: newMetadata,
-      masterEdition: newMasterEdition,
-      mintNftTo,
-      tokenProgram: TOKEN_PROGRAM_ID,
-      associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-      systemProgram: SystemProgram.programId,
-      tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-      rent: SYSVAR_RENT_PUBKEY,
-    })
+    .accounts(accounts)
     .signers([newMint])
     .instruction();
 };

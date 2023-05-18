@@ -119,7 +119,7 @@ export type Soar = {
         },
         {
           "name": "game",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -391,13 +391,13 @@ export type Soar = {
         },
         {
           "name": "topEntries",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false,
           "isOptional": true
         },
         {
           "name": "playerEntries",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -431,14 +431,14 @@ export type Soar = {
           "isSigner": true
         },
         {
-          "name": "playerInfo",
+          "name": "player",
           "isMut": false,
           "isSigner": false
         },
         {
           "name": "mergeAccount",
           "isMut": true,
-          "isSigner": false
+          "isSigner": true
         },
         {
           "name": "systemProgram",
@@ -446,7 +446,14 @@ export type Soar = {
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "keys",
+          "type": {
+            "vec": "publicKey"
+          }
+        }
+      ]
     },
     {
       "name": "registerMergeApproval",
@@ -555,7 +562,7 @@ export type Soar = {
         },
         {
           "name": "achievement",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -636,7 +643,7 @@ export type Soar = {
         },
         {
           "name": "reward",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -1092,7 +1099,7 @@ export type Soar = {
     {
       "name": "playerEntryList",
       "docs": [
-        "Represents a [Player]'s collection of score entries([Entry]) for a particular [LeaderBoard].",
+        "Represents a [Player]'s collection of score entries([ScoreEntry]) for a particular [LeaderBoard].",
         "",
         "Seeds: `[b\"entry\", player_info.key().as_ref(), leaderboard.key().as_ref()]`"
       ],
@@ -1114,11 +1121,11 @@ export type Soar = {
             "type": "publicKey"
           },
           {
-            "name": "scoreCount",
+            "name": "allocCount",
             "docs": [
-              "Keep track of how many [StoreEntry]s are in the scores vec."
+              "Max number of [ScoreEntry] objects the current space allocation supports."
             ],
-            "type": "u64"
+            "type": "u16"
           },
           {
             "name": "scores",
@@ -1589,7 +1596,7 @@ export const IDL: Soar = {
         },
         {
           "name": "game",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -1861,13 +1868,13 @@ export const IDL: Soar = {
         },
         {
           "name": "topEntries",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false,
           "isOptional": true
         },
         {
           "name": "playerEntries",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -1901,14 +1908,14 @@ export const IDL: Soar = {
           "isSigner": true
         },
         {
-          "name": "playerInfo",
+          "name": "player",
           "isMut": false,
           "isSigner": false
         },
         {
           "name": "mergeAccount",
           "isMut": true,
-          "isSigner": false
+          "isSigner": true
         },
         {
           "name": "systemProgram",
@@ -1916,7 +1923,14 @@ export const IDL: Soar = {
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "keys",
+          "type": {
+            "vec": "publicKey"
+          }
+        }
+      ]
     },
     {
       "name": "registerMergeApproval",
@@ -2025,7 +2039,7 @@ export const IDL: Soar = {
         },
         {
           "name": "achievement",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -2106,7 +2120,7 @@ export const IDL: Soar = {
         },
         {
           "name": "reward",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -2562,7 +2576,7 @@ export const IDL: Soar = {
     {
       "name": "playerEntryList",
       "docs": [
-        "Represents a [Player]'s collection of score entries([Entry]) for a particular [LeaderBoard].",
+        "Represents a [Player]'s collection of score entries([ScoreEntry]) for a particular [LeaderBoard].",
         "",
         "Seeds: `[b\"entry\", player_info.key().as_ref(), leaderboard.key().as_ref()]`"
       ],
@@ -2584,11 +2598,11 @@ export const IDL: Soar = {
             "type": "publicKey"
           },
           {
-            "name": "scoreCount",
+            "name": "allocCount",
             "docs": [
-              "Keep track of how many [StoreEntry]s are in the scores vec."
+              "Max number of [ScoreEntry] objects the current space allocation supports."
             ],
-            "type": "u64"
+            "type": "u16"
           },
           {
             "name": "scores",

@@ -22,6 +22,14 @@ export const addLeaderBoardInstruction = async (
   minScore: BN | null,
   maxScore: BN | null
 ): Promise<TransactionInstruction> => {
+  const accounts = {
+    authority,
+    game: gameAddress,
+    payer,
+    leaderboard: newLeaderBoard,
+    topEntries: topEntriesAddress,
+    systemProgram: SystemProgram.programId,
+  };
   return program.methods
     .addLeaderboard({
       description,
@@ -32,13 +40,6 @@ export const addLeaderBoardInstruction = async (
       scoresToRetain,
       scoresOrder,
     })
-    .accounts({
-      authority,
-      game: gameAddress,
-      payer,
-      leaderboard: newLeaderBoard,
-      topEntries: topEntriesAddress,
-      systemProgram: SystemProgram.programId,
-    })
+    .accounts(accounts)
     .instruction();
 };

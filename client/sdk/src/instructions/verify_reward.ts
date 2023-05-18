@@ -17,21 +17,20 @@ export const verifyRewardInstruction = async (
   collectionMetadata: PublicKey,
   collectionMasterEdition: PublicKey
 ): Promise<TransactionInstruction> => {
-  return program.methods
-    .verifyReward()
-    .accounts({
-      payer,
-      authority,
-      user,
-      game: gameAccount,
-      achievement: achievementAccount,
-      reward: rewardAccount,
-      player: userPlayerAccount,
-      playerAchievement: playerAchievementAccount,
-      metadataToVerify: metadata,
-      collectionMint,
-      collectionMetadata,
-      collectionMasterEdition,
-    })
-    .instruction();
+  const accounts = {
+    payer,
+    authority,
+    user,
+    game: gameAccount,
+    achievement: achievementAccount,
+    reward: rewardAccount,
+    player: userPlayerAccount,
+    playerAchievement: playerAchievementAccount,
+    metadataToVerify: metadata,
+    collectionMint,
+    collectionMetadata,
+    collectionMasterEdition,
+  };
+
+  return program.methods.verifyReward().accounts(accounts).instruction();
 };

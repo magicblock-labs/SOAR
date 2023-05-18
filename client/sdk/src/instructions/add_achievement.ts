@@ -16,14 +16,15 @@ export const addAchievementInstruction = async (
   description: string,
   nftMeta: PublicKey
 ): Promise<TransactionInstruction> => {
+  const accounts = {
+    authority,
+    game,
+    payer,
+    newAchievement: newAchievementAddress,
+    systemProgram: SystemProgram.programId,
+  };
   return program.methods
     .addAchievement(title, description, nftMeta)
-    .accounts({
-      authority,
-      game,
-      payer,
-      newAchievement: newAchievementAddress,
-      systemProgram: SystemProgram.programId,
-    })
+    .accounts(accounts)
     .instruction();
 };

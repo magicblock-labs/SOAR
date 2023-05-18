@@ -99,8 +99,8 @@ pub mod soar {
 
     /// Initialize a new merge account and await approval from the verified users of all the
     /// specified [Player] accounts.
-    pub fn initiate_merge<'a>(ctx: Context<'_, '_, '_, 'a, InitiateMerge<'a>>) -> Result<()> {
-        initiate_merge::handler(ctx)
+    pub fn initiate_merge(ctx: Context<InitiateMerge>, keys: Vec<Pubkey>) -> Result<()> {
+        initiate_merge::handler(ctx, keys)
     }
 
     /// Register merge confirmation for a particular [Player] account included in a [Merged].
@@ -172,6 +172,7 @@ pub struct AddAchievement<'info> {
     pub authority: Signer<'info>,
     #[account(mut)]
     pub payer: Signer<'info>,
+    #[account(mut)]
     pub game: Account<'info, Game>,
     #[account(
         init,
@@ -249,7 +250,6 @@ pub struct NewPlayer<'info> {
     pub system_program: Program<'info, System>,
 }
 
-/// TODO: Players should be able to register against **any** leaderboard.
 #[derive(Accounts)]
 pub struct RegisterPlayer<'info> {
     #[account(mut)]
@@ -293,9 +293,9 @@ pub struct SubmitScore<'info> {
     pub game: Account<'info, Game>,
     #[account(has_one = game)]
     pub leaderboard: Account<'info, LeaderBoard>,
-    #[account(constraint = check_top_entries(&leaderboard, top_entries))]
+    #[account(mut, constraint = check_top_entries(&leaderboard, top_entries))]
     pub top_entries: Option<Account<'info, LeaderTopEntries>>,
-    #[account(has_one = player_info, has_one = leaderboard)]
+    #[account(mut, has_one = player_info, has_one = leaderboard)]
     pub player_entries: Account<'info, PlayerEntryList>,
     pub system_program: Program<'info, System>,
 }
@@ -312,16 +312,35 @@ fn check_top_entries(
 }
 
 #[derive(Accounts)]
+#[instruction(keys: Vec<Pubkey>)]
 pub struct InitiateMerge<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
     pub user: Signer<'info>,
     #[account(has_one = user)]
-    pub player_info: Account<'info, Player>,
+    pub player: Account<'info, Player>,
     /// CHECK: Account to be initialized in handler.
-    #[account(mut)]
-    pub merge_account: UncheckedAccount<'info>,
+    #[account(
+        init,
+        payer = payer,
+        space = Merged::size(dedup_input(&player.key(), keys).1)
+    )]
+    pub merge_account: Account<'info, Merged>,
     pub system_program: Program<'info, System>,
+}
+
+pub fn dedup_input(initiator_player_account: &Pubkey, input: Vec<Pubkey>) -> (Vec<Pubkey>, usize) {
+    use std::collections::HashSet;
+
+    let keys: Vec<Pubkey> = input
+        .into_iter()
+        .collect::<HashSet<_>>()
+        .into_iter()
+        .filter(|key| key != initiator_player_account)
+        .collect();
+    let size = Merged::size(keys.len());
+
+    (keys, size)
 }
 
 #[derive(Accounts)]
@@ -345,6 +364,8 @@ pub struct UnlockPlayerAchievement<'info> {
     pub user: Signer<'info>,
     #[account(has_one = user)]
     pub player_info: Account<'info, Player>,
+    // The presence of the next two account ensures that the player has
+    // some entry for the game.
     #[account(has_one = player_info, has_one = leaderboard)]
     pub player_entry: Account<'info, PlayerEntryList>,
     #[account(has_one = game)]
@@ -373,7 +394,7 @@ pub struct AddReward<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
     pub game: Account<'info, Game>,
-    #[account(has_one = game)]
+    #[account(mut, has_one = game)]
     pub achievement: Account<'info, Achievement>,
     #[account(
         init,
@@ -411,7 +432,7 @@ pub struct MintReward<'info> {
         constraint = achievement.reward.unwrap() == reward.key()
     )]
     pub achievement: Box<Account<'info, Achievement>>,
-    #[account(has_one = achievement)]
+    #[account(mut, has_one = achievement)]
     pub reward: Box<Account<'info, Reward>>,
     #[account(has_one = user)]
     pub player: Box<Account<'info, Player>>,

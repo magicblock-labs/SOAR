@@ -15,27 +15,18 @@ pub fn handler(ctx: Context<SubmitScore>, score: u64) -> Result<()> {
     let clock = Clock::get().unwrap();
     let entry = ScoreEntry::new(score, clock.unix_timestamp);
 
-    let count = player_entries.score_count;
-    msg!("score_count is {}", count);
-    msg!("scores_vec length is {}", player_entries.scores.len());
-    let capacity = player_entries.scores.capacity();
-    msg!("scores_vec capacity is {}", capacity);
+    let count = player_entries.scores.len();
+    if count == player_entries.alloc_count as usize {
+        let window = PlayerEntryList::REALLOC_WINDOW;
+        msg!(
+            "count: {}. Reallocating space for {} entries",
+            count,
+            window
+        );
 
-    if count as usize == capacity {
-        let size_without_vec = PlayerEntryList::SIZE_WITHOUT_VEC;
-        let vec_size = 4_usize
-            .checked_add(capacity.checked_mul(ScoreEntry::SIZE).unwrap())
-            .unwrap();
-
-        let to_add = PlayerEntryList::REALLOC_WINDOW
-            .checked_mul(ScoreEntry::SIZE)
-            .unwrap();
-
-        let new_size = size_without_vec
-            .checked_add(vec_size)
-            .unwrap()
-            .checked_add(to_add)
-            .unwrap();
+        let size = player_entries.current_size();
+        let to_add = window.checked_mul(ScoreEntry::SIZE).unwrap();
+        let new_size = size.checked_add(to_add).unwrap();
 
         resize_account(
             &player_entries.to_account_info(),
@@ -43,11 +34,20 @@ pub fn handler(ctx: Context<SubmitScore>, score: u64) -> Result<()> {
             &ctx.accounts.system_program.to_account_info(),
             new_size,
         )?;
+        player_entries.alloc_count = player_entries
+            .alloc_count
+            .checked_add(PlayerEntryList::REALLOC_WINDOW as u16)
+            .unwrap();
+
+        let new_space = player_entries.to_account_info().data_len();
+        msg!(
+            "Resized account with initial space {}. New space: {}.",
+            size,
+            new_space
+        );
     }
 
     player_entries.scores.push(entry);
-    player_entries.score_count = count.checked_add(1).unwrap();
-
     let user_key = ctx.accounts.user.key();
 
     if let Some(top_entries) = &mut ctx.accounts.top_entries {

@@ -1,6 +1,5 @@
 import { type AnchorProvider, type IdlTypes, Program } from "@coral-xyz/anchor";
 import {
-  type AccountMeta,
   type ConfirmOptions,
   Keypair,
   PublicKey,
@@ -65,7 +64,7 @@ export class SoarProgram {
   }
 
   public async initializeNewGame(
-    newGame: Keypair,
+    newGame: PublicKey,
     title: string,
     description: string,
     genre: Genre,
@@ -77,7 +76,7 @@ export class SoarProgram {
 
     const initGame = await initializeGameInstruction(
       this.program,
-      newGame.publicKey,
+      newGame,
       this.provider.publicKey,
       title,
       description,
@@ -89,7 +88,7 @@ export class SoarProgram {
     transaction.add(initGame);
 
     return {
-      gameAddress: newGame.publicKey,
+      gameAddress: newGame,
       transaction,
     };
   }
@@ -161,32 +160,23 @@ export class SoarProgram {
 
   public async initiateMerge(
     user: PublicKey,
-    newMergeAccount: Keypair,
+    newMergeAccount: PublicKey,
     playerAccountKeys: PublicKey[]
   ): Promise<InstructionResult.InitiateMerge> {
     const transaction = new Transaction();
     const playerInfo = this.derivePlayerAddress(user)[0];
-
-    const accounts = playerAccountKeys.map((key) => {
-      const meta: AccountMeta = {
-        pubkey: key,
-        isSigner: true,
-        isWritable: false,
-      };
-      return meta;
-    });
 
     const initMerge = await initiateMergeInstruction(
       this.program,
       user,
       this.provider.publicKey,
       playerInfo,
-      newMergeAccount.publicKey,
-      accounts
+      newMergeAccount,
+      playerAccountKeys
     );
 
     return {
-      newMergeAccount: newMergeAccount.publicKey,
+      newMergeAccount,
       transaction: transaction.add(initMerge),
     };
   }
@@ -294,10 +284,7 @@ export class SoarProgram {
       game ?? (await this.program.account.leaderBoard.fetch(leaderboard)).game;
 
     const playerInfo = this.derivePlayerAddress(user)[0];
-    const newList = this.derivePlayerEntryListAddress(
-      playerInfo,
-      leaderboard
-    )[0];
+    const newList = this.derivePlayerEntryListAddress(user, leaderboard)[0];
 
     const register = await registerPlayerEntryInstruction(
       this.program,
@@ -327,7 +314,7 @@ export class SoarProgram {
 
     const playerInfo = this.derivePlayerAddress(user)[0];
     const playerEntryList = this.derivePlayerEntryListAddress(
-      playerInfo,
+      user,
       leaderboard
     )[0];
     const topEntries = this.deriveLeaderTopEntriesAddress(leaderboard)[0];
@@ -418,7 +405,7 @@ export class SoarProgram {
     }
 
     const playerEntryList = this.derivePlayerEntryListAddress(
-      playerAccount,
+      user,
       leaderBoardAddress
     )[0];
     const newPlayerAchievement = this.derivePlayerAchievementAddress(
@@ -448,7 +435,6 @@ export class SoarProgram {
   public async addRewardForAchievement(
     authority: PublicKey,
     achievement: PublicKey,
-    payer: PublicKey,
     game: PublicKey | null,
     uri: string,
     name: string,
@@ -466,7 +452,7 @@ export class SoarProgram {
     const instruction = await addRewardInstruction(
       this.program,
       authority,
-      payer,
+      this.provider.publicKey,
       achievement,
       gameAddress,
       newRewardAddress,
@@ -669,19 +655,21 @@ export class SoarProgram {
   }
 
   public derivePlayerEntryListAddress(
-    playerInfo: PublicKey,
+    user: PublicKey,
     leaderboard: PublicKey
   ): [PublicKey, number] {
+    const player = this.derivePlayerAddress(user)[0];
     return PublicKey.findProgramAddressSync(
-      [Buffer.from(Seeds.ENTRY), playerInfo.toBuffer(), leaderboard.toBuffer()],
+      [Buffer.from(Seeds.ENTRY), player.toBuffer(), leaderboard.toBuffer()],
       this.program.programId
     );
   }
 
   public derivePlayerAchievementAddress(
-    player: PublicKey,
+    user: PublicKey,
     achievement: PublicKey
   ): [PublicKey, number] {
+    const player = this.derivePlayerAddress(user)[0];
     return PublicKey.findProgramAddressSync(
       [
         Buffer.from(Seeds.PLAYER_ACHIEVEMENT),

@@ -2,7 +2,6 @@ mod achievement;
 mod game;
 mod leaderboard;
 mod player;
-mod score;
 
 use anchor_lang::prelude::*;
 
@@ -157,18 +156,16 @@ pub struct MergeInfo {
 
 #[account]
 #[derive(Debug, Default)]
-/// Represents a [Player]'s collection of score entries([Entry]) for a particular [LeaderBoard].
+/// Represents a [Player]'s collection of score entries([ScoreEntry]) for a particular [LeaderBoard].
 ///
 /// Seeds: `[b"entry", player_info.key().as_ref(), leaderboard.key().as_ref()]`
 pub struct PlayerEntryList {
     /// The player_info account this entry is derived from
     pub player_info: Pubkey,
     /// The leaderboard this entry derives from.
-    // TODO: Get rid.
     pub leaderboard: Pubkey,
-    /// Keep track of how many [StoreEntry]s are in the scores vec.
-    // TODO: Get rid.
-    pub score_count: u64,
+    /// Max number of [ScoreEntry] objects the current space allocation supports.
+    pub alloc_count: u16,
     /// Collection of entries.
     pub scores: Vec<ScoreEntry>,
     // TODO:(Vec<Entry>) Push and realloc each time, or realloc in batches and keep

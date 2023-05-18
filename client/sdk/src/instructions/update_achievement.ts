@@ -11,12 +11,13 @@ export const updateAchievementInstruction = async (
   newDescription: string | null,
   newNftMeta: PublicKey | null
 ): Promise<TransactionInstruction> => {
+  const accounts = {
+    authority,
+    game: gameAddress,
+    achievement,
+  };
   return program.methods
     .updateAchievement(newTitle, newDescription, newNftMeta)
-    .accounts({
-      authority,
-      game: gameAddress,
-      achievement,
-    })
+    .accounts(accounts)
     .instruction();
 };

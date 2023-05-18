@@ -14,13 +14,14 @@ export const updateGameInstruction = async (
   newMeta: IdlTypes<Soar>["GameMeta"] | null,
   newAuths: PublicKey[] | null
 ): Promise<TransactionInstruction> => {
+  const accounts = {
+    authority,
+    payer,
+    game: gameAddress,
+    systemProgram: SystemProgram.programId,
+  };
   return program.methods
     .updateGame(newMeta, newAuths)
-    .accounts({
-      authority,
-      payer,
-      game: gameAddress,
-      systemProgram: SystemProgram.programId,
-    })
+    .accounts(accounts)
     .instruction();
 };

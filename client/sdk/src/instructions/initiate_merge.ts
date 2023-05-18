@@ -1,6 +1,5 @@
 import { type Program } from "@coral-xyz/anchor";
 import {
-  type AccountMeta,
   type PublicKey,
   type TransactionInstruction,
   SystemProgram,
@@ -13,17 +12,14 @@ export const initiateMergeInstruction = async (
   payer: PublicKey,
   userPlayerAccount: PublicKey,
   newMergeAccount: PublicKey,
-  others: AccountMeta[]
+  keys: PublicKey[]
 ): Promise<TransactionInstruction> => {
-  return program.methods
-    .initiateMerge()
-    .accounts({
-      user,
-      payer,
-      playerInfo: userPlayerAccount,
-      mergeAccount: newMergeAccount,
-      systemProgram: SystemProgram.programId,
-    })
-    .remainingAccounts(others)
-    .instruction();
+  const accounts = {
+    user,
+    payer,
+    player: userPlayerAccount,
+    mergeAccount: newMergeAccount,
+    systemProgram: SystemProgram.programId,
+  };
+  return program.methods.initiateMerge(keys).accounts(accounts).instruction();
 };

@@ -20,19 +20,20 @@ export const submitScoreInstruction = async (
   score: BN,
   preInstructions: TransactionInstruction[]
 ): Promise<TransactionInstruction> => {
+  const accounts = {
+    user,
+    payer,
+    authority,
+    playerInfo: userPlayerAccount,
+    game,
+    leaderboard,
+    topEntries, // TODO:
+    playerEntries: playerEntryListAddress,
+    systemProgram: SystemProgram.programId,
+  };
   return program.methods
     .submitScore(score)
-    .accounts({
-      user,
-      payer,
-      authority,
-      playerInfo: userPlayerAccount,
-      game,
-      leaderboard,
-      topEntries, // TODO:
-      playerEntries: playerEntryListAddress,
-      systemProgram: SystemProgram.programId,
-    })
+    .accounts(accounts)
     .preInstructions(preInstructions)
     .instruction();
 };

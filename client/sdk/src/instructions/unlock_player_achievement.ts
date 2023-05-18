@@ -18,19 +18,20 @@ export const unlockPlayerAchievementInstruction = async (
   authority: PublicKey,
   newPlayerAchievementAccount: PublicKey
 ): Promise<TransactionInstruction> => {
+  const accounts = {
+    authority,
+    user,
+    payer,
+    playerInfo: userPlayerAccount,
+    playerEntry: userEntryListAccount,
+    leaderboard,
+    game,
+    achievement,
+    playerAchievement: newPlayerAchievementAccount,
+    systemProgram: SystemProgram.programId,
+  };
   return program.methods
     .unlockPlayerAchievement()
-    .accounts({
-      authority,
-      user,
-      payer,
-      playerInfo: userPlayerAccount,
-      playerEntry: userEntryListAccount,
-      leaderboard,
-      game,
-      achievement,
-      playerAchievement: newPlayerAchievementAccount,
-      systemProgram: SystemProgram.programId,
-    })
+    .accounts(accounts)
     .instruction();
 };

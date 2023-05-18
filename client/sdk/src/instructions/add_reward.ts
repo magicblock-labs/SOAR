@@ -21,19 +21,20 @@ export const addRewardInstruction = async (
   collectionMint: PublicKey | null,
   collectionMetadata: PublicKey | null
 ): Promise<TransactionInstruction> => {
+  const accounts = {
+    authority,
+    payer,
+    game,
+    achievement,
+    newReward: newRewardAccount,
+    collectionUpdateAuth,
+    collectionMint,
+    collectionMetadata,
+    systemProgram: SystemProgram.programId,
+    tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+  };
   return program.methods
     .addReward({ uri, name, symbol })
-    .accounts({
-      authority,
-      payer,
-      game,
-      achievement,
-      newReward: newRewardAccount,
-      collectionUpdateAuth,
-      collectionMint,
-      collectionMetadata,
-      systemProgram: SystemProgram.programId,
-      tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-    })
+    .accounts(accounts)
     .instruction();
 };

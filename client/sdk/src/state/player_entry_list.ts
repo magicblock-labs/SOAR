@@ -8,7 +8,7 @@ export class PlayerEntryListAccount {
     public readonly address: PublicKey,
     public readonly playerInfo: PublicKey,
     public readonly leaderboard: PublicKey,
-    public readonly scoreCount: BN,
+    public readonly allocCount: number,
     public readonly scores: ScoreEntry[]
   ) {}
 
@@ -20,7 +20,7 @@ export class PlayerEntryListAccount {
       address,
       account.playerInfo,
       account.leaderboard,
-      account.scoreCount,
+      account.allocCount,
       account.scores
     );
   }
@@ -30,7 +30,7 @@ export class PlayerEntryListAccount {
       address: this.address.toBase58(),
       playerInfo: this.playerInfo.toBase58(),
       leaderboard: this.leaderboard.toBase58(),
-      scoreCount: this.scoreCount.toString(),
+      allocCount: this.allocCount,
       scores: this.scores.map((score) => printScoreEntry(score)),
     };
   }
@@ -40,7 +40,7 @@ interface ReadablePlayerEntryListAccountInfo {
   address: string;
   playerInfo: string;
   leaderboard: string;
-  scoreCount: string;
+  allocCount: number;
   scores: ReadableScoreEntry[];
 }
 

@@ -11,6 +11,8 @@ pub fn handler(ctx: Context<AddReward>, input: RegisterNewRewardInput) -> Result
     new_reward.symbol = input.symbol;
     new_reward.minted = 0;
 
+    new_reward.check_field_lengths()?;
+
     let authority = &ctx.accounts.collection_update_auth;
     let mint = &ctx.accounts.collection_mint;
     let meta = &ctx.accounts.collection_metadata;

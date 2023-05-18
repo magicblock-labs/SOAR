@@ -7,6 +7,7 @@ export class PlayerAchievementAccount {
   constructor(
     public readonly address: PublicKey,
     public readonly player: PublicKey,
+    public readonly achievement: PublicKey,
     public readonly timestamp: BN,
     public readonly unlocked: boolean,
     public readonly metadata: PublicKey | null
@@ -19,6 +20,7 @@ export class PlayerAchievementAccount {
     return new PlayerAchievementAccount(
       address,
       account.player,
+      account.achievement,
       account.timestamp,
       account.unlocked,
       account.metadata
@@ -29,6 +31,7 @@ export class PlayerAchievementAccount {
     return {
       address: this.address.toBase58(),
       player: this.player.toBase58(),
+      achievement: this.achievement.toBase58(),
       timestamp: this.timestamp.toString(),
       unlocked: this.unlocked,
       metadata:
@@ -40,6 +43,7 @@ export class PlayerAchievementAccount {
 interface ReadablePlayerAchievementInfo {
   address: string;
   player: string;
+  achievement: string;
   timestamp: string;
   unlocked: boolean;
   metadata: string | null;

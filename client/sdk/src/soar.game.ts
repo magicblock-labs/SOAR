@@ -31,7 +31,6 @@ export class Game {
     const soarClient = SoarProgram.get(provider);
     const game = new Game(address, soarClient);
     await game.init();
-    console.log("soar.game: get");
     return game;
   }
 
@@ -46,7 +45,7 @@ export class Game {
   ): Promise<Game> {
     const game = Keypair.generate();
     const { gameAddress, transaction } = await program.initializeNewGame(
-      game,
+      game.publicKey,
       title,
       description,
       genre,
@@ -65,7 +64,6 @@ export class Game {
   public async init(): Promise<void> {
     const account = await this.soar.program.account.game.fetch(this.address);
     this.state = GameAccount.fromIdlAccount(account, this.address);
-    console.log("soar.game: init");
   }
 
   public async refresh(): Promise<void> {
@@ -74,7 +72,7 @@ export class Game {
 
   public async currentLeaderBoardId(): Promise<BN> {
     if (this.state === null) {
-      throw new Error("Init() not called");
+      throw new Error("init not called");
     }
     return this.state.leaderboardCount;
   }
@@ -85,6 +83,7 @@ export class Game {
   }
 
   public async nextLeaderBoardAddress(): Promise<PublicKey> {
+    await this.refresh();
     const id = (await this.currentLeaderBoardId()).addn(1);
     return this.soar.deriveLeaderBoardAddress(id, this.address)[0];
   }

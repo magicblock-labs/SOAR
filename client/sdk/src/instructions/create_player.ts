@@ -14,13 +14,14 @@ export const createPlayerInstruction = async (
   username: string,
   nftMeta: PublicKey
 ): Promise<TransactionInstruction> => {
+  const accounts = {
+    user,
+    payer,
+    playerInfo: newPlayerInfo,
+    systemProgram: SystemProgram.programId,
+  };
   return program.methods
     .createPlayer(username, nftMeta)
-    .accounts({
-      user,
-      payer,
-      playerInfo: newPlayerInfo,
-      systemProgram: SystemProgram.programId,
-    })
+    .accounts(accounts)
     .instruction();
 };

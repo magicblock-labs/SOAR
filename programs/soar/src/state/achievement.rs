@@ -25,11 +25,8 @@ impl Achievement {
 }
 
 impl Reward {
-    #[constant]
     const MAX_URI_LENGTH: usize = 200;
-    #[constant]
     const MAX_NAME_LENGTH: usize = 32;
-    #[constant]
     const MAX_SYMBOL_LENGTH: usize = 10;
     pub const SIZE: usize = 8 + // discriminator
         32 + (4 + 200)/*URI*/ + (4 + 32)/*NAME*/ + (4 + 10)/*SYMBOL*/ + 8 + ( 1+ 32);

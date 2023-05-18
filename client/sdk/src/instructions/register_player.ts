@@ -15,16 +15,14 @@ export const registerPlayerEntryInstruction = async (
   gameAddress: PublicKey,
   leaderboard: PublicKey
 ): Promise<TransactionInstruction> => {
-  return program.methods
-    .registerPlayer()
-    .accounts({
-      user,
-      payer,
-      playerInfo: userPlayerAccount,
-      game: gameAddress,
-      leaderboard,
-      newList: newEntryList,
-      systemProgram: SystemProgram.programId,
-    })
-    .instruction();
+  const accounts = {
+    user,
+    payer,
+    playerInfo: userPlayerAccount,
+    game: gameAddress,
+    leaderboard,
+    newList: newEntryList,
+    systemProgram: SystemProgram.programId,
+  };
+  return program.methods.registerPlayer().accounts(accounts).instruction();
 };

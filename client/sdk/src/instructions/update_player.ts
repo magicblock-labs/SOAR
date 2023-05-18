@@ -9,11 +9,12 @@ export const updatePlayerInstruction = async (
   updatedUsername: string | null,
   updatedNftMeta: PublicKey | null
 ): Promise<TransactionInstruction> => {
+  const accounts = {
+    user,
+    playerInfo: userPlayerAccount,
+  };
   return program.methods
     .updatePlayer(updatedUsername, updatedNftMeta)
-    .accounts({
-      user,
-      playerInfo: userPlayerAccount,
-    })
+    .accounts(accounts)
     .instruction();
 };

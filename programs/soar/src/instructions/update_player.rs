@@ -15,5 +15,6 @@ pub fn handler(
         player_account.nft_meta = meta;
     }
 
+    player_account.check_field_lengths()?;
     Ok(())
 }

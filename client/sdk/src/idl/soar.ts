@@ -239,6 +239,43 @@ export type Soar = {
       ]
     },
     {
+      "name": "updateLeaderboard",
+      "docs": [
+        "Update's a leaderboard's description and nft metadata information."
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "game",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "leaderboard",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "newDescription",
+          "type": {
+            "option": "string"
+          }
+        },
+        {
+          "name": "newNftMeta",
+          "type": {
+            "option": "publicKey"
+          }
+        }
+      ]
+    },
+    {
       "name": "createPlayer",
       "docs": [
         "Create a [Player] account for a particular user."
@@ -1712,6 +1749,43 @@ export const IDL: Soar = {
           "name": "input",
           "type": {
             "defined": "RegisterLeaderBoardInput"
+          }
+        }
+      ]
+    },
+    {
+      "name": "updateLeaderboard",
+      "docs": [
+        "Update's a leaderboard's description and nft metadata information."
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "game",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "leaderboard",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "newDescription",
+          "type": {
+            "option": "string"
+          }
+        },
+        {
+          "name": "newNftMeta",
+          "type": {
+            "option": "publicKey"
           }
         }
       ]

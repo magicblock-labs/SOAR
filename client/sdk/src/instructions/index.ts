@@ -13,3 +13,4 @@ export * from "./mint_reward";
 export * from "./verify_reward";
 export * from "./initiate_merge";
 export * from "./register_merge_approval";
+export * from "./update_leaderboard";

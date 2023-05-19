@@ -67,6 +67,15 @@ pub mod soar {
         add_leaderboard::handler(ctx, input)
     }
 
+    /// Update's a leaderboard's description and nft metadata information.
+    pub fn update_leaderboard(
+        ctx: Context<UpdateLeaderBoard>,
+        new_description: Option<String>,
+        new_nft_meta: Option<Pubkey>,
+    ) -> Result<()> {
+        update_leaderboard::handler(ctx, new_description, new_nft_meta)
+    }
+
     /// Create a [Player] account for a particular user.
     pub fn create_player(
         ctx: Context<NewPlayer>,
@@ -235,6 +244,18 @@ pub struct AddLeaderBoard<'info> {
 
 fn next_leaderboard(game: &Account<'_, Game>) -> u64 {
     game.leaderboard_count.checked_add(1).unwrap()
+}
+
+#[derive(Accounts)]
+pub struct UpdateLeaderBoard<'info> {
+    #[account(
+        constraint = game.check_signer_is_authority(authority.key)
+        @ SoarError::InvalidAuthority
+    )]
+    pub authority: Signer<'info>,
+    pub game: Account<'info, Game>,
+    #[account(mut, has_one = game)]
+    pub leaderboard: Account<'info, LeaderBoard>,
 }
 
 #[derive(Accounts)]

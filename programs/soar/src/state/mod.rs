@@ -2,6 +2,7 @@ mod achievement;
 mod game;
 mod leaderboard;
 mod player;
+mod merge;
 
 use anchor_lang::prelude::*;
 

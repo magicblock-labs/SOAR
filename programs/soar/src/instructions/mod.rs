@@ -13,6 +13,7 @@ pub mod update_achievement;
 pub mod update_game;
 pub mod update_player;
 pub mod verify_reward;
+pub mod update_leaderboard;
 
 pub use add_achievement::*;
 pub use add_leaderboard::*;
@@ -28,3 +29,4 @@ pub use update_achievement::*;
 pub use update_game::*;
 pub use update_player::*;
 pub use verify_reward::*;
+pub use update_leaderboard::*;

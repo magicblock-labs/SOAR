@@ -1,5 +1,4 @@
 use super::*;
-use crate::state::ScoreEntry;
 use crate::SoarError;
 
 impl LeaderBoard {
@@ -26,6 +25,14 @@ impl LeaderBoard {
             top_entries: None,
         }
     }
+
+    pub fn check_field_lengths(&self) -> Result<()> {
+        if self.description.len() > MAX_DESCRIPTION_LEN {
+            return Err(SoarError::InvalidFieldLength.into());
+        }
+
+        Ok(())
+    }
 }
 
 impl RegisterLeaderBoardInput {
@@ -47,6 +54,14 @@ impl RegisterLeaderBoardInput {
         }
 
         Ok(())
+    }
+}
+
+impl ScoreEntry {
+    pub const SIZE: usize = 8 + 8;
+
+    pub fn new(score: u64, timestamp: i64) -> Self {
+        ScoreEntry { score, timestamp }
     }
 }
 

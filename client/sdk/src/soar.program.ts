@@ -19,6 +19,7 @@ import {
   updateAchievementInstruction,
   updateGameInstruction,
   updatePlayerInstruction,
+  updateLeaderBoardInstruction,
   submitScoreInstruction,
   unlockPlayerAchievementInstruction,
   addRewardInstruction,
@@ -276,6 +277,31 @@ export class SoarProgram {
     transaction.add(addBoard);
 
     return { newLeaderBoard, topEntries, transaction };
+  }
+
+  public async updateGameLeaderboard(
+    authority: PublicKey,
+    leaderboard: PublicKey,
+    game: PublicKey | null,
+    newDescription: string | null,
+    newNftMeta: PublicKey | null,
+  ): Promise<InstructionResult.UpdateLeaderboard> {
+    let transaction = new Transaction();
+
+    const gameAddress =
+      game ?? (await this.program.account.leaderBoard.fetch(leaderboard)).game;
+
+    let updateIx = await updateLeaderBoardInstruction(
+      this.program,
+      authority,
+      gameAddress,
+      leaderboard,
+      newDescription,
+      newNftMeta
+    );
+    transaction.add(updateIx);
+
+    return { transaction };
   }
 
   public async registerPlayerEntryForLeaderBoard(

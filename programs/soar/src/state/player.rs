@@ -67,11 +67,3 @@ impl MergeInfo {
         }
     }
 }
-
-impl ScoreEntry {
-    pub const SIZE: usize = 8 + 8;
-
-    pub fn new(score: u64, timestamp: i64) -> Self {
-        ScoreEntry { score, timestamp }
-    }
-}

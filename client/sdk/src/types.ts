@@ -57,4 +57,7 @@ export module InstructionResult {
   export interface RegisterMergeApproval {
     transaction: Transaction;
   }
+  export interface UpdateLeaderboard {
+    transaction: Transaction;
+  }
 }

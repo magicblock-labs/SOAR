@@ -191,6 +191,20 @@ describe("soar", () => {
     expect(gameClient.state.leaderboardCount.toNumber()).to.equal(1);
   });
 
+  it("Can update a leaderboard", async() => {
+    let leaderboard = leaderBoards[0];
+    let newDescription = "newDescription";
+    let newMeta = Keypair.generate().publicKey;
+
+    let { transaction } = await client.updateGameLeaderboard(auths[0].publicKey, leaderboard, gameClient.address,
+      newDescription, newMeta);
+    await client.sendAndConfirmTransaction(transaction, [auths[0]]);
+
+    let info = await client.fetchLeaderBoardAccount(leaderboard);
+    expect(info.description).to.equal(newDescription);
+    expect(info.nftMeta.toBase58()).to.equal(newMeta.toBase58());
+  });
+
   it("Can't add a leaderboard with the wrong authority", async() => {
     let dummyKeypair = Keypair.generate();
     let expectedFail = await gameClient.addLeaderBoard(dummyKeypair.publicKey, "", 

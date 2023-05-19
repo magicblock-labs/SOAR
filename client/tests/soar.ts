@@ -358,6 +358,11 @@ describe("soar", () => {
     expect(account.scores.length).to.equal(1);
     expect(account.scores[0].score.toNumber()).to.equal(score.toNumber());
     expect(account.allocCount).to.equal(10);
+
+    let topEntries = await client.fetchLeaderBoardTopEntriesAccount(client.deriveLeaderTopEntriesAddress(leaderBoards[0])[0]);
+    let scores = topEntries.topScores.map((score) => score.entry.score.toNumber());
+    let expectedScores = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    expect(JSON.stringify(scores)).to.equal(JSON.stringify(expectedScores));
   });
 
   it("Can resize if needed when submitting a player score", async() => {
@@ -372,6 +377,7 @@ describe("soar", () => {
       let { transaction } = await client.submitScoreToLeaderBoard(user1.publicKey, auths[0].publicKey, gameClient.address,
         leaderBoards[0], score);
       await client.sendAndConfirmTransaction(transaction, [auths[0], user1]);
+
       ++i;
     }
 
@@ -390,6 +396,16 @@ describe("soar", () => {
     expect(list.allocCount).to.equal(20);
     expect(list.scores.length).to.equal(11);
     expect(info.data.length).to.equal(initialLength + (10 * (8 + 8)));
+  });
+
+  it("Can store top entries for a leaderboard", async() => {
+    let topEntries = client.deriveLeaderTopEntriesAddress(leaderBoards[0])[0];
+    let info = await client.fetchLeaderBoardTopEntriesAccount(topEntries);
+
+    let scores = info.topScores.map((score) => score.entry.score.toNumber());
+    let expectedScores = [11, 10, 9, 8, 7, 6, 5, 4, 3, 2];
+    expect(scores.length).to.equal(expectedScores.length); 
+    expect(JSON.stringify(scores), JSON.stringify(expectedScores));
   });
 
   it("Should fail submitting a player score", async() => {
@@ -439,13 +455,11 @@ describe("soar", () => {
     expect(thrown).to.be.true;
   });
 
-  it("Can store top entries for a leaderboard", async() => {});
-
   it("Can unlock an achievement for a player", async() => {
     // Unlock achievements[0] for player. LeaderBoards[0] is the leaderboard the user is registered to.
     let { newPlayerAchievement, transaction } = await client.unlockPlayerAchievement(user1.publicKey, auths[0].publicKey, achievements[0], gameClient.address,
       leaderBoards[0]);
-    try {await client.sendAndConfirmTransaction(transaction, [auths[0], user1]);} catch(err) {console.log(err);}
+    await client.sendAndConfirmTransaction(transaction, [auths[0], user1]);
 
     let account = await client.fetchPlayerAchievementAccount(newPlayerAchievement);
     expect(account.player.toBase58()).to.equal(client.derivePlayerAddress(user1.publicKey)[0].toBase58());
@@ -459,7 +473,7 @@ describe("soar", () => {
       .map((key) => client.derivePlayerAddress(key)[0]);
     
     let { newMergeAccount, transaction } = await client.initiateMerge(user1.publicKey, mergeAccount.publicKey, keys);
-    try {await client.sendAndConfirmTransaction(transaction, [mergeAccount, user1])}catch(err){console.log(err);};
+    await client.sendAndConfirmTransaction(transaction, [mergeAccount, user1]);
 
     let account = await client.fetchMergedAccount(newMergeAccount);
     expect(account.initiator.toBase58()).to.equal(user1.publicKey.toBase58());

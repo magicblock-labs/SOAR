@@ -61,7 +61,7 @@ pub fn handler(ctx: Context<SubmitScore>, score: u64) -> Result<()> {
             scores[0] = top_scores_entry;
             scores.sort_by(|a, b| a.entry.score.cmp(&b.entry.score));
         } else if !is_ascending && entry.score > scores[last_index].entry.score {
-            scores[last_index - 1] = top_scores_entry;
+            scores[last_index] = top_scores_entry;
             scores.sort_by(|a, b| b.entry.score.cmp(&a.entry.score));
         }
     }

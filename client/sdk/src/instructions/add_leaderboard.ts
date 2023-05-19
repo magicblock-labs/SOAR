@@ -12,7 +12,7 @@ export const addLeaderBoardInstruction = async (
   newLeaderBoard: PublicKey,
   payer: PublicKey,
   gameAddress: PublicKey,
-  topEntriesAddress: PublicKey,
+  topEntries: PublicKey | null,
   authority: PublicKey,
   description: string,
   nftMeta: PublicKey,
@@ -27,7 +27,7 @@ export const addLeaderBoardInstruction = async (
     game: gameAddress,
     payer,
     leaderboard: newLeaderBoard,
-    topEntries: topEntriesAddress,
+    topEntries,
     systemProgram: SystemProgram.programId,
   };
   return program.methods

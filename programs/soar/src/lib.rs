@@ -202,6 +202,7 @@ pub struct UpdateAchievement<'info> {
 }
 
 #[derive(Accounts)]
+#[instruction(input: RegisterLeaderBoardInput)]
 pub struct AddLeaderBoard<'info> {
     #[account(
         constraint = game.check_signer_is_authority(authority.key)
@@ -220,13 +221,15 @@ pub struct AddLeaderBoard<'info> {
         bump,
     )]
     pub leaderboard: Account<'info, LeaderBoard>,
-    /// CHECK: The [LeaderTopEntries] account that is `optionally` created in handler.
     #[account(
-        mut,
+        init,
+        constraint = input.scores_to_retain > 0,
+        space = LeaderTopEntries::size(input.scores_to_retain as usize),
+        payer = payer,
         seeds = [seeds::LEADER_TOP_ENTRIES, leaderboard.key().as_ref()],
         bump,
     )]
-    pub top_entries: UncheckedAccount<'info>,
+    pub top_entries: Option<Account<'info, LeaderTopEntries>>,
     pub system_program: Program<'info, System>,
 }
 

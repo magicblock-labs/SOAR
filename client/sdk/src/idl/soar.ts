@@ -220,7 +220,8 @@ export type Soar = {
         {
           "name": "topEntries",
           "isMut": true,
-          "isSigner": false
+          "isSigner": false,
+          "isOptional": true
         },
         {
           "name": "systemProgram",
@@ -1697,7 +1698,8 @@ export const IDL: Soar = {
         {
           "name": "topEntries",
           "isMut": true,
-          "isSigner": false
+          "isSigner": false,
+          "isOptional": true
         },
         {
           "name": "systemProgram",

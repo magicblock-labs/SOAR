@@ -251,14 +251,19 @@ export class SoarProgram {
       newLeaderBoard = this.deriveLeaderBoardAddress(id, gameAddress)[0];
     }
 
-    const topEntries = this.deriveLeaderTopEntriesAddress(newLeaderBoard)[0];
+    let topEntries = this.deriveLeaderTopEntriesAddress(newLeaderBoard)[0];
+
+    let topEntriesAccount: PublicKey | null = null;
+    if (scoresToRetain !== null && scoresToRetain > 0) {
+      topEntriesAccount = this.deriveLeaderTopEntriesAddress(newLeaderBoard)[0];
+    }
 
     const addBoard = await addLeaderBoardInstruction(
       this.program,
       newLeaderBoard,
       this.provider.publicKey,
       gameAddress,
-      topEntries,
+      topEntriesAccount,
       authority,
       description,
       nftMeta,

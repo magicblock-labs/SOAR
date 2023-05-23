@@ -1,40 +1,59 @@
 import { type Program } from "@coral-xyz/anchor";
-import {
-  type PublicKey,
-  type TransactionInstruction,
-  SystemProgram,
-} from "@solana/web3.js";
+import { type PublicKey, type TransactionInstruction } from "@solana/web3.js";
 import { type Soar } from "../idl/soar";
-import { TOKEN_METADATA_PROGRAM_ID } from "../constants";
+import type BN from "bn.js";
 
 export const addRewardInstruction = async (
   program: Program<Soar>,
+  args: {
+    amountPerUser: BN;
+    availableRewards: BN;
+    kind: {
+      ft:
+        | {
+            initial_delegated_amount: BN;
+            mint: PublicKey;
+          }
+        | undefined;
+      nft:
+        | {
+            uri: string;
+            name: string;
+            symbol: string;
+          }
+        | undefined;
+    };
+  },
   authority: PublicKey,
   payer: PublicKey,
-  achievement: PublicKey,
   game: PublicKey,
-  newRewardAccount: PublicKey,
-  uri: string,
-  name: string,
-  symbol: string,
-  collectionUpdateAuth: PublicKey | null,
-  collectionMint: PublicKey | null,
-  collectionMetadata: PublicKey | null
+  achievement: PublicKey,
+  newReward: PublicKey,
+  systemProgram: PublicKey,
+  ftRewardTokenMint?: PublicKey,
+  ftRewardDelegateAccount?: PublicKey,
+  ftRewardDelegateAccountOwner?: PublicKey,
+  tokenProgram?: PublicKey,
+  nftRewardCollectionUpdateAuth?: PublicKey,
+  nftRewardCollectionMint?: PublicKey,
+  nftRewardCollectionMetadata?: PublicKey,
+  tokenMetadataProgram?: PublicKey
 ): Promise<TransactionInstruction> => {
   const accounts = {
     authority,
     payer,
     game,
     achievement,
-    newReward: newRewardAccount,
-    collectionUpdateAuth,
-    collectionMint,
-    collectionMetadata,
-    systemProgram: SystemProgram.programId,
-    tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+    newReward,
+    systemProgram,
+    ftRewardTokenMint,
+    ftRewardDelegateAccount,
+    ftRewardDelegateAccountOwner,
+    tokenProgram,
+    nftRewardCollectionUpdateAuth,
+    nftRewardCollectionMint,
+    nftRewardCollectionMetadata,
+    tokenMetadataProgram,
   };
-  return program.methods
-    .addReward({ uri, name, symbol })
-    .accounts(accounts)
-    .instruction();
+  return program.methods.addReward(args).accounts(accounts).instruction();
 };

@@ -10,7 +10,8 @@ export class PlayerAchievementAccount {
     public readonly achievement: PublicKey,
     public readonly timestamp: BN,
     public readonly unlocked: boolean,
-    public readonly metadata: PublicKey | null
+    public readonly claimed: boolean,
+    public readonly nftRewardMint: PublicKey | null
   ) {}
 
   public static fromIdlAccount(
@@ -23,7 +24,8 @@ export class PlayerAchievementAccount {
       account.achievement,
       account.timestamp,
       account.unlocked,
-      account.metadata
+      account.claimed,
+      account.nftRewardMint
     );
   }
 
@@ -34,8 +36,11 @@ export class PlayerAchievementAccount {
       achievement: this.achievement.toBase58(),
       timestamp: this.timestamp.toString(),
       unlocked: this.unlocked,
-      metadata:
-        this.metadata !== null ? this.metadata.toBase58() : this.metadata,
+      claimed: this.claimed,
+      nftRewardMint:
+        this.nftRewardMint !== null
+          ? this.nftRewardMint.toBase58()
+          : this.nftRewardMint,
     };
   }
 }
@@ -46,5 +51,6 @@ interface ReadablePlayerAchievementInfo {
   achievement: string;
   timestamp: string;
   unlocked: boolean;
-  metadata: string | null;
+  claimed: boolean;
+  nftRewardMint: string | null;
 }

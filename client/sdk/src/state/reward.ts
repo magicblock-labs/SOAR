@@ -7,11 +7,22 @@ export class RewardAccount {
   constructor(
     public readonly address: PublicKey,
     public readonly achievement: PublicKey,
-    public readonly uri: string,
-    public readonly name: string,
-    public readonly symbol: string,
-    public readonly minted: BN,
-    public readonly collectionMint: PublicKey | null
+    public readonly amountPerUser: BN,
+    public readonly FungibleToken:
+      | {
+          mint: PublicKey;
+          token_account: PublicKey;
+        }
+      | undefined,
+    public readonly NonFungibleToken:
+      | {
+          uri: string;
+          name: string;
+          symbol: string;
+          minted: BN;
+          collection_mint: PublicKey | null;
+        }
+      | undefined
   ) {}
 
   public static fromIdlAccount(
@@ -21,11 +32,9 @@ export class RewardAccount {
     return new RewardAccount(
       address,
       account.achievement,
-      account.uri,
-      account.name,
-      account.symbol,
-      account.minted,
-      account.collectionMint
+      account.amountPerUser,
+      account.reward.fungibleToken,
+      account.reward.nonFungibleToken
     );
   }
 
@@ -33,14 +42,27 @@ export class RewardAccount {
     return {
       address: this.address.toBase58(),
       achievement: this.achievement.toBase58(),
-      uri: this.uri,
-      name: this.name,
-      symbol: this.symbol,
-      minted: this.minted.toString(),
-      collectionMint:
-        this.collectionMint !== null
-          ? this.collectionMint.toBase58()
-          : this.collectionMint,
+      amountPerUser: this.amountPerUser.toString(),
+      FungibleToken:
+        this.FungibleToken !== undefined
+          ? {
+              mint: this.FungibleToken.mint.toBase58(),
+              token_account: this.FungibleToken.token_account.toBase58(),
+            }
+          : undefined,
+      NonFungibleToken:
+        this.NonFungibleToken !== undefined
+          ? {
+              uri: this.NonFungibleToken.uri,
+              name: this.NonFungibleToken.name,
+              symbol: this.NonFungibleToken.symbol,
+              minted: this.NonFungibleToken.minted.toString(),
+              collection_mint:
+                this.NonFungibleToken.collection_mint !== null
+                  ? this.NonFungibleToken.collection_mint.toBase58()
+                  : null,
+            }
+          : undefined,
     };
   }
 }
@@ -48,9 +70,20 @@ export class RewardAccount {
 interface ReadableRewardAccountInfo {
   address: string;
   achievement: string;
-  uri: string;
-  name: string;
-  symbol: string;
-  minted: string;
-  collectionMint: string | null;
+  amountPerUser: string;
+  FungibleToken:
+    | {
+        mint: string;
+        token_account: string;
+      }
+    | undefined;
+  NonFungibleToken:
+    | {
+        uri: string;
+        name: string;
+        symbol: string;
+        minted: string;
+        collection_mint: string | null;
+      }
+    | undefined;
 }

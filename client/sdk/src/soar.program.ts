@@ -6,9 +6,10 @@ import {
   type Signer,
   type TransactionInstruction,
   Transaction,
+  SystemProgram,
 } from "@solana/web3.js";
 import { IDL, type Soar } from "./idl/soar";
-import { PROGRAM_ID } from "./constants";
+import { PROGRAM_ID, TOKEN_METADATA_PROGRAM_ID } from "./constants";
 import type BN from "bn.js";
 import {
   addLeaderBoardInstruction,
@@ -51,6 +52,7 @@ import {
   RewardAccount,
 } from "./state";
 import bs58 from "bs58";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 
 export class SoarProgram {
   readonly program: Program<Soar>;
@@ -252,7 +254,7 @@ export class SoarProgram {
       newLeaderBoard = this.deriveLeaderBoardAddress(id, gameAddress)[0];
     }
 
-    let topEntries = this.deriveLeaderTopEntriesAddress(newLeaderBoard)[0];
+    const topEntries = this.deriveLeaderTopEntriesAddress(newLeaderBoard)[0];
 
     let topEntriesAccount: PublicKey | null = null;
     if (scoresToRetain !== null && scoresToRetain > 0) {
@@ -284,14 +286,14 @@ export class SoarProgram {
     leaderboard: PublicKey,
     game: PublicKey | null,
     newDescription: string | null,
-    newNftMeta: PublicKey | null,
+    newNftMeta: PublicKey | null
   ): Promise<InstructionResult.UpdateLeaderboard> {
-    let transaction = new Transaction();
+    const transaction = new Transaction();
 
     const gameAddress =
       game ?? (await this.program.account.leaderBoard.fetch(leaderboard)).game;
 
-    let updateIx = await updateLeaderBoardInstruction(
+    const updateIx = await updateLeaderBoardInstruction(
       this.program,
       authority,
       gameAddress,
@@ -463,18 +465,16 @@ export class SoarProgram {
     };
   }
 
-  public async addRewardForAchievement(
+  public async addFungibleReward(
     authority: PublicKey,
     achievement: PublicKey,
     game: PublicKey | null,
-    uri: string,
-    name: string,
-    symbol: string,
-    includeCollection: {
-      authority: PublicKey;
-      mint: PublicKey;
-      metadata: PublicKey;
-    } | null
+    amountPerUser: BN,
+    availableRewards: BN,
+    initialDelegatedAmount: BN,
+    sourceTokenAccount: PublicKey,
+    tokenAccountOwner: PublicKey,
+    mint: PublicKey
   ): Promise<InstructionResult.AddReward> {
     const gameAddress =
       game ?? (await this.program.account.achievement.fetch(achievement)).game;
@@ -482,17 +482,86 @@ export class SoarProgram {
 
     const instruction = await addRewardInstruction(
       this.program,
+      {
+        amountPerUser,
+        availableRewards,
+        kind: {
+          ft: {
+            initial_delegated_amount: initialDelegatedAmount,
+            mint,
+          },
+          nft: undefined,
+        },
+      },
       authority,
       this.provider.publicKey,
-      achievement,
       gameAddress,
+      achievement,
       newRewardAddress,
-      uri,
-      name,
-      symbol,
-      includeCollection !== null ? includeCollection.authority : null,
-      includeCollection !== null ? includeCollection.mint : null,
-      includeCollection !== null ? includeCollection.metadata : null
+      SystemProgram.programId,
+      mint,
+      sourceTokenAccount,
+      tokenAccountOwner,
+      TOKEN_PROGRAM_ID
+    );
+
+    return {
+      newReward: newRewardAddress,
+      transaction: new Transaction().add(instruction),
+    };
+  }
+
+  public async addNonFungibleReward(
+    authority: PublicKey,
+    achievement: PublicKey,
+    game: PublicKey | null,
+    amountPerUser: BN,
+    availableRewards: BN,
+    defineUri: string,
+    defineName: string,
+    defineSymbol: string,
+    collectionMint?: PublicKey,
+    collectionUpdateAuthority?: PublicKey
+  ): Promise<InstructionResult.AddReward> {
+    const gameAddress =
+      game ?? (await this.program.account.achievement.fetch(achievement)).game;
+    const newRewardAddress = this.deriveRewardAddress(achievement)[0];
+
+    let collectionMetadata: PublicKey | undefined;
+    let metadataProgram: PublicKey | undefined;
+    if (collectionMint !== undefined) {
+      collectionMetadata = deriveMetadataAddress(collectionMint)[0];
+      metadataProgram = TOKEN_METADATA_PROGRAM_ID;
+    }
+
+    const instruction = await addRewardInstruction(
+      this.program,
+      {
+        amountPerUser,
+        availableRewards,
+        kind: {
+          ft: undefined,
+          nft: {
+            uri: defineUri,
+            name: defineName,
+            symbol: defineSymbol,
+          },
+        },
+      },
+      authority,
+      this.provider.publicKey,
+      gameAddress,
+      achievement,
+      newRewardAddress,
+      SystemProgram.programId,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      collectionUpdateAuthority,
+      collectionMint,
+      collectionMetadata,
+      metadataProgram
     );
 
     return {
@@ -562,23 +631,23 @@ export class SoarProgram {
       achievement
     )[0];
 
-    const account = await this.program.account.playerAchievement.fetch(
-      playerAchievement
-    );
-    if (account === null || account.metadata === null) {
+    const account = await this.fetchPlayerAchievementAccount(playerAchievement);
+    if (account === null || account.nftRewardMint === null) {
       throw new Error("No reward minted for this user.");
     }
+    const metadata = deriveMetadataAddress(account.nftRewardMint)[0];
 
-    const rewardAccount = await this.program.account.reward.fetch(
-      rewardAddress
-    );
-    if (rewardAccount.collectionMint === null) {
+    const rewardAccount = await this.fetchRewardAccount(rewardAddress);
+    if (
+      rewardAccount.NonFungibleToken === undefined ||
+      rewardAccount.NonFungibleToken?.collection_mint === null
+    ) {
       throw new Error("No collection to verify rewards for.");
     }
 
-    const mint = rewardAccount.collectionMint;
-    const metadata = deriveMetadataAddress(mint)[0];
-    const edition = deriveEditionAddress(mint)[0];
+    const collectionMint = rewardAccount.NonFungibleToken.collection_mint;
+    const collectionMetadata = deriveMetadataAddress(collectionMint)[0];
+    const collectionEdition = deriveEditionAddress(collectionMint)[0];
 
     const instruction = await verifyRewardInstruction(
       this.program,
@@ -590,10 +659,11 @@ export class SoarProgram {
       achievement,
       rewardAddress,
       playerAchievement,
-      account.metadata,
-      rewardAccount.collectionMint,
+      account.nftRewardMint,
       metadata,
-      edition
+      rewardAccount.NonFungibleToken.collection_mint,
+      collectionMetadata,
+      collectionEdition
     );
 
     return {

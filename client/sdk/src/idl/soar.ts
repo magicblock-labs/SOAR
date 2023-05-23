@@ -3,6 +3,27 @@ export type Soar = {
   "name": "soar",
   "constants": [
     {
+      "name": "MAX_URI_LENGTH",
+      "type": {
+        "defined": "usize"
+      },
+      "value": "200"
+    },
+    {
+      "name": "MAX_NAME_LENGTH",
+      "type": {
+        "defined": "usize"
+      },
+      "value": "32"
+    },
+    {
+      "name": "MAX_SYMBOL_LENGTH",
+      "type": {
+        "defined": "usize"
+      },
+      "value": "10"
+    },
+    {
       "name": "MAX_TITLE_LEN",
       "type": {
         "defined": "usize"
@@ -609,56 +630,76 @@ export type Soar = {
           "isSigner": false
         },
         {
-          "name": "collectionUpdateAuth",
-          "isMut": false,
-          "isSigner": true,
-          "isOptional": true
-        },
-        {
-          "name": "collectionMint",
-          "isMut": false,
-          "isSigner": false,
-          "isOptional": true
-        },
-        {
-          "name": "collectionMetadata",
-          "isMut": true,
-          "isSigner": false,
-          "isOptional": true
-        },
-        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false
         },
         {
+          "name": "ftRewardTokenMint",
+          "isMut": false,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
+          "name": "ftRewardDelegateAccount",
+          "isMut": false,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
+          "name": "ftRewardDelegateAccountOwner",
+          "isMut": false,
+          "isSigner": true,
+          "isOptional": true
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
+          "name": "nftRewardCollectionUpdateAuth",
+          "isMut": false,
+          "isSigner": true,
+          "isOptional": true
+        },
+        {
+          "name": "nftRewardCollectionMint",
+          "isMut": false,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
+          "name": "nftRewardCollectionMetadata",
+          "isMut": true,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
           "name": "tokenMetadataProgram",
           "isMut": false,
-          "isSigner": false
+          "isSigner": false,
+          "isOptional": true
         }
       ],
       "args": [
         {
           "name": "input",
           "type": {
-            "defined": "RegisterNewRewardInput"
+            "defined": "AddNewRewardArgs"
           }
         }
       ]
     },
     {
-      "name": "mintReward",
+      "name": "claimReward",
       "docs": [
         "Mint an NFT reward for unlocking a [PlayerAchievement] account.",
         "",
         "Optional: Only relevant if an NFT reward is specified for that achievement."
       ],
       "accounts": [
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true
-        },
         {
           "name": "authority",
           "isMut": false,
@@ -695,49 +736,78 @@ export type Soar = {
           "isSigner": false
         },
         {
-          "name": "mint",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "metadata",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "masterEdition",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "mintNftTo",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false
         },
         {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true,
+          "isOptional": true
+        },
+        {
+          "name": "nftRewardMint",
+          "isMut": true,
+          "isSigner": true,
+          "isOptional": true,
+          "docs": [
+            "Initialized as mint in instruction."
+          ]
+        },
+        {
+          "name": "nftRewardMetadata",
+          "isMut": true,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
+          "name": "nftRewardMasterEdition",
+          "isMut": true,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
+          "name": "nftRewardMintTo",
+          "isMut": true,
+          "isSigner": false,
+          "isOptional": true
         },
         {
           "name": "tokenMetadataProgram",
           "isMut": false,
-          "isSigner": false
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "isOptional": true
         },
         {
           "name": "systemProgram",
           "isMut": false,
-          "isSigner": false
+          "isSigner": false,
+          "isOptional": true
         },
         {
           "name": "rent",
           "isMut": false,
-          "isSigner": false
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
+          "name": "sourceTokenAccount",
+          "isMut": true,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
+          "name": "userTokenAccount",
+          "isMut": true,
+          "isSigner": false,
+          "isOptional": true
         }
       ],
       "args": []
@@ -788,6 +858,11 @@ export type Soar = {
         },
         {
           "name": "playerAchievement",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "mint",
           "isMut": false,
           "isSigner": false
         },
@@ -1002,7 +1077,7 @@ export type Soar = {
           {
             "name": "reward",
             "docs": [
-              "Whether to mint a reward for unlocking this achievement."
+              "A reward for unlocking this achievement."
             ],
             "type": {
               "option": "publicKey"
@@ -1013,51 +1088,37 @@ export type Soar = {
     },
     {
       "name": "reward",
-      "docs": [
-        "Contains details of a NFT reward."
-      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "achievement",
+            "docs": [
+              "The achievement this reward is given for."
+            ],
             "type": "publicKey"
           },
           {
-            "name": "uri",
+            "name": "available",
             "docs": [
-              "URI of the NFT to be minted."
-            ],
-            "type": "string"
-          },
-          {
-            "name": "name",
-            "docs": [
-              "Name of the NFT to be minted."
-            ],
-            "type": "string"
-          },
-          {
-            "name": "symbol",
-            "docs": [
-              "Symbol of the NFT to be minted."
-            ],
-            "type": "string"
-          },
-          {
-            "name": "minted",
-            "docs": [
-              "Number of nft rewards given so far."
+              "Number of available rewards."
             ],
             "type": "u64"
           },
           {
-            "name": "collectionMint",
+            "name": "amountPerUser",
             "docs": [
-              "Optional: A collection to verify a minted nft as belonging to."
+              "Reward amount per user."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "reward",
+            "docs": [
+              "The reward type and information."
             ],
             "type": {
-              "option": "publicKey"
+              "defined": "RewardKind"
             }
           }
         ]
@@ -1218,9 +1279,16 @@ export type Soar = {
             "type": "bool"
           },
           {
-            "name": "metadata",
+            "name": "claimed",
             "docs": [
-              "This is [Some] only if the player has minted a reward for the achievement."
+              "Whether or not this player has claimed their reward."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "nftRewardMint",
+            "docs": [
+              "This is [Some] only if the player has minted an NFT reward pending verification."
             ],
             "type": {
               "option": "publicKey"
@@ -1407,7 +1475,7 @@ export type Soar = {
       }
     },
     {
-      "name": "RegisterNewRewardInput",
+      "name": "AddNewRewardArgs",
       "docs": [
         "Parameters used for registering metadata information for an nft reward."
       ],
@@ -1415,16 +1483,125 @@ export type Soar = {
         "kind": "struct",
         "fields": [
           {
-            "name": "uri",
-            "type": "string"
+            "name": "amountPerUser",
+            "type": "u64"
           },
           {
-            "name": "name",
-            "type": "string"
+            "name": "availableRewards",
+            "type": "u64"
           },
           {
-            "name": "symbol",
-            "type": "string"
+            "name": "kind",
+            "type": {
+              "defined": "RewardKindArgs"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "RewardKind",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "FungibleToken",
+            "fields": [
+              {
+                "name": "mint",
+                "docs": [
+                  "The mint of the token to be given out."
+                ],
+                "type": "publicKey"
+              },
+              {
+                "name": "token_account",
+                "docs": [
+                  "The token account to withdraw from."
+                ],
+                "type": "publicKey"
+              }
+            ]
+          },
+          {
+            "name": "NonFungibleToken",
+            "fields": [
+              {
+                "name": "uri",
+                "docs": [
+                  "URI of the NFT to be minted."
+                ],
+                "type": "string"
+              },
+              {
+                "name": "name",
+                "docs": [
+                  "Name of the NFT to be minted."
+                ],
+                "type": "string"
+              },
+              {
+                "name": "symbol",
+                "docs": [
+                  "Symbol of the NFT to be minted."
+                ],
+                "type": "string"
+              },
+              {
+                "name": "minted",
+                "docs": [
+                  "Number of nft rewards given so far."
+                ],
+                "type": "u64"
+              },
+              {
+                "name": "collection_mint",
+                "docs": [
+                  "Optional: A collection to verify a minted nft as belonging to."
+                ],
+                "type": {
+                  "option": "publicKey"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "RewardKindArgs",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Ft",
+            "fields": [
+              {
+                "name": "initial_delegated_amount",
+                "type": "u64"
+              },
+              {
+                "name": "mint",
+                "type": "publicKey"
+              }
+            ]
+          },
+          {
+            "name": "Nft",
+            "fields": [
+              {
+                "name": "uri",
+                "type": "string"
+              },
+              {
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "name": "symbol",
+                "type": "string"
+              }
+            ]
           }
         ]
       }
@@ -1509,6 +1686,26 @@ export type Soar = {
       "code": 6005,
       "name": "ScoreNotWithinBounds",
       "msg": "Tried to input score that is below the minimum or above the maximum"
+    },
+    {
+      "code": 6006,
+      "name": "MissingRequiredAccountsForFtReward",
+      "msg": "An account required for setting up this reward kind is missing."
+    },
+    {
+      "code": 6007,
+      "name": "MissingRequiredAccountsForNftReward",
+      "msg": "An account required for setting up this reward kind is missing."
+    },
+    {
+      "code": 6008,
+      "name": "NoAvailableRewards",
+      "msg": "No more rewards are being given out for this game."
+    },
+    {
+      "code": 6009,
+      "name": "DuplicateRewardClaim",
+      "msg": "This user has already claimed their reward"
     }
   ]
 };
@@ -1518,6 +1715,27 @@ export const IDL: Soar = {
   "name": "soar",
   "constants": [
     {
+      "name": "MAX_URI_LENGTH",
+      "type": {
+        "defined": "usize"
+      },
+      "value": "200"
+    },
+    {
+      "name": "MAX_NAME_LENGTH",
+      "type": {
+        "defined": "usize"
+      },
+      "value": "32"
+    },
+    {
+      "name": "MAX_SYMBOL_LENGTH",
+      "type": {
+        "defined": "usize"
+      },
+      "value": "10"
+    },
+    {
       "name": "MAX_TITLE_LEN",
       "type": {
         "defined": "usize"
@@ -2124,56 +2342,76 @@ export const IDL: Soar = {
           "isSigner": false
         },
         {
-          "name": "collectionUpdateAuth",
-          "isMut": false,
-          "isSigner": true,
-          "isOptional": true
-        },
-        {
-          "name": "collectionMint",
-          "isMut": false,
-          "isSigner": false,
-          "isOptional": true
-        },
-        {
-          "name": "collectionMetadata",
-          "isMut": true,
-          "isSigner": false,
-          "isOptional": true
-        },
-        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false
         },
         {
+          "name": "ftRewardTokenMint",
+          "isMut": false,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
+          "name": "ftRewardDelegateAccount",
+          "isMut": false,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
+          "name": "ftRewardDelegateAccountOwner",
+          "isMut": false,
+          "isSigner": true,
+          "isOptional": true
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
+          "name": "nftRewardCollectionUpdateAuth",
+          "isMut": false,
+          "isSigner": true,
+          "isOptional": true
+        },
+        {
+          "name": "nftRewardCollectionMint",
+          "isMut": false,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
+          "name": "nftRewardCollectionMetadata",
+          "isMut": true,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
           "name": "tokenMetadataProgram",
           "isMut": false,
-          "isSigner": false
+          "isSigner": false,
+          "isOptional": true
         }
       ],
       "args": [
         {
           "name": "input",
           "type": {
-            "defined": "RegisterNewRewardInput"
+            "defined": "AddNewRewardArgs"
           }
         }
       ]
     },
     {
-      "name": "mintReward",
+      "name": "claimReward",
       "docs": [
         "Mint an NFT reward for unlocking a [PlayerAchievement] account.",
         "",
         "Optional: Only relevant if an NFT reward is specified for that achievement."
       ],
       "accounts": [
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true
-        },
         {
           "name": "authority",
           "isMut": false,
@@ -2210,49 +2448,78 @@ export const IDL: Soar = {
           "isSigner": false
         },
         {
-          "name": "mint",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "metadata",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "masterEdition",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "mintNftTo",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false
         },
         {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true,
+          "isOptional": true
+        },
+        {
+          "name": "nftRewardMint",
+          "isMut": true,
+          "isSigner": true,
+          "isOptional": true,
+          "docs": [
+            "Initialized as mint in instruction."
+          ]
+        },
+        {
+          "name": "nftRewardMetadata",
+          "isMut": true,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
+          "name": "nftRewardMasterEdition",
+          "isMut": true,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
+          "name": "nftRewardMintTo",
+          "isMut": true,
+          "isSigner": false,
+          "isOptional": true
         },
         {
           "name": "tokenMetadataProgram",
           "isMut": false,
-          "isSigner": false
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "isOptional": true
         },
         {
           "name": "systemProgram",
           "isMut": false,
-          "isSigner": false
+          "isSigner": false,
+          "isOptional": true
         },
         {
           "name": "rent",
           "isMut": false,
-          "isSigner": false
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
+          "name": "sourceTokenAccount",
+          "isMut": true,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
+          "name": "userTokenAccount",
+          "isMut": true,
+          "isSigner": false,
+          "isOptional": true
         }
       ],
       "args": []
@@ -2303,6 +2570,11 @@ export const IDL: Soar = {
         },
         {
           "name": "playerAchievement",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "mint",
           "isMut": false,
           "isSigner": false
         },
@@ -2517,7 +2789,7 @@ export const IDL: Soar = {
           {
             "name": "reward",
             "docs": [
-              "Whether to mint a reward for unlocking this achievement."
+              "A reward for unlocking this achievement."
             ],
             "type": {
               "option": "publicKey"
@@ -2528,51 +2800,37 @@ export const IDL: Soar = {
     },
     {
       "name": "reward",
-      "docs": [
-        "Contains details of a NFT reward."
-      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "achievement",
+            "docs": [
+              "The achievement this reward is given for."
+            ],
             "type": "publicKey"
           },
           {
-            "name": "uri",
+            "name": "available",
             "docs": [
-              "URI of the NFT to be minted."
-            ],
-            "type": "string"
-          },
-          {
-            "name": "name",
-            "docs": [
-              "Name of the NFT to be minted."
-            ],
-            "type": "string"
-          },
-          {
-            "name": "symbol",
-            "docs": [
-              "Symbol of the NFT to be minted."
-            ],
-            "type": "string"
-          },
-          {
-            "name": "minted",
-            "docs": [
-              "Number of nft rewards given so far."
+              "Number of available rewards."
             ],
             "type": "u64"
           },
           {
-            "name": "collectionMint",
+            "name": "amountPerUser",
             "docs": [
-              "Optional: A collection to verify a minted nft as belonging to."
+              "Reward amount per user."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "reward",
+            "docs": [
+              "The reward type and information."
             ],
             "type": {
-              "option": "publicKey"
+              "defined": "RewardKind"
             }
           }
         ]
@@ -2733,9 +2991,16 @@ export const IDL: Soar = {
             "type": "bool"
           },
           {
-            "name": "metadata",
+            "name": "claimed",
             "docs": [
-              "This is [Some] only if the player has minted a reward for the achievement."
+              "Whether or not this player has claimed their reward."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "nftRewardMint",
+            "docs": [
+              "This is [Some] only if the player has minted an NFT reward pending verification."
             ],
             "type": {
               "option": "publicKey"
@@ -2922,7 +3187,7 @@ export const IDL: Soar = {
       }
     },
     {
-      "name": "RegisterNewRewardInput",
+      "name": "AddNewRewardArgs",
       "docs": [
         "Parameters used for registering metadata information for an nft reward."
       ],
@@ -2930,16 +3195,125 @@ export const IDL: Soar = {
         "kind": "struct",
         "fields": [
           {
-            "name": "uri",
-            "type": "string"
+            "name": "amountPerUser",
+            "type": "u64"
           },
           {
-            "name": "name",
-            "type": "string"
+            "name": "availableRewards",
+            "type": "u64"
           },
           {
-            "name": "symbol",
-            "type": "string"
+            "name": "kind",
+            "type": {
+              "defined": "RewardKindArgs"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "RewardKind",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "FungibleToken",
+            "fields": [
+              {
+                "name": "mint",
+                "docs": [
+                  "The mint of the token to be given out."
+                ],
+                "type": "publicKey"
+              },
+              {
+                "name": "token_account",
+                "docs": [
+                  "The token account to withdraw from."
+                ],
+                "type": "publicKey"
+              }
+            ]
+          },
+          {
+            "name": "NonFungibleToken",
+            "fields": [
+              {
+                "name": "uri",
+                "docs": [
+                  "URI of the NFT to be minted."
+                ],
+                "type": "string"
+              },
+              {
+                "name": "name",
+                "docs": [
+                  "Name of the NFT to be minted."
+                ],
+                "type": "string"
+              },
+              {
+                "name": "symbol",
+                "docs": [
+                  "Symbol of the NFT to be minted."
+                ],
+                "type": "string"
+              },
+              {
+                "name": "minted",
+                "docs": [
+                  "Number of nft rewards given so far."
+                ],
+                "type": "u64"
+              },
+              {
+                "name": "collection_mint",
+                "docs": [
+                  "Optional: A collection to verify a minted nft as belonging to."
+                ],
+                "type": {
+                  "option": "publicKey"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "RewardKindArgs",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Ft",
+            "fields": [
+              {
+                "name": "initial_delegated_amount",
+                "type": "u64"
+              },
+              {
+                "name": "mint",
+                "type": "publicKey"
+              }
+            ]
+          },
+          {
+            "name": "Nft",
+            "fields": [
+              {
+                "name": "uri",
+                "type": "string"
+              },
+              {
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "name": "symbol",
+                "type": "string"
+              }
+            ]
           }
         ]
       }
@@ -3024,6 +3398,26 @@ export const IDL: Soar = {
       "code": 6005,
       "name": "ScoreNotWithinBounds",
       "msg": "Tried to input score that is below the minimum or above the maximum"
+    },
+    {
+      "code": 6006,
+      "name": "MissingRequiredAccountsForFtReward",
+      "msg": "An account required for setting up this reward kind is missing."
+    },
+    {
+      "code": 6007,
+      "name": "MissingRequiredAccountsForNftReward",
+      "msg": "An account required for setting up this reward kind is missing."
+    },
+    {
+      "code": 6008,
+      "name": "NoAvailableRewards",
+      "msg": "No more rewards are being given out for this game."
+    },
+    {
+      "code": 6009,
+      "name": "DuplicateRewardClaim",
+      "msg": "This user has already claimed their reward"
     }
   ]
 };

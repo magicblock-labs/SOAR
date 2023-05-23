@@ -13,7 +13,7 @@ pub fn handler(ctx: Context<AddReward>, input: AddNewRewardArgs) -> Result<()> {
 
     match input.kind {
         RewardKindArgs::Ft {
-            initial_delegated_amount,
+            deposit,
             mint: _,
         } => {
             let mint = &ctx.accounts.ft_reward_token_mint;
@@ -44,7 +44,7 @@ pub fn handler(ctx: Context<AddReward>, input: AddNewRewardArgs) -> Result<()> {
                     authority: token_account_owner.to_account_info(),
                 },
             );
-            token::approve(cpi_ctx, initial_delegated_amount)?;
+            token::approve(cpi_ctx, deposit)?;
 
             let reward = RewardKind::FungibleToken {
                 mint: mint.key(),

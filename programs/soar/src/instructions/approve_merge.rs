@@ -1,7 +1,7 @@
-use crate::{error::SoarError, RegisterMergeApproval};
+use crate::{error::SoarError, ApproveMerge};
 use anchor_lang::prelude::*;
 
-pub fn handler(ctx: Context<RegisterMergeApproval>) -> Result<()> {
+pub fn handler(ctx: Context<ApproveMerge>) -> Result<()> {
     let merge_account = &mut ctx.accounts.merge_account;
     let player_account = &ctx.accounts.player_info;
     let others = &mut merge_account.others;

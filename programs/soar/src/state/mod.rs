@@ -251,7 +251,7 @@ pub struct AddNewRewardArgs {
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
 pub enum RewardKindArgs {
     Ft {
-        initial_delegated_amount: u64,
+        deposit: u64,
         mint: Pubkey,
     },
     Nft {

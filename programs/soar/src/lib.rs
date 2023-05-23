@@ -113,8 +113,8 @@ pub mod soar {
     }
 
     /// Register merge confirmation for a particular [Player] account included in a [Merged].
-    pub fn register_merge_approval(ctx: Context<RegisterMergeApproval>) -> Result<()> {
-        register_merge_approval::handler(ctx)
+    pub fn approve_merge(ctx: Context<ApproveMerge>) -> Result<()> {
+        approve_merge::handler(ctx)
     }
 
     /// Indicate that a player has completed some [Achievement] and create a [PlayerAchievement]
@@ -368,7 +368,7 @@ pub fn dedup_input(initiator_player_account: &Pubkey, input: Vec<Pubkey>) -> (Ve
 }
 
 #[derive(Accounts)]
-pub struct RegisterMergeApproval<'info> {
+pub struct ApproveMerge<'info> {
     pub user: Signer<'info>,
     #[account(has_one = user)]
     pub player_info: Account<'info, Player>,
@@ -388,7 +388,7 @@ pub struct UnlockPlayerAchievement<'info> {
     pub user: Signer<'info>,
     #[account(has_one = user)]
     pub player_info: Account<'info, Player>,
-    // The presence of the next two account ensures that the player has
+    // The presence of the next two accounts ensures that the player has
     // some entry for the game.
     #[account(has_one = player_info, has_one = leaderboard)]
     pub player_entry: Account<'info, PlayerEntryList>,
@@ -417,9 +417,9 @@ pub struct AddReward<'info> {
     pub authority: Signer<'info>,
     #[account(mut)]
     pub payer: Signer<'info>,
-    pub game: Account<'info, Game>,
+    pub game: Box<Account<'info, Game>>,
     #[account(mut, has_one = game)]
-    pub achievement: Account<'info, Achievement>,
+    pub achievement: Box<Account<'info, Achievement>>,
     #[account(
         init,
         payer = payer,
@@ -427,18 +427,18 @@ pub struct AddReward<'info> {
         seeds = [seeds::REWARD, achievement.key().as_ref()],
         bump,
     )]
-    pub new_reward: Account<'info, Reward>,
+    pub new_reward: Box<Account<'info, Reward>>,
     pub system_program: Program<'info, System>,
 
-    // Optional accounts for ft reward.
-    pub ft_reward_token_mint: Option<Account<'info, Mint>>,
-    pub ft_reward_delegate_account: Option<Account<'info, TokenAccount>>,
+    // Accounts required `ONLY` for ft reward.
+    pub ft_reward_token_mint: Option<Box<Account<'info, Mint>>>,
+    pub ft_reward_delegate_account: Option<Box<Account<'info, TokenAccount>>>,
     pub ft_reward_delegate_account_owner: Option<Signer<'info>>,
     pub token_program: Option<Program<'info, Token>>,
 
-    // Optional accounts for nft reward.
+    // Accounts required `ONLY` for nft reward.
     pub nft_reward_collection_update_auth: Option<Signer<'info>>,
-    pub nft_reward_collection_mint: Option<Account<'info, Mint>>,
+    pub nft_reward_collection_mint: Option<Box<Account<'info, Mint>>>,
     #[account(mut)]
     /// CHECK: Checked in instruction handler.
     pub nft_reward_collection_metadata: Option<UncheckedAccount<'info>>,

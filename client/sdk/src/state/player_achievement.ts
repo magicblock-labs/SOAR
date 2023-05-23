@@ -4,7 +4,7 @@ import { type IdlAccounts } from "@coral-xyz/anchor";
 import { type Soar } from "../idl/soar";
 
 export class PlayerAchievementAccount {
-  constructor(
+  private constructor(
     public readonly address: PublicKey,
     public readonly player: PublicKey,
     public readonly achievement: PublicKey,
@@ -29,7 +29,15 @@ export class PlayerAchievementAccount {
     );
   }
 
-  public print(): ReadablePlayerAchievementInfo {
+  public print(): {
+    address: string;
+    player: string;
+    achievement: string;
+    timestamp: string;
+    unlocked: boolean;
+    claimed: boolean;
+    nftRewardMint: string | null;
+  } {
     return {
       address: this.address.toBase58(),
       player: this.player.toBase58(),
@@ -43,14 +51,4 @@ export class PlayerAchievementAccount {
           : this.nftRewardMint,
     };
   }
-}
-
-interface ReadablePlayerAchievementInfo {
-  address: string;
-  player: string;
-  achievement: string;
-  timestamp: string;
-  unlocked: boolean;
-  claimed: boolean;
-  nftRewardMint: string | null;
 }

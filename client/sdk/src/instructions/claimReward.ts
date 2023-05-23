@@ -48,7 +48,7 @@ export const mintRewardInstruction = async (
     rent: SYSVAR_RENT_PUBKEY,
   };
   return program.methods
-    .mintReward()
+    .claimReward()
     .accounts(accounts)
     .signers([newMint])
     .instruction();

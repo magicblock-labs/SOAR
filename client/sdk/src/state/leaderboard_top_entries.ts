@@ -21,7 +21,17 @@ export class TopEntriesAccount {
     );
   }
 
-  public print(): ReadableTopEntriesAccountInfo {
+  public print(): {
+    address: string;
+    isAscending: boolean;
+    topScores: Array<{
+      user: string;
+      entry: {
+        score: string;
+        timestamp: string;
+      };
+    }>;
+  } {
     return {
       address: this.address.toBase58(),
       isAscending: this.isAscending,
@@ -30,11 +40,6 @@ export class TopEntriesAccount {
   }
 }
 
-interface ReadableTopEntriesAccountInfo {
-  address: string;
-  isAscending: boolean;
-  topScores: ReadableLeaderboardScore[];
-}
 interface LeaderboardScore {
   user: PublicKey;
   entry: {
@@ -42,16 +47,16 @@ interface LeaderboardScore {
     timestamp: BN;
   };
 }
-interface ReadableLeaderboardScore {
+
+const printLeaderboardScore = (
+  raw: LeaderboardScore
+): {
   user: string;
   entry: {
     score: string;
     timestamp: string;
   };
-}
-const printLeaderboardScore = (
-  raw: LeaderboardScore
-): ReadableLeaderboardScore => {
+} => {
   return {
     user: raw.user.toBase58(),
     entry: {

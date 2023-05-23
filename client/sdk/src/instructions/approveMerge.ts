@@ -13,8 +13,5 @@ export const registerMergeApprovalInstruction = async (
     playerInfo: userPlayerAccount,
     mergeAccount,
   };
-  return program.methods
-    .registerMergeApproval()
-    .accounts(accounts)
-    .instruction();
+  return program.methods.approveMerge().accounts(accounts).instruction();
 };

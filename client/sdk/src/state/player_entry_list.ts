@@ -4,7 +4,7 @@ import { type IdlAccounts } from "@coral-xyz/anchor";
 import { type Soar } from "../idl/soar";
 
 export class PlayerEntryListAccount {
-  constructor(
+  private constructor(
     public readonly address: PublicKey,
     public readonly playerInfo: PublicKey,
     public readonly leaderboard: PublicKey,
@@ -25,7 +25,16 @@ export class PlayerEntryListAccount {
     );
   }
 
-  public print(): ReadablePlayerEntryListAccountInfo {
+  public print(): {
+    address: string;
+    playerInfo: string;
+    leaderboard: string;
+    allocCount: number;
+    scores: Array<{
+      score: string;
+      timestamp: string;
+    }>;
+  } {
     return {
       address: this.address.toBase58(),
       playerInfo: this.playerInfo.toBase58(),
@@ -36,23 +45,17 @@ export class PlayerEntryListAccount {
   }
 }
 
-interface ReadablePlayerEntryListAccountInfo {
-  address: string;
-  playerInfo: string;
-  leaderboard: string;
-  allocCount: number;
-  scores: ReadableScoreEntry[];
-}
-
 interface ScoreEntry {
   score: BN;
   timestamp: BN;
 }
-interface ReadableScoreEntry {
+
+const printScoreEntry = (
+  entry: ScoreEntry
+): {
   score: string;
   timestamp: string;
-}
-const printScoreEntry = (entry: ScoreEntry): ReadableScoreEntry => {
+} => {
   return {
     score: entry.score.toString(),
     timestamp: entry.timestamp.toString(),

@@ -1,37 +1,26 @@
-import { type AnchorProvider, type IdlTypes } from "@coral-xyz/anchor";
 import { Keypair, type PublicKey } from "@solana/web3.js";
-import { type Soar } from "./idl/soar";
 import type BN from "bn.js";
+import { type IdlTypes } from "@coral-xyz/anchor";
+import { type Soar } from "./idl/soar";
+import { type SoarProgram } from "./soar.program";
 import { type InstructionResult } from "./types";
-import { SoarProgram } from "./soar.program";
 import {
-  type GameType,
-  type Genre,
-  AchievementAccount,
   GameAccount,
-  LeaderBoardAccount,
-  PlayerEntryListAccount,
+  type Genre,
+  type GameType,
+  type AchievementAccount,
+  type LeaderBoardAccount,
 } from "./state";
 
-export class Game {
-  readonly soar: SoarProgram;
+export class GameClient {
+  program: SoarProgram;
   address: PublicKey;
-  state: GameAccount | null;
+  account: GameAccount | undefined;
 
-  private constructor(address: PublicKey, readonly soarProgram: SoarProgram) {
+  constructor(program: SoarProgram, address: PublicKey, account?: GameAccount) {
     this.address = address;
-    this.soar = soarProgram;
-    this.state = null;
-  }
-
-  public static async get(
-    address: PublicKey,
-    provider: AnchorProvider
-  ): Promise<Game> {
-    const soarClient = SoarProgram.get(provider);
-    const game = new Game(address, soarClient);
-    await game.init();
-    return game;
+    this.program = program;
+    this.account = account;
   }
 
   public static async register(
@@ -42,9 +31,10 @@ export class Game {
     gameType: GameType,
     nftMeta: PublicKey,
     auths: PublicKey[]
-  ): Promise<Game> {
+  ): Promise<GameClient> {
     const game = Keypair.generate();
-    const { gameAddress, transaction } = await program.initializeNewGame(
+
+    const { newGame, transaction } = await program.initializeNewGame(
       game.publicKey,
       title,
       description,
@@ -55,45 +45,63 @@ export class Game {
     );
 
     await program.sendAndConfirmTransaction(transaction, [game]);
-    const obj = new Game(gameAddress, program);
+    const client = new GameClient(program, newGame);
 
-    await obj.init();
-    return obj;
+    await client.init();
+    return client;
   }
 
   public async init(): Promise<void> {
-    const account = await this.soar.program.account.game.fetch(this.address);
-    this.state = GameAccount.fromIdlAccount(account, this.address);
+    const account = await this.program.fetchGameAccount(this.address);
+    this.account = GameAccount.fromIdlAccount(account, this.address);
   }
 
   public async refresh(): Promise<void> {
     await this.init();
   }
 
-  public async currentLeaderBoardId(): Promise<BN> {
-    if (this.state === null) {
+  currentLeaderBoardAddress = (): PublicKey => {
+    if (this.account === undefined) {
       throw new Error("init not called");
     }
-    return this.state.leaderboardCount;
-  }
+    return this.program.deriveLeaderBoardAddress(
+      this.account.leaderboardCount,
+      this.address
+    )[0];
+  };
 
-  public async currentLeaderBoardAddress(): Promise<PublicKey> {
-    const id = await this.currentLeaderBoardId();
-    return this.soar.deriveLeaderBoardAddress(id, this.address)[0];
-  }
+  nextLeaderBoardAddress = (): PublicKey => {
+    if (this.account === undefined) {
+      throw new Error("init not called");
+    }
+    const nextId = this.account.leaderboardCount.addn(1);
+    return this.program.deriveLeaderBoardAddress(nextId, this.address)[0];
+  };
 
-  public async nextLeaderBoardAddress(): Promise<PublicKey> {
-    await this.refresh();
-    const id = (await this.currentLeaderBoardId()).addn(1);
-    return this.soar.deriveLeaderBoardAddress(id, this.address)[0];
-  }
+  currentAchievementAddress = (): PublicKey => {
+    if (this.account === undefined) {
+      throw new Error("init not called");
+    }
+    return this.program.deriveAchievementAddress(
+      this.account.achievementCount,
+      this.address
+    )[0];
+  };
+
+  nextAchievementAddress = (): PublicKey => {
+    if (this.account === undefined) {
+      throw new Error("init not called");
+    }
+    const nextId = this.account.achievementCount.addn(1);
+    return this.program.deriveAchievementAddress(nextId, this.address)[0];
+  };
 
   public async update(
     authority: PublicKey,
     newMeta: IdlTypes<Soar>["GameMeta"],
     newAuths: PublicKey[] | null
   ): Promise<InstructionResult.UpdateGame> {
-    return this.soar.updateGameAccount(
+    return this.program.updateGameAccount(
       this.address,
       authority,
       newMeta,
@@ -111,10 +119,8 @@ export class Game {
     minScore: BN | null,
     maxScore: BN | null
   ): Promise<InstructionResult.AddLeaderBoard> {
-    const next = await this.nextLeaderBoardAddress();
-    return this.soar.addNewGameLeaderBoard(
+    return this.program.addNewGameLeaderBoard(
       this.address,
-      next,
       authority,
       description,
       nftMeta,
@@ -122,7 +128,8 @@ export class Game {
       scoresOrder,
       decimals,
       minScore,
-      maxScore
+      maxScore,
+      this.nextLeaderBoardAddress()
     );
   }
 
@@ -132,20 +139,22 @@ export class Game {
     description: string,
     nftMeta: PublicKey
   ): Promise<InstructionResult.AddGameAchievement> {
-    return this.soar.addNewGameAchievement(
+    return this.program.addNewGameAchievement(
       this.address,
       authority,
       title,
       description,
-      nftMeta
+      nftMeta,
+      this.nextAchievementAddress()
     );
   }
 
   public async registerPlayer(
-    user: PublicKey
+    user: PublicKey,
+    leaderBoard?: PublicKey
   ): Promise<InstructionResult.RegisterPlayerEntry> {
-    const leaderboard = await this.currentLeaderBoardAddress();
-    return this.soar.registerPlayerEntryForLeaderBoard(
+    const leaderboard = leaderBoard ?? this.currentLeaderBoardAddress();
+    return this.program.registerPlayerEntryForLeaderBoard(
       user,
       leaderboard,
       this.address
@@ -155,15 +164,16 @@ export class Game {
   public async submitScore(
     user: PublicKey,
     authority: PublicKey,
-    score: BN
+    score: BN,
+    leaderBoard?: PublicKey
   ): Promise<InstructionResult.SubmitScore> {
-    const leaderboard = await this.currentLeaderBoardAddress();
-    return this.soar.submitScoreToLeaderBoard(
+    const leaderboard = leaderBoard ?? this.currentLeaderBoardAddress();
+    return this.program.submitScoreToLeaderBoard(
       user,
       authority,
-      this.address,
       leaderboard,
-      score
+      score,
+      this.address
     );
   }
 
@@ -174,18 +184,18 @@ export class Game {
     newDescription: string | null,
     newNftMeta: PublicKey | null
   ): Promise<InstructionResult.UpdateAchievement> {
-    return this.soar.updateGameAchievement(
+    return this.program.updateGameAchievement(
       authority,
-      this.address,
       achievement,
       newTitle,
       newDescription,
-      newNftMeta
+      newNftMeta,
+      this.address
     );
   }
 
-  public async fetchAllLeaderBoardAccounts(): Promise<LeaderBoardAccount[]> {
-    const results = await this.soar.program.account.leaderBoard.all([
+  public async fetchLeaderBoardAccounts(): Promise<LeaderBoardAccount[]> {
+    return this.program.fetchAllLeaderboardAccounts([
       {
         memcmp: {
           offset: 8 + 8,
@@ -193,13 +203,10 @@ export class Game {
         },
       },
     ]);
-    return results.map((board) =>
-      LeaderBoardAccount.fromIdlAccount(board.account, board.publicKey)
-    );
   }
 
-  public async fetchAllAchievements(): Promise<AchievementAccount[]> {
-    const results = await this.soar.program.account.achievement.all([
+  public async fetchAchievementAccounts(): Promise<AchievementAccount[]> {
+    return this.program.fetchAllAchievementAccounts([
       {
         memcmp: {
           offset: 8,
@@ -207,36 +214,5 @@ export class Game {
         },
       },
     ]);
-    return results.map((achievement) =>
-      AchievementAccount.fromIdlAccount(
-        achievement.account,
-        achievement.publicKey
-      )
-    );
-  }
-
-  public async fetchPlayerScores(
-    player: PublicKey
-  ): Promise<PlayerEntryListAccount[]> {
-    const playerInfo = this.soar.derivePlayerAddress(player)[0];
-    const leaderboard = await this.currentLeaderBoardAddress();
-    const results = await this.soar.program.account.playerEntryList.all([
-      {
-        memcmp: {
-          offset: 8,
-          bytes: playerInfo.toBase58(),
-        },
-      },
-      {
-        memcmp: {
-          offset: 8 + 32,
-          bytes: leaderboard.toBase58(),
-        },
-      },
-    ]);
-
-    return results.map((list) =>
-      PlayerEntryListAccount.fromIdlAccount(list.account, list.publicKey)
-    );
   }
 }

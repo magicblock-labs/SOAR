@@ -3,7 +3,7 @@ import { type PublicKey, type Transaction } from "@solana/web3.js";
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export module InstructionResult {
   export interface InitializeGame {
-    gameAddress: PublicKey;
+    newGame: PublicKey;
     transaction: Transaction;
   }
   export interface UpdateGame {
@@ -51,7 +51,7 @@ export module InstructionResult {
     transaction: Transaction;
   }
   export interface InitiateMerge {
-    newMergeAccount: PublicKey;
+    newMerge: PublicKey;
     transaction: Transaction;
   }
   export interface RegisterMergeApproval {

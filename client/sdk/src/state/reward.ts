@@ -4,10 +4,11 @@ import { type IdlAccounts } from "@coral-xyz/anchor";
 import { type Soar } from "../idl/soar";
 
 export class RewardAccount {
-  constructor(
+  private constructor(
     public readonly address: PublicKey,
     public readonly achievement: PublicKey,
     public readonly amountPerUser: BN,
+    public readonly available: BN,
     public readonly FungibleToken:
       | {
           mint: PublicKey;
@@ -33,15 +34,37 @@ export class RewardAccount {
       address,
       account.achievement,
       account.amountPerUser,
+      account.available,
       account.reward.fungibleToken,
       account.reward.nonFungibleToken
     );
   }
 
-  public print(): ReadableRewardAccountInfo {
+  public print(): {
+    address: string;
+    achievement: string;
+    available: string;
+    amountPerUser: string;
+    FungibleToken:
+      | {
+          mint: string;
+          token_account: string;
+        }
+      | undefined;
+    NonFungibleToken:
+      | {
+          uri: string;
+          name: string;
+          symbol: string;
+          minted: string;
+          collection_mint: string | null;
+        }
+      | undefined;
+  } {
     return {
       address: this.address.toBase58(),
       achievement: this.achievement.toBase58(),
+      available: this.available.toString(),
       amountPerUser: this.amountPerUser.toString(),
       FungibleToken:
         this.FungibleToken !== undefined
@@ -65,25 +88,4 @@ export class RewardAccount {
           : undefined,
     };
   }
-}
-
-interface ReadableRewardAccountInfo {
-  address: string;
-  achievement: string;
-  amountPerUser: string;
-  FungibleToken:
-    | {
-        mint: string;
-        token_account: string;
-      }
-    | undefined;
-  NonFungibleToken:
-    | {
-        uri: string;
-        name: string;
-        symbol: string;
-        minted: string;
-        collection_mint: string | null;
-      }
-    | undefined;
 }

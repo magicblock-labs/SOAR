@@ -3,7 +3,7 @@ import { type IdlAccounts } from "@coral-xyz/anchor";
 import { type Soar } from "../idl/soar";
 
 export class PlayerAccount {
-  constructor(
+  private constructor(
     public readonly address: PublicKey,
     public readonly user: PublicKey,
     public readonly username: string,
@@ -22,7 +22,12 @@ export class PlayerAccount {
     );
   }
 
-  public print(): ReadablePlayerAccountInfo {
+  public print(): {
+    address: string;
+    user: string;
+    username: string;
+    nftMeta: string;
+  } {
     return {
       address: this.address.toBase58(),
       user: this.user.toBase58(),
@@ -30,11 +35,4 @@ export class PlayerAccount {
       nftMeta: this.nftMeta.toBase58(),
     };
   }
-}
-
-interface ReadablePlayerAccountInfo {
-  address: string;
-  user: string;
-  username: string;
-  nftMeta: string;
 }

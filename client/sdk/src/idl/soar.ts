@@ -515,7 +515,7 @@ export type Soar = {
       ]
     },
     {
-      "name": "registerMergeApproval",
+      "name": "approveMerge",
       "docs": [
         "Register merge confirmation for a particular [Player] account included in a [Merged]."
       ],
@@ -1577,7 +1577,7 @@ export type Soar = {
             "name": "Ft",
             "fields": [
               {
-                "name": "initial_delegated_amount",
+                "name": "deposit",
                 "type": "u64"
               },
               {
@@ -2227,7 +2227,7 @@ export const IDL: Soar = {
       ]
     },
     {
-      "name": "registerMergeApproval",
+      "name": "approveMerge",
       "docs": [
         "Register merge confirmation for a particular [Player] account included in a [Merged]."
       ],
@@ -3289,7 +3289,7 @@ export const IDL: Soar = {
             "name": "Ft",
             "fields": [
               {
-                "name": "initial_delegated_amount",
+                "name": "deposit",
                 "type": "u64"
               },
               {

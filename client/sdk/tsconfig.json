@@ -13,7 +13,7 @@
     "declaration": true,
     "skipLibCheck": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "src/instructions/addAchievement.ts"],
   "exclude": ["../../node_modules", "dist"]
 }
   

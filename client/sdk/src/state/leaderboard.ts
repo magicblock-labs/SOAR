@@ -4,7 +4,7 @@ import { type IdlAccounts } from "@coral-xyz/anchor";
 import { type Soar } from "../idl/soar";
 
 export class LeaderBoardAccount {
-  constructor(
+  private constructor(
     public readonly address: PublicKey,
     public readonly id: BN,
     public readonly game: PublicKey,
@@ -33,7 +33,17 @@ export class LeaderBoardAccount {
     );
   }
 
-  public print(): ReadableLeaderBoardAccountInfo {
+  public print(): {
+    address: string;
+    id: string;
+    game: string;
+    description: string;
+    nftMeta: string;
+    decimals: number;
+    minScore: string;
+    maxScore: string;
+    topEntries: string | null;
+  } {
     return {
       address: this.address.toBase58(),
       id: this.id.toString(),
@@ -46,16 +56,4 @@ export class LeaderBoardAccount {
       topEntries: this.topEntries ? this.topEntries.toBase58() : null,
     };
   }
-}
-
-interface ReadableLeaderBoardAccountInfo {
-  address: string;
-  id: string;
-  game: string;
-  description: string;
-  nftMeta: string;
-  decimals: number;
-  minScore: string;
-  maxScore: string;
-  topEntries: string | null;
 }

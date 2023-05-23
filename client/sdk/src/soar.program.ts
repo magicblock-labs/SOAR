@@ -3,6 +3,7 @@ import {
   type ConfirmOptions,
   Keypair,
   PublicKey,
+  type GetProgramAccountsFilter,
   type Signer,
   type TransactionInstruction,
   Transaction,
@@ -37,7 +38,6 @@ import {
   zip,
 } from "./utils";
 import { type InstructionResult } from "./types";
-import { Game } from "./soar.game";
 import {
   type GameType,
   type Genre,
@@ -53,6 +53,7 @@ import {
 } from "./state";
 import bs58 from "bs58";
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { GameClient } from "./soar.game";
 
 export class SoarProgram {
   readonly program: Program<Soar>;
@@ -91,7 +92,7 @@ export class SoarProgram {
     transaction.add(initGame);
 
     return {
-      gameAddress: newGame,
+      newGame,
       transaction,
     };
   }
@@ -123,7 +124,7 @@ export class SoarProgram {
   public async updateGameAccount(
     game: PublicKey,
     authority: PublicKey,
-    newMeta: IdlTypes<Soar>["GameMeta"],
+    newMeta: IdlTypes<Soar>["GameMeta"] | null,
     newAuths: PublicKey[] | null
   ): Promise<InstructionResult.UpdateGame> {
     const transaction = new Transaction();
@@ -143,7 +144,7 @@ export class SoarProgram {
 
   public async updatePlayerAccount(
     user: PublicKey,
-    updatedUsername: string | null,
+    updatedUsername: string,
     updatedNftMeta: PublicKey | null
   ): Promise<InstructionResult.UpdatePlayer> {
     const transaction = new Transaction();
@@ -179,7 +180,7 @@ export class SoarProgram {
     );
 
     return {
-      newMergeAccount,
+      newMerge: newMergeAccount,
       transaction: transaction.add(initMerge),
     };
   }
@@ -208,13 +209,15 @@ export class SoarProgram {
     authority: PublicKey,
     title: string,
     description: string,
-    nftMeta: PublicKey
+    nftMeta: PublicKey,
+    nextAchievement?: PublicKey
   ): Promise<InstructionResult.AddGameAchievement> {
     const transaction = new Transaction();
 
-    const gameAccount = await this.program.account.game.fetch(gameAddress);
+    const gameAccount = await this.fetchGameAccount(gameAddress);
     const id = gameAccount.achievementCount.addn(1);
-    const newAchievement = this.deriveAchievementAddress(id, gameAddress)[0];
+    const newAchievement =
+      nextAchievement ?? this.deriveAchievementAddress(id, gameAddress)[0];
 
     const addAchievement = await addAchievementInstruction(
       this.program,
@@ -233,7 +236,6 @@ export class SoarProgram {
 
   public async addNewGameLeaderBoard(
     gameAddress: PublicKey,
-    leaderboard: PublicKey | null,
     authority: PublicKey,
     description: string,
     nftMeta: PublicKey,
@@ -241,19 +243,19 @@ export class SoarProgram {
     scoresOrder: boolean | null,
     decimals: number | null,
     minScore: BN | null,
-    maxScore: BN | null
+    maxScore: BN | null,
+    nextLeaderboard?: PublicKey
   ): Promise<InstructionResult.AddLeaderBoard> {
     const transaction = new Transaction();
 
     let newLeaderBoard: PublicKey;
-    if (leaderboard !== null) {
-      newLeaderBoard = leaderboard;
+    if (nextLeaderboard !== undefined) {
+      newLeaderBoard = nextLeaderboard;
     } else {
       const gameAccount = await this.program.account.game.fetch(gameAddress);
       const id = (gameAccount.leaderboard as any as BN).addn(1);
       newLeaderBoard = this.deriveLeaderBoardAddress(id, gameAddress)[0];
     }
-
     const topEntries = this.deriveLeaderTopEntriesAddress(newLeaderBoard)[0];
 
     let topEntriesAccount: PublicKey | null = null;
@@ -284,14 +286,14 @@ export class SoarProgram {
   public async updateGameLeaderboard(
     authority: PublicKey,
     leaderboard: PublicKey,
-    game: PublicKey | null,
     newDescription: string | null,
-    newNftMeta: PublicKey | null
+    newNftMeta: PublicKey | null,
+    game?: PublicKey
   ): Promise<InstructionResult.UpdateLeaderboard> {
     const transaction = new Transaction();
 
     const gameAddress =
-      game ?? (await this.program.account.leaderBoard.fetch(leaderboard)).game;
+      game ?? (await this.fetchLeaderBoardAccount(leaderboard)).game;
 
     const updateIx = await updateLeaderBoardInstruction(
       this.program,
@@ -309,13 +311,12 @@ export class SoarProgram {
   public async registerPlayerEntryForLeaderBoard(
     user: PublicKey,
     leaderboard: PublicKey,
-    game: PublicKey | null
+    game?: PublicKey
   ): Promise<InstructionResult.RegisterPlayerEntry> {
     const transaction = new Transaction();
 
     const gameAddress =
-      game ?? (await this.program.account.leaderBoard.fetch(leaderboard)).game;
-
+      game ?? (await this.fetchLeaderBoardAccount(leaderboard)).game;
     const playerInfo = this.derivePlayerAddress(user)[0];
     const newList = this.derivePlayerEntryListAddress(user, leaderboard)[0];
 
@@ -336,15 +337,14 @@ export class SoarProgram {
   public async submitScoreToLeaderBoard(
     user: PublicKey,
     authority: PublicKey,
-    game: PublicKey | null,
     leaderboard: PublicKey,
-    score: BN
+    score: BN,
+    game?: PublicKey
   ): Promise<InstructionResult.SubmitScore> {
     const transaction = new Transaction();
 
     const gameAddress =
-      game ?? (await this.program.account.leaderBoard.fetch(leaderboard)).game;
-
+      game ?? (await this.fetchLeaderBoardAccount(leaderboard)).game;
     const playerInfo = this.derivePlayerAddress(user)[0];
     const playerEntryList = this.derivePlayerEntryListAddress(
       user,
@@ -389,16 +389,16 @@ export class SoarProgram {
 
   public async updateGameAchievement(
     authority: PublicKey,
-    game: PublicKey | null,
     achievement: PublicKey,
     newTitle: string | null,
     newDescription: string | null,
-    newNftMeta: PublicKey | null
+    newNftMeta: PublicKey | null,
+    game?: PublicKey
   ): Promise<InstructionResult.UpdateAchievement> {
     const transaction = new Transaction();
 
     const gameAddress =
-      game ?? (await this.program.account.achievement.fetch(achievement)).game;
+      game ?? (await this.fetchAchievementAccount(achievement)).game;
 
     const update = await updateAchievementInstruction(
       this.program,
@@ -418,28 +418,16 @@ export class SoarProgram {
     user: PublicKey,
     authority: PublicKey,
     achievement: PublicKey,
-    game: PublicKey | null,
-    leaderboard: PublicKey | null
+    leaderboard: PublicKey,
+    game?: PublicKey
   ): Promise<InstructionResult.UnlockPlayerAchievement> {
     const playerAccount = this.derivePlayerAddress(user)[0];
 
     const gameAddress =
-      game ?? (await this.program.account.achievement.fetch(achievement)).game;
-
-    let leaderBoardAddress: PublicKey;
-    if (leaderboard === null) {
-      const gameAccount = await this.program.account.game.fetch(gameAddress);
-      leaderBoardAddress = this.deriveLeaderBoardAddress(
-        gameAccount.leaderboard as any as BN,
-        gameAddress
-      )[0];
-    } else {
-      leaderBoardAddress = leaderboard;
-    }
-
+      game ?? (await this.fetchAchievementAccount(achievement)).game;
     const playerEntryList = this.derivePlayerEntryListAddress(
       user,
-      leaderBoardAddress
+      leaderboard
     )[0];
     const newPlayerAchievement = this.derivePlayerAchievementAddress(
       user,
@@ -453,7 +441,7 @@ export class SoarProgram {
       playerAccount,
       playerEntryList,
       gameAddress,
-      leaderBoardAddress,
+      leaderboard,
       achievement,
       authority,
       newPlayerAchievement
@@ -468,31 +456,27 @@ export class SoarProgram {
   public async addFungibleReward(
     authority: PublicKey,
     achievement: PublicKey,
-    game: PublicKey | null,
     amountPerUser: BN,
     availableRewards: BN,
-    initialDelegatedAmount: BN,
+    initialDelegation: BN,
     sourceTokenAccount: PublicKey,
     tokenAccountOwner: PublicKey,
-    mint: PublicKey
+    mint: PublicKey,
+    game?: PublicKey
   ): Promise<InstructionResult.AddReward> {
     const gameAddress =
-      game ?? (await this.program.account.achievement.fetch(achievement)).game;
+      game ?? (await this.fetchAchievementAccount(achievement)).game;
     const newRewardAddress = this.deriveRewardAddress(achievement)[0];
 
     const instruction = await addRewardInstruction(
       this.program,
+      amountPerUser,
+      availableRewards,
       {
-        amountPerUser,
-        availableRewards,
-        kind: {
-          ft: {
-            initial_delegated_amount: initialDelegatedAmount,
-            mint,
-          },
-          nft: undefined,
-        },
+        deposit: initialDelegation,
+        mint,
       },
+      undefined,
       authority,
       this.provider.publicKey,
       gameAddress,
@@ -514,17 +498,17 @@ export class SoarProgram {
   public async addNonFungibleReward(
     authority: PublicKey,
     achievement: PublicKey,
-    game: PublicKey | null,
     amountPerUser: BN,
     availableRewards: BN,
     defineUri: string,
     defineName: string,
     defineSymbol: string,
+    game?: PublicKey,
     collectionMint?: PublicKey,
     collectionUpdateAuthority?: PublicKey
   ): Promise<InstructionResult.AddReward> {
     const gameAddress =
-      game ?? (await this.program.account.achievement.fetch(achievement)).game;
+      game ?? (await this.fetchAchievementAccount(achievement)).game;
     const newRewardAddress = this.deriveRewardAddress(achievement)[0];
 
     let collectionMetadata: PublicKey | undefined;
@@ -536,17 +520,13 @@ export class SoarProgram {
 
     const instruction = await addRewardInstruction(
       this.program,
+      amountPerUser,
+      availableRewards,
+      undefined,
       {
-        amountPerUser,
-        availableRewards,
-        kind: {
-          ft: undefined,
-          nft: {
-            uri: defineUri,
-            name: defineName,
-            symbol: defineSymbol,
-          },
-        },
+        uri: defineUri,
+        name: defineName,
+        symbol: defineSymbol,
       },
       authority,
       this.provider.publicKey,
@@ -575,11 +555,10 @@ export class SoarProgram {
     achievement: PublicKey,
     payer: PublicKey,
     user: PublicKey,
-    game: PublicKey | null
+    game?: PublicKey
   ): Promise<InstructionResult.MintReward> {
     const gameAddress =
-      game ?? (await this.program.account.achievement.fetch(achievement)).game;
-
+      game ?? (await this.fetchAchievementAccount(achievement)).game;
     const userPlayerAccount = this.derivePlayerAddress(user)[0];
     const rewardAddress = this.deriveRewardAddress(achievement)[0];
     const playerAchievement = this.derivePlayerAchievementAddress(
@@ -614,12 +593,12 @@ export class SoarProgram {
     };
   }
 
-  public async verifyPlayerMintedRewardForAchievement(
+  public async verifyPlayerNftReward(
     authority: PublicKey,
+    user: PublicKey,
     payer: PublicKey,
     achievement: PublicKey,
-    game: PublicKey | null,
-    user: PublicKey
+    game?: PublicKey
   ): Promise<InstructionResult.VerifyReward> {
     const gameAddress =
       game ?? (await this.program.account.achievement.fetch(achievement)).game;
@@ -699,24 +678,8 @@ export class SoarProgram {
     return txSigs;
   }
 
-  public async newGame(
-    title: string,
-    description: string,
-    genre: Genre,
-    gameType: GameType,
-    nftMeta: PublicKey,
-    auths: PublicKey[]
-  ): Promise<Game> {
-    const game = await Game.register(
-      this,
-      title,
-      description,
-      genre,
-      gameType,
-      nftMeta,
-      auths
-    );
-    return game;
+  public async newGameClient(gameAddress: PublicKey): Promise<GameClient> {
+    return new GameClient(this, gameAddress);
   }
 
   public deriveLeaderBoardAddress(
@@ -843,16 +806,46 @@ export class SoarProgram {
     );
   }
 
-  public async fetchAllGameAccountsInfo(): Promise<GameAccount[]> {
-    const games = await this.program.account.game.all();
+  public async fetchAllGameAccounts(
+    memcmp?: Buffer | GetProgramAccountsFilter[]
+  ): Promise<GameAccount[]> {
+    const games = await this.program.account.game.all(memcmp);
 
     return games.map((game) =>
       GameAccount.fromIdlAccount(game.account, game.publicKey)
     );
   }
 
-  public async fetchAllPlayerAccountsInfo(): Promise<PlayerAccount[]> {
-    const players = await this.program.account.player.all();
+  public async fetchAllAchievementAccounts(
+    memcmp?: Buffer | GetProgramAccountsFilter[]
+  ): Promise<AchievementAccount[]> {
+    const achievements = await this.program.account.achievement.all(memcmp);
+
+    return achievements.map((achievement) =>
+      AchievementAccount.fromIdlAccount(
+        achievement.account,
+        achievement.publicKey
+      )
+    );
+  }
+
+  public async fetchAllLeaderboardAccounts(
+    memcmp?: Buffer | GetProgramAccountsFilter[]
+  ): Promise<LeaderBoardAccount[]> {
+    const achievements = await this.program.account.achievement.all(memcmp);
+
+    return achievements.map((achievement) =>
+      LeaderBoardAccount.fromIdlAccount(
+        achievement.account,
+        achievement.publicKey
+      )
+    );
+  }
+
+  public async fetchAllPlayerAccounts(
+    memcmp?: Buffer | GetProgramAccountsFilter[]
+  ): Promise<PlayerAccount[]> {
+    const players = await this.program.account.player.all(memcmp);
 
     return players.map((player) =>
       PlayerAccount.fromIdlAccount(player.account, player.publicKey)

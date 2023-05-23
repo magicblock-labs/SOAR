@@ -3,7 +3,7 @@ import { type IdlAccounts } from "@coral-xyz/anchor";
 import { type Soar } from "../idl/soar";
 
 export class MergedAccount {
-  constructor(
+  private constructor(
     public readonly address: PublicKey,
     public readonly initiator: PublicKey,
     public readonly others: MergeInfo[],
@@ -22,31 +22,35 @@ export class MergedAccount {
     );
   }
 
-  public print(): ReadableMergedAccountInfo {
+  public print(): {
+    address: string;
+    initiator: string;
+    others: Array<{
+      key: string;
+      approved: boolean;
+    }>;
+    mergeComplete: boolean;
+  } {
     return {
       address: this.address.toBase58(),
       initiator: this.initiator.toBase58(),
-      others: this.others.map((other) => toReadable(other)),
+      others: this.others.map((other) => printMergeInfo(other)),
       mergeComplete: this.mergeComplete,
     };
   }
 }
 
-interface ReadableMergedAccountInfo {
-  address: string;
-  initiator: string;
-  others: ReadableMergeInfo[];
-  mergeComplete: boolean;
-}
 interface MergeInfo {
   key: PublicKey;
   approved: boolean;
 }
-interface ReadableMergeInfo {
+
+const printMergeInfo = (
+  raw: MergeInfo
+): {
   key: string;
   approved: boolean;
-}
-const toReadable = (raw: MergeInfo): ReadableMergeInfo => {
+} => {
   return {
     key: raw.key.toBase58(),
     approved: raw.approved,

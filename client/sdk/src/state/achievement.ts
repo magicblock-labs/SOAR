@@ -3,7 +3,7 @@ import { type IdlAccounts } from "@coral-xyz/anchor";
 import { type Soar } from "../idl/soar";
 
 export class AchievementAccount {
-  constructor(
+  private constructor(
     public readonly address: PublicKey,
     public readonly game: PublicKey,
     public readonly title: string,
@@ -26,7 +26,14 @@ export class AchievementAccount {
     );
   }
 
-  public print(): ReadableAchievementAccountInfo {
+  public print(): {
+    address: string;
+    game: string;
+    title: string;
+    description: string;
+    nftMeta: string;
+    reward: string | null;
+  } {
     return {
       address: this.address.toBase58(),
       game: this.game.toBase58(),
@@ -36,13 +43,4 @@ export class AchievementAccount {
       reward: this.reward !== null ? this.reward.toBase58() : this.reward,
     };
   }
-}
-
-interface ReadableAchievementAccountInfo {
-  address: string;
-  game: string;
-  title: string;
-  description: string;
-  nftMeta: string;
-  reward: string | null;
 }

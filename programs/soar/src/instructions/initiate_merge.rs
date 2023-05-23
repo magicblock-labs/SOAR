@@ -1,5 +1,5 @@
-use anchor_lang::prelude::*;
 use crate::{state::MergeInfo, InitiateMerge};
+use anchor_lang::prelude::*;
 
 pub fn handler(ctx: Context<InitiateMerge>, keys: Vec<Pubkey>) -> Result<()> {
     let merge_account = &mut ctx.accounts.merge_account;

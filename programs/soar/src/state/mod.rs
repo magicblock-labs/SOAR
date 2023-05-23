@@ -1,8 +1,9 @@
 mod achievement;
 mod game;
 mod leaderboard;
-mod player;
 mod merge;
+mod player;
+mod reward;
 
 use anchor_lang::prelude::*;
 
@@ -99,25 +100,45 @@ pub struct Achievement {
     pub description: String,
     /// Metadata representing this achievement.
     pub nft_meta: Pubkey,
-    /// Whether to mint a reward for unlocking this achievement.
+    /// A reward for unlocking this achievement.
     pub reward: Option<Pubkey>,
 }
 
-/// Contains details of a NFT reward.
 #[account]
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct Reward {
+    /// The achievement this reward is given for.
     pub achievement: Pubkey,
-    /// URI of the NFT to be minted.
-    pub uri: String,
-    /// Name of the NFT to be minted.
-    pub name: String,
-    /// Symbol of the NFT to be minted.
-    pub symbol: String,
-    /// Number of nft rewards given so far.
-    pub minted: u64,
-    /// Optional: A collection to verify a minted nft as belonging to.
-    pub collection_mint: Option<Pubkey>,
+    /// Number of available rewards.
+    pub available: u64,
+    /// Reward amount per user.
+    pub amount_per_user: u64,
+    /// The reward type and information.
+    pub reward: RewardKind,
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
+pub enum RewardKind {
+    /// Represents an `ordinary` token reward(the same mint).
+    FungibleToken {
+        /// The mint of the token to be given out.
+        mint: Pubkey,
+        /// The token account to withdraw from.
+        token_account: Pubkey,
+    },
+    /// Represents an nft reward with distinct mints.
+    NonFungibleToken {
+        /// URI of the NFT to be minted.
+        uri: String,
+        /// Name of the NFT to be minted.
+        name: String,
+        /// Symbol of the NFT to be minted.
+        symbol: String,
+        /// Number of nft rewards given so far.
+        minted: u64,
+        /// Optional: A collection to verify a minted nft as belonging to.
+        collection_mint: Option<Pubkey>,
+    },
 }
 
 #[account]
@@ -169,8 +190,6 @@ pub struct PlayerEntryList {
     pub alloc_count: u16,
     /// Collection of entries.
     pub scores: Vec<ScoreEntry>,
-    // TODO:(Vec<Entry>) Push and realloc each time, or realloc in batches and keep
-    // track of size.
 }
 
 /// A single score entry for a player.
@@ -196,8 +215,10 @@ pub struct PlayerAchievement {
     pub timestamp: i64,
     /// True for unlocked, false for locked.
     pub unlocked: bool,
-    /// This is [Some] only if the player has minted a reward for the achievement.
-    pub metadata: Option<Pubkey>,
+    /// Whether or not this player has claimed their reward.
+    pub claimed: bool,
+    /// This is [Some] only if the player has minted an NFT reward pending verification.
+    pub nft_reward_mint: Option<Pubkey>,
 }
 
 /// Parameters needed when registering a leaderboard.
@@ -220,11 +241,24 @@ pub struct RegisterLeaderBoardInput {
 }
 
 /// Parameters used for registering metadata information for an nft reward.
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug, Default)]
-pub struct RegisterNewRewardInput {
-    pub uri: String,
-    pub name: String,
-    pub symbol: String,
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
+pub struct AddNewRewardArgs {
+    pub amount_per_user: u64,
+    pub available_rewards: u64,
+    pub kind: RewardKindArgs,
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
+pub enum RewardKindArgs {
+    Ft {
+        initial_delegated_amount: u64,
+        mint: Pubkey,
+    },
+    Nft {
+        uri: String,
+        name: String,
+        symbol: String,
+    },
 }
 
 pub enum GameType {

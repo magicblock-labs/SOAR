@@ -59,7 +59,7 @@ impl Merged {
 
 impl MergeInfo {
     pub const SIZE: usize = 32 + 1;
-    
+
     pub fn new(key: Pubkey) -> Self {
         MergeInfo {
             key,

@@ -8,6 +8,7 @@ pub fn handler(ctx: Context<UnlockPlayerAchievement>) -> Result<()> {
     achievement.player = ctx.accounts.player_info.key();
     achievement.achievement = ctx.accounts.achievement.key();
     achievement.timestamp = clock.unix_timestamp;
+    achievement.claimed = false;
     achievement.unlocked = true;
 
     Ok(())

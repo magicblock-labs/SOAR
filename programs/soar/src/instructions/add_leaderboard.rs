@@ -1,6 +1,6 @@
-use anchor_lang::prelude::*;
-use crate::AddLeaderBoard;
 use crate::state::{LeaderBoardScore, RegisterLeaderBoardInput};
+use crate::AddLeaderBoard;
+use anchor_lang::prelude::*;
 
 pub fn handler(ctx: Context<AddLeaderBoard>, input: RegisterLeaderBoardInput) -> Result<()> {
     input.check_field_lengths()?;

@@ -22,4 +22,16 @@ pub enum SoarError {
 
     #[msg("Tried to input score that is below the minimum or above the maximum")]
     ScoreNotWithinBounds,
+
+    #[msg("An account required for setting up this reward kind is missing.")]
+    MissingRequiredAccountsForFtReward,
+
+    #[msg("An account required for setting up this reward kind is missing.")]
+    MissingRequiredAccountsForNftReward,
+
+    #[msg("No more rewards are being given out for this game.")]
+    NoAvailableRewards,
+
+    #[msg("This user has already claimed their reward")]
+    DuplicateRewardClaim,
 }

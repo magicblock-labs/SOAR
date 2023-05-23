@@ -3,7 +3,7 @@
 
 use anchor_lang::prelude::*;
 use anchor_spl::associated_token::AssociatedToken;
-use anchor_spl::token::{Mint, Token};
+use anchor_spl::token::{Mint, Token, TokenAccount};
 
 declare_id!("3UEaKjkjK2Lz6D4DqSEUHwtBsezL5RaNCeBSWStxyNU9");
 
@@ -124,15 +124,15 @@ pub mod soar {
     }
 
     /// Optional: Add an NFT-based [Reward] for unlocking some [Achievement].
-    pub fn add_reward(ctx: Context<AddReward>, input: RegisterNewRewardInput) -> Result<()> {
+    pub fn add_reward(ctx: Context<AddReward>, input: AddNewRewardArgs) -> Result<()> {
         add_reward::handler(ctx, input)
     }
 
     /// Mint an NFT reward for unlocking a [PlayerAchievement] account.
     ///
     /// Optional: Only relevant if an NFT reward is specified for that achievement.
-    pub fn mint_reward(ctx: Context<MintReward>) -> Result<()> {
-        mint_reward::handler(ctx)
+    pub fn claim_reward(ctx: Context<ClaimReward>) -> Result<()> {
+        claim_reward::handler(ctx)
     }
 
     /// Verify NFT reward as belonging to a particular collection.
@@ -428,21 +428,27 @@ pub struct AddReward<'info> {
         bump,
     )]
     pub new_reward: Account<'info, Reward>,
-    pub collection_update_auth: Option<Signer<'info>>,
-    pub collection_mint: Option<Account<'info, Mint>>,
+    pub system_program: Program<'info, System>,
+
+    // Optional accounts for ft reward.
+    pub ft_reward_token_mint: Option<Account<'info, Mint>>,
+    pub ft_reward_delegate_account: Option<Account<'info, TokenAccount>>,
+    pub ft_reward_delegate_account_owner: Option<Signer<'info>>,
+    pub token_program: Option<Program<'info, Token>>,
+
+    // Optional accounts for nft reward.
+    pub nft_reward_collection_update_auth: Option<Signer<'info>>,
+    pub nft_reward_collection_mint: Option<Account<'info, Mint>>,
     #[account(mut)]
     /// CHECK: Checked in instruction handler.
-    pub collection_metadata: Option<UncheckedAccount<'info>>,
-    pub system_program: Program<'info, System>,
+    pub nft_reward_collection_metadata: Option<UncheckedAccount<'info>>,
     #[account(address = mpl_token_metadata::ID)]
     /// CHECK: We check that the ID is the correct one.
-    pub token_metadata_program: UncheckedAccount<'info>,
+    pub token_metadata_program: Option<UncheckedAccount<'info>>,
 }
 
 #[derive(Accounts)]
-pub struct MintReward<'info> {
-    #[account(mut)]
-    pub payer: Signer<'info>,
+pub struct ClaimReward<'info> {
     #[account(
         constraint = game.check_signer_is_authority(&authority.key())
         @ SoarError::InvalidAuthority
@@ -463,27 +469,39 @@ pub struct MintReward<'info> {
     #[account(
         has_one = player,
         has_one = achievement,
+        constraint = player_achievement.claimed == false
+        @ SoarError::DuplicateRewardClaim
     )]
     pub player_achievement: Box<Account<'info, PlayerAchievement>>,
+    pub token_program: Program<'info, Token>,
+
+    // Accounts required for an achievement with an NFT RewardKind.
     #[account(mut)]
-    /// CHECK: Initialized as mint in instruction.
-    pub mint: Signer<'info>,
+    pub payer: Option<Signer<'info>>,
+    #[account(mut)]
+    /// Initialized as mint in instruction.
+    pub nft_reward_mint: Option<Signer<'info>>,
     #[account(mut)]
     /// CHECK: Checked in metaplex program.
-    pub metadata: UncheckedAccount<'info>,
+    pub nft_reward_metadata: Option<UncheckedAccount<'info>>,
     #[account(mut)]
     /// CHECK: Checked in metaplex program.
-    pub master_edition: UncheckedAccount<'info>,
+    pub nft_reward_master_edition: Option<UncheckedAccount<'info>>,
     #[account(mut)]
     /// CHECK: Initialized in handler as token account owned by `user`.
-    pub mint_nft_to: UncheckedAccount<'info>,
-    pub token_program: Program<'info, Token>,
-    pub associated_token_program: Program<'info, AssociatedToken>,
+    pub nft_reward_mint_to: Option<UncheckedAccount<'info>>,
     #[account(address = mpl_token_metadata::ID)]
-    /// CHECK: Verified program address.
-    pub token_metadata_program: UncheckedAccount<'info>,
-    pub system_program: Program<'info, System>,
-    pub rent: Sysvar<'info, Rent>,
+    /// CHECK: Verified Token Metadata Program address.
+    pub token_metadata_program: Option<UncheckedAccount<'info>>,
+    pub associated_token_program: Option<Program<'info, AssociatedToken>>,
+    pub system_program: Option<Program<'info, System>>,
+    pub rent: Option<Sysvar<'info, Rent>>,
+
+    // Accounts required for an achievement with an FT RewardKind.
+    #[account(mut)]
+    pub source_token_account: Option<Account<'info, TokenAccount>>,
+    #[account(mut)]
+    pub user_token_account: Option<Account<'info, TokenAccount>>
 }
 
 #[derive(Accounts)]
@@ -504,7 +522,7 @@ pub struct VerifyReward<'info> {
     #[account(
         has_one = achievement,
         seeds = [seeds::REWARD, achievement.key().as_ref()], bump,
-        constraint = reward.collection_mint == Some(collection_mint.key())
+        //constraint = reward.collection_mint == Some(collection_mint.key())
     )]
     pub reward: Box<Account<'info, Reward>>,
     /// CHECK: Checked in has_one relationship with `player`.
@@ -513,16 +531,38 @@ pub struct VerifyReward<'info> {
     pub player: Box<Account<'info, Player>>,
     #[account(
         has_one = player, has_one = achievement,
-        constraint = player_achievement.metadata.unwrap() == metadata_to_verify.key()
+        constraint = player_achievement.nft_reward_mint.unwrap() == mint.key()
     )]
     pub player_achievement: Box<Account<'info, PlayerAchievement>>,
-    /// CHECK: We check that it's the same metadata in `player_achievement`.
+    /// CHECK: Checked that this is the mint in player_achievement.
+    pub mint: UncheckedAccount<'info>,
+    /// CHECK: Checked in handler that this is the metadata account for this mint.
     pub metadata_to_verify: UncheckedAccount<'info>,
     /// CHECK: We check that it's the reward's collection mint.
+    #[account(constraint = verify_reward_collection(&reward, collection_mint.key()))]
     pub collection_mint: UncheckedAccount<'info>,
     #[account(mut)]
     /// CHECK: Checked in CPI to Metaplex.
     pub collection_metadata: UncheckedAccount<'info>,
     /// CHECK: Checked in CPI to Metaplex.
     pub collection_master_edition: UncheckedAccount<'info>,
+}
+
+fn verify_reward_collection(reward: &Reward, maybe_collection_mint: Pubkey) -> bool {
+    match &reward.reward {
+        RewardKind::NonFungibleToken {
+            uri: _,
+            name: _,
+            symbol: _,
+            minted: _,
+            collection_mint,
+        } => {
+            if collection_mint.is_some() && collection_mint.unwrap() == maybe_collection_mint {
+                true
+            } else {
+                false
+            }
+        }
+        _ => false,
+    }
 }

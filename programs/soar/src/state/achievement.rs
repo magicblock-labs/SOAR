@@ -24,25 +24,7 @@ impl Achievement {
     }
 }
 
-impl Reward {
-    const MAX_URI_LENGTH: usize = 200;
-    const MAX_NAME_LENGTH: usize = 32;
-    const MAX_SYMBOL_LENGTH: usize = 10;
-    pub const SIZE: usize = 8 + // discriminator
-        32 + (4 + 200)/*URI*/ + (4 + 32)/*NAME*/ + (4 + 10)/*SYMBOL*/ + 8 + ( 1+ 32);
-
-    pub fn check_field_lengths(&self) -> Result<()> {
-        if self.uri.len() > Self::MAX_URI_LENGTH
-            || self.name.len() > Self::MAX_NAME_LENGTH
-            || self.symbol.len() > Self::MAX_SYMBOL_LENGTH
-        {
-            return Err(SoarError::InvalidFieldLength.into());
-        }
-        Ok(())
-    }
-}
-
 impl PlayerAchievement {
     pub const SIZE: usize = 8 + // discriminator
-        32 + 32 + 8 + 1 + (1+32)/*optional metadata*/;
+        32 + 32 + 8 + 1 + 1 + (1+32)/*optional metadata*/;
 }

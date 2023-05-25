@@ -6,7 +6,6 @@ import {
   type Signer,
   type TransactionInstruction,
   Transaction,
-  SystemProgram,
 } from "@solana/web3.js";
 import { IDL, type Soar } from "./idl/soar";
 import { PROGRAM_ID, TOKEN_METADATA_PROGRAM_ID } from "./constants";
@@ -23,11 +22,13 @@ import {
   updateLeaderBoardInstruction,
   submitScoreInstruction,
   unlockPlayerAchievementInstruction,
-  addRewardInstruction,
-  claimRewardInstruction,
-  verifyRewardInstruction,
   initiateMergeInstruction,
   registerMergeApprovalInstruction,
+  addFtRewardInstruction,
+  addNftRewardInstruction,
+  claimFtRewardInstruction,
+  claimNftRewardInstruction,
+  verifyNftRewardInstruction,
 } from "./instructions";
 import { Seeds, Utils } from "./utils";
 import { type InstructionResult } from "./types";
@@ -46,10 +47,7 @@ import {
   RewardAccount,
 } from "./state";
 import bs58 from "bs58";
-import {
-  createAssociatedTokenAccountIdempotentInstruction,
-  TOKEN_PROGRAM_ID,
-} from "@solana/spl-token";
+import { createAssociatedTokenAccountIdempotentInstruction } from "@solana/spl-token";
 import { GameClient } from "./soar.game";
 
 export class SoarProgram {
@@ -468,25 +466,21 @@ export class SoarProgram {
     const gameAddress =
       game ?? (await this.fetchAchievementAccount(achievement)).game;
 
-    const instruction = await addRewardInstruction(
+    const instruction = await addFtRewardInstruction(
       this.program,
       amountPerUser,
       availableRewards,
       {
         deposit: initialDelegation,
-        mint,
       },
-      undefined,
       authority,
       this.provider.publicKey,
       gameAddress,
       achievement,
       newReward,
-      SystemProgram.programId,
       mint,
       sourceTokenAccount,
-      tokenAccountOwner,
-      TOKEN_PROGRAM_ID
+      tokenAccountOwner
     );
 
     const oldReward = await this.fetchAchievementAccount(achievement).then(
@@ -528,18 +522,20 @@ export class SoarProgram {
     const gameAddress =
       game ?? (await this.fetchAchievementAccount(achievement)).game;
 
-    let collectionMetadata: PublicKey | undefined;
-    let metadataProgram: PublicKey | undefined;
+    let collectionMetadata: PublicKey | null = null;
+    let metadataProgram: PublicKey | null = null;
     if (collectionMint !== undefined) {
+      if (collectionUpdateAuthority === undefined) {
+        throw new Error("Collection update authority should be defined");
+      }
       collectionMetadata = this.utils.deriveMetadataAddress(collectionMint)[0];
       metadataProgram = TOKEN_METADATA_PROGRAM_ID;
     }
 
-    const instruction = await addRewardInstruction(
+    const instruction = await addNftRewardInstruction(
       this.program,
       amountPerUser,
       availableRewards,
-      undefined,
       {
         uri: defineUri,
         name: defineName,
@@ -550,13 +546,8 @@ export class SoarProgram {
       gameAddress,
       achievement,
       newReward,
-      SystemProgram.programId,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      collectionUpdateAuthority,
-      collectionMint,
+      collectionMint ?? null,
+      collectionUpdateAuthority ?? null,
       collectionMetadata,
       metadataProgram
     );
@@ -600,7 +591,7 @@ export class SoarProgram {
     const userAta = this.utils.deriveAssociatedTokenAddress(mint, user);
 
     const claim = this.deriveNftClaimAddress(rewardAddress, mint)[0];
-    const instruction = await claimRewardInstruction(
+    const instruction = await claimNftRewardInstruction(
       this.program,
       user,
       userPlayerAccount,
@@ -608,14 +599,12 @@ export class SoarProgram {
       achievement,
       rewardAddress,
       playerAchievement,
-      {
-        feePayer: this.provider.publicKey,
-        claim,
-        newMint: mint,
-        newMetadata: metadata,
-        newMasterEdition: masterEdition,
-        mintNftTo: userAta,
-      }
+      this.provider.publicKey,
+      claim,
+      mint,
+      metadata,
+      masterEdition,
+      userAta
     );
 
     return {
@@ -659,7 +648,7 @@ export class SoarProgram {
       transaction.add(this.createAssociatedTokenAccount(mint, userAta, user));
     }
 
-    const instruction = await claimRewardInstruction(
+    const instruction = await claimFtRewardInstruction(
       this.program,
       user,
       userPlayerAccount,
@@ -667,11 +656,8 @@ export class SoarProgram {
       achievement,
       rewardAddress,
       playerAchievement,
-      undefined,
-      {
-        sourceTokenAccount: rewardAccount.FungibleToken.account,
-        userTokenAccount: userAta,
-      }
+      rewardAccount.FungibleToken.account,
+      userAta
     );
 
     return {
@@ -719,7 +705,7 @@ export class SoarProgram {
     const collectionEdition =
       this.utils.deriveEditionAddress(collectionMint)[0];
 
-    const instruction = await verifyRewardInstruction(
+    const instruction = await verifyNftRewardInstruction(
       this.program,
       this.provider.publicKey,
       user,

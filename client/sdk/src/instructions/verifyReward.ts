@@ -3,7 +3,7 @@ import { type PublicKey, type TransactionInstruction } from "@solana/web3.js";
 import { type Soar } from "../idl/soar";
 import { TOKEN_METADATA_PROGRAM_ID } from "../constants";
 
-export const verifyRewardInstruction = async (
+export const verifyNftRewardInstruction = async (
   program: Program<Soar>,
   payer: PublicKey,
   user: PublicKey,
@@ -36,5 +36,5 @@ export const verifyRewardInstruction = async (
     tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
   };
 
-  return program.methods.verifyReward().accounts(accounts).instruction();
+  return program.methods.verifyNftReward().accounts(accounts).instruction();
 };

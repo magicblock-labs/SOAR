@@ -1,39 +1,28 @@
 import { type Program } from "@coral-xyz/anchor";
-import { type PublicKey, type TransactionInstruction } from "@solana/web3.js";
+import {
+  type PublicKey,
+  SystemProgram,
+  type TransactionInstruction,
+} from "@solana/web3.js";
 import { type Soar } from "../idl/soar";
 import type BN from "bn.js";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 
-export const addRewardInstruction = async (
+export const addFtRewardInstruction = async (
   program: Program<Soar>,
   amountPerUser: BN,
   availableRewards: BN,
-  ft:
-    | {
-        deposit: BN;
-        mint: PublicKey;
-      }
-    | undefined,
-  nft:
-    | {
-        uri: string;
-        name: string;
-        symbol: string;
-      }
-    | undefined,
+  args: {
+    deposit: BN;
+  },
   authority: PublicKey,
   payer: PublicKey,
   game: PublicKey,
   achievement: PublicKey,
   newReward: PublicKey,
-  systemProgram: PublicKey,
-  ftRewardTokenMint?: PublicKey,
-  ftRewardDelegateAccount?: PublicKey,
-  ftRewardDelegateAccountOwner?: PublicKey,
-  tokenProgram?: PublicKey,
-  nftRewardCollectionUpdateAuth?: PublicKey,
-  nftRewardCollectionMint?: PublicKey,
-  nftRewardCollectionMetadata?: PublicKey,
-  tokenMetadataProgram?: PublicKey
+  rewardTokenMint: PublicKey,
+  delegateFromTokenAccount: PublicKey,
+  tokenAccountOwner: PublicKey
 ): Promise<TransactionInstruction> => {
   const accounts = {
     authority,
@@ -41,28 +30,65 @@ export const addRewardInstruction = async (
     game,
     achievement,
     newReward,
-    systemProgram,
-    ftRewardTokenMint: ftRewardTokenMint ?? null,
-    ftRewardDelegateAccount: ftRewardDelegateAccount ?? null,
-    ftRewardDelegateAccountOwner: ftRewardDelegateAccountOwner ?? null,
-    tokenProgram: tokenProgram ?? null,
-    nftRewardCollectionUpdateAuth: nftRewardCollectionUpdateAuth ?? null,
-    nftRewardCollectionMint: nftRewardCollectionMint ?? null,
-    nftRewardCollectionMetadata: nftRewardCollectionMetadata ?? null,
-    tokenMetadataProgram: tokenMetadataProgram ?? null,
+    rewardTokenMint,
+    delegateFromTokenAccount,
+    tokenAccountOwner,
+    tokenProgram: TOKEN_PROGRAM_ID,
+    systemProgram: SystemProgram.programId,
   };
 
-  let kind;
-  if (nft !== undefined) {
-    kind = { nft };
-  } else if (ft !== undefined) {
-    kind = { ft };
-  } else {
-    throw Error("Either nft or ft must be defined");
-  }
+  return program.methods
+    .addFtReward({
+      amountPerUser,
+      availableRewards,
+      kind: {
+        ft: args,
+      },
+    })
+    .accounts(accounts)
+    .instruction();
+};
+
+export const addNftRewardInstruction = async (
+  program: Program<Soar>,
+  amountPerUser: BN,
+  availableRewards: BN,
+  args: {
+    uri: string;
+    name: string;
+    symbol: string;
+  },
+  authority: PublicKey,
+  payer: PublicKey,
+  game: PublicKey,
+  achievement: PublicKey,
+  newReward: PublicKey,
+  rewardCollectionMint: PublicKey | null,
+  collectionUpdateAuth: PublicKey | null,
+  collectionMetadata: PublicKey | null,
+  tokenMetadataProgram: PublicKey | null
+): Promise<TransactionInstruction> => {
+  const accounts = {
+    authority,
+    payer,
+    game,
+    achievement,
+    newReward,
+    rewardCollectionMint,
+    collectionUpdateAuth,
+    collectionMetadata,
+    systemProgram: SystemProgram.programId,
+    tokenMetadataProgram,
+  };
 
   return program.methods
-    .addReward({ amountPerUser, availableRewards, kind })
+    .addNftReward({
+      amountPerUser,
+      availableRewards,
+      kind: {
+        nft: args,
+      },
+    })
     .accounts(accounts)
     .instruction();
 };

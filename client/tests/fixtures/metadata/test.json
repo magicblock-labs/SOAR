@@ -1,0 +1,10 @@
+{
+    "name": "test",
+    "symbol": "t1",
+    "description": "test_description_1",
+    "seller_fee_basis_points": 1,
+    "external_url": "",
+    "edition": "",
+    "background_color": "000000",
+    "image": "https://raw.githubusercontent.com/magicblock-labs/SOAR/client/tests/fixtures/metadata/test.jpeg"
+}

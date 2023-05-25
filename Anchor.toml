@@ -13,10 +13,13 @@ wallet = "client/tests/fixtures/provider.json"
 
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 client/tests/soar.ts"
-#test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 client/tests/**/*.ts"
 
 [workspace]
 types = "client/sdk/src/idl"
 
 [test]
 startup_wait = 60000
+
+[[test.genesis]]
+address = "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
+program = "client/tests/fixtures/mpl_token_metadata.so"

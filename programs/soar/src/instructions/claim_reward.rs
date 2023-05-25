@@ -1,10 +1,4 @@
-use crate::error::SoarError;
-use crate::state::RewardKind;
-use crate::utils::{
-    create_master_edition_account, create_metadata_account, create_mint, create_token_account,
-    mint_token,
-};
-use crate::ClaimReward;
+use crate::{error::SoarError, state::RewardKind, utils, ClaimReward};
 use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Transfer};
 
@@ -17,21 +11,25 @@ pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
     if reward_account.available == 0 {
         return Err(SoarError::NoAvailableRewards.into());
     }
+    if !player_achievement.claimed {
+        return Err(SoarError::FullyClaimedReward.into());
+    }
+    let achievement_account = &ctx.accounts.achievement;
 
-    let achievement_key = &ctx.accounts.achievement.key();
-    let reward_bump = *ctx.bumps.get("reward").unwrap();
-    let reward_seeds = &[
-        crate::seeds::REWARD,
-        achievement_key.as_ref(),
-        &[reward_bump],
+    let game_key = &ctx.accounts.game.key();
+    let achievement_bump = *ctx.bumps.get("achievement").unwrap();
+    let id = ctx.accounts.achievement.id;
+    let achievement_seeds = &[
+        crate::seeds::ACHIEVEMENT,
+        game_key.as_ref(),
+        &id.to_le_bytes(),
+        &[achievement_bump],
     ];
-    let signer = &[&reward_seeds[..]];
+    let signer = &[&achievement_seeds[..]];
 
-    match &reward_account.reward {
-        RewardKind::FungibleToken {
-            mint: _,
-            token_account,
-        } => {
+    let reward = &mut reward_account.reward;
+    match reward {
+        RewardKind::FungibleToken { mint: _, account } => {
             let user_token_account = &ctx.accounts.user_token_account;
             let source_token_account = &ctx.accounts.source_token_account;
             if user_token_account.is_none() || source_token_account.is_none() {
@@ -41,26 +39,28 @@ pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
             let user_token_account = user_token_account.as_ref().unwrap();
             require_keys_eq!(user_token_account.owner, user.key());
             let source_token_account = source_token_account.as_ref().unwrap();
-            require_keys_eq!(source_token_account.key(), *token_account);
+            require_keys_eq!(source_token_account.key(), *account);
 
             let cpi_ctx = CpiContext::new_with_signer(
                 token_program.to_account_info(),
                 Transfer {
                     from: source_token_account.to_account_info(),
                     to: user_token_account.to_account_info(),
-                    authority: reward_account.to_account_info(),
+                    authority: achievement_account.to_account_info(),
                 },
                 signer,
             );
 
             token::transfer(cpi_ctx, reward_account.amount_per_user)?;
+            player_achievement.claimed = true;
+            player_achievement.claims = reward_account.amount_per_user;
         }
         RewardKind::NonFungibleToken {
             uri,
             name,
             symbol,
-            minted: _,
-            collection_mint,
+            minted,
+            collection,
         } => {
             let payer = &ctx.accounts.payer;
             let mint = &ctx.accounts.nft_reward_mint;
@@ -85,8 +85,6 @@ pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
                 return Err(SoarError::MissingRequiredAccountsForNftReward.into());
             }
 
-            // Temporary: Mint authority ends up being transferred to the master edition account.
-            let mint_authority = &ctx.accounts.authority.to_account_info();
             let payer = payer.as_ref().unwrap();
             let mint = mint.as_ref().unwrap();
             let metadata = metadata.as_ref().unwrap();
@@ -97,17 +95,20 @@ pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
             let system_program = system_program.as_ref().unwrap();
             let rent = rent.as_ref().unwrap();
 
-            create_mint(
+            // Mint authority ends up being transferred to the master edition account.
+            let temp_mint_authority = &payer.to_account_info();
+
+            utils::create_mint(
                 payer,
                 mint,
-                mint_authority,
+                temp_mint_authority,
                 system_program,
                 token_program,
                 &rent.to_account_info(),
             )?;
 
             let user_token_account = mint_to;
-            create_token_account(
+            utils::create_token_account(
                 payer,
                 user_token_account,
                 user,
@@ -117,52 +118,55 @@ pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
                 associated_token_program,
             )?;
 
-            mint_token(
+            utils::mint_token(
                 mint,
                 user_token_account,
-                mint_authority,
+                temp_mint_authority,
                 token_program,
                 None,
             )?;
 
-            let update_authority = reward_account.to_account_info();
-            let creator = Some(reward_account.key());
+            let update_authority = achievement_account.to_account_info();
+            let creator = Some(achievement_account.key());
 
-            create_metadata_account(
+            utils::create_metadata_account(
                 name,
                 symbol,
                 uri,
                 metadata,
                 mint,
-                mint_authority,
+                temp_mint_authority,
                 payer,
                 &update_authority,
                 &creator,
-                collection_mint,
+                collection,
                 token_metadata_program,
                 system_program,
                 &rent.to_account_info(),
-                None,
+                Some(signer),
             )?;
 
-            create_master_edition_account(
+            utils::create_master_edition_account(
                 master_edition,
                 mint,
                 payer,
                 metadata,
-                mint_authority,
-                &update_authority.to_account_info(),
+                temp_mint_authority,
+                &update_authority,
                 token_metadata_program,
                 system_program,
                 &rent.to_account_info(),
-                None,
+                Some(signer),
             )?;
-            // TODO. Shouldn't some sort of metadata be set here.
-            player_achievement.nft_reward_mint = Some(mint.key());
+
+            *minted = minted.checked_add(1).unwrap();
+            player_achievement.claims = player_achievement.claims.checked_add(1).unwrap();
+            if player_achievement.claims == reward_account.amount_per_user {
+                player_achievement.claimed = true;
+            }
         }
     }
 
-    player_achievement.claimed = true;
     reward_account.available = reward_account.available.checked_sub(1).unwrap();
     Ok(())
 }

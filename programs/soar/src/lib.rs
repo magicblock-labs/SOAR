@@ -24,7 +24,7 @@ pub mod soar {
     /// Initialize a new [Game] and register its [LeaderBoard].
     pub fn initialize_game(
         ctx: Context<InitializeGame>,
-        game_meta: GameMeta,
+        game_meta: GameAttributes,
         game_auth: Vec<Pubkey>,
     ) -> Result<()> {
         create_game::handler(ctx, game_meta, game_auth)
@@ -33,7 +33,7 @@ pub mod soar {
     /// Update a [Game]'s meta-information or authority list.
     pub fn update_game(
         ctx: Context<UpdateGame>,
-        new_meta: Option<GameMeta>,
+        new_meta: Option<GameAttributes>,
         new_auth: Option<Vec<Pubkey>>,
     ) -> Result<()> {
         update_game::handler(ctx, new_meta, new_auth)
@@ -123,8 +123,9 @@ pub mod soar {
         unlock_player_achievement::handler(ctx)
     }
 
-    /// Optional: Add an NFT-based [Reward] for unlocking some [Achievement].
-    pub fn add_reward(ctx: Context<AddReward>, input: AddNewRewardArgs) -> Result<()> {
+    /// Optional: Add an NFT-based [Reward] for unlocking some [Achievement]. Overwrite the current
+    /// reward if any exists.
+    pub fn add_reward(ctx: Context<AddReward>, input: AddNewRewardInput) -> Result<()> {
         add_reward::handler(ctx, input)
     }
 
@@ -145,14 +146,14 @@ pub mod soar {
 }
 
 #[derive(Accounts)]
-#[instruction(meta: GameMeta, auth: Vec<Pubkey>)]
+#[instruction(_attr: GameAttributes, auth: Vec<Pubkey>)]
 pub struct InitializeGame<'info> {
     #[account(mut)]
     pub creator: Signer<'info>,
     #[account(
         init,
         payer = creator,
-        space = Game::size_with_auths(auth.len())
+        space = Game::size(auth.len())
     )]
     pub game: Account<'info, Game>,
     pub system_program: Program<'info, System>,
@@ -161,8 +162,8 @@ pub struct InitializeGame<'info> {
 #[derive(Accounts)]
 pub struct UpdateGame<'info> {
     #[account(
-        constraint = game.check_signer_is_authority(authority.key)
-        @ SoarError::InvalidAuthority
+        constraint = game.check_signer(authority.key)
+        @SoarError::InvalidAuthority
     )]
     pub authority: Signer<'info>,
     #[account(mut)]
@@ -175,8 +176,8 @@ pub struct UpdateGame<'info> {
 #[derive(Accounts)]
 pub struct AddAchievement<'info> {
     #[account(
-        constraint = game.check_signer_is_authority(authority.key)
-        @ SoarError::InvalidAuthority
+        constraint = game.check_signer(authority.key)
+        @SoarError::InvalidAuthority
     )]
     pub authority: Signer<'info>,
     #[account(mut)]
@@ -187,26 +188,29 @@ pub struct AddAchievement<'info> {
         init,
         payer = payer,
         space = Achievement::SIZE,
-        seeds = [seeds::ACHIEVEMENT, game.key().as_ref(), &next_achievement(&game).to_le_bytes()],
+        seeds = [
+            seeds::ACHIEVEMENT,
+            game.key().as_ref(),
+            &game.next_achievement().to_le_bytes(),
+        ],
         bump,
     )]
     pub new_achievement: Account<'info, Achievement>,
     pub system_program: Program<'info, System>,
 }
 
-fn next_achievement(game: &Account<'_, Game>) -> u64 {
-    game.achievement_count.checked_add(1).unwrap()
-}
-
 #[derive(Accounts)]
 pub struct UpdateAchievement<'info> {
     #[account(
-        constraint = game.check_signer_is_authority(authority.key)
-        @ SoarError::InvalidAuthority
+        constraint = game.check_signer(authority.key)
+        @SoarError::InvalidAuthority
     )]
     pub authority: Signer<'info>,
     pub game: Account<'info, Game>,
-    #[account(mut, has_one = game)]
+    #[account(
+        mut,
+        has_one = game
+    )]
     pub achievement: Account<'info, Achievement>,
 }
 
@@ -214,8 +218,8 @@ pub struct UpdateAchievement<'info> {
 #[instruction(input: RegisterLeaderBoardInput)]
 pub struct AddLeaderBoard<'info> {
     #[account(
-        constraint = game.check_signer_is_authority(authority.key)
-        @ SoarError::InvalidAuthority
+        constraint = game.check_signer(authority.key)
+        @SoarError::InvalidAuthority
     )]
     pub authority: Signer<'info>,
     #[account(mut)]
@@ -226,35 +230,41 @@ pub struct AddLeaderBoard<'info> {
         init,
         payer = payer,
         space = LeaderBoard::SIZE,
-        seeds = [seeds::LEADER, game.key().as_ref(), &next_leaderboard(&game).to_le_bytes()],
+        seeds = [
+            seeds::LEADER, game.key().as_ref(),
+            &game.next_leaderboard().to_le_bytes()
+        ],
         bump,
     )]
     pub leaderboard: Account<'info, LeaderBoard>,
     #[account(
         init,
         constraint = input.scores_to_retain > 0,
-        space = LeaderTopEntries::size(input.scores_to_retain as usize),
+        space =
+            LeaderTopEntries::size(input.scores_to_retain as usize),
         payer = payer,
-        seeds = [seeds::LEADER_TOP_ENTRIES, leaderboard.key().as_ref()],
+        seeds = [
+            seeds::LEADER_TOP_ENTRIES,
+            leaderboard.key().as_ref()
+        ],
         bump,
     )]
     pub top_entries: Option<Account<'info, LeaderTopEntries>>,
     pub system_program: Program<'info, System>,
 }
 
-fn next_leaderboard(game: &Account<'_, Game>) -> u64 {
-    game.leaderboard_count.checked_add(1).unwrap()
-}
-
 #[derive(Accounts)]
 pub struct UpdateLeaderBoard<'info> {
     #[account(
-        constraint = game.check_signer_is_authority(authority.key)
-        @ SoarError::InvalidAuthority
+        constraint = game.check_signer(authority.key)
+        @SoarError::InvalidAuthority
     )]
     pub authority: Signer<'info>,
     pub game: Account<'info, Game>,
-    #[account(mut, has_one = game)]
+    #[account(
+        mut,
+        has_one = game
+    )]
     pub leaderboard: Account<'info, LeaderBoard>,
 }
 
@@ -270,7 +280,7 @@ pub struct NewPlayer<'info> {
         seeds = [seeds::PLAYER, user.key().as_ref()],
         bump,
     )]
-    pub player_info: Account<'info, Player>,
+    pub player_account: Account<'info, Player>,
     pub system_program: Program<'info, System>,
 }
 
@@ -280,18 +290,22 @@ pub struct RegisterPlayer<'info> {
     pub payer: Signer<'info>,
     pub user: Signer<'info>,
     #[account(has_one = user)]
-    pub player_info: Account<'info, Player>,
+    pub player_account: Account<'info, Player>,
     pub game: Account<'info, Game>,
     #[account(has_one = game)]
     pub leaderboard: Account<'info, LeaderBoard>,
     #[account(
         init,
         payer = payer,
-        space = PlayerEntryList::initial_size(),
-        seeds = [seeds::ENTRY, player_info.key().as_ref(), leaderboard.key().as_ref()],
+        space = PlayerScoresList::initial_size(),
+        seeds = [
+            seeds::ENTRY,
+            player_account.key().as_ref(),
+            leaderboard.key().as_ref()
+        ],
         bump
     )]
-    pub new_list: Account<'info, PlayerEntryList>,
+    pub new_list: Account<'info, PlayerScoresList>,
     system_program: Program<'info, System>,
 }
 
@@ -299,7 +313,7 @@ pub struct RegisterPlayer<'info> {
 pub struct UpdatePlayer<'info> {
     pub user: Signer<'info>,
     #[account(mut)]
-    pub player_info: Account<'info, Player>,
+    pub player_account: Account<'info, Player>,
 }
 
 #[derive(Accounts)]
@@ -308,19 +322,27 @@ pub struct SubmitScore<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
     #[account(
-        constraint = game.check_signer_is_authority(&authority.key())
-        @ SoarError::InvalidAuthority
+        constraint = game.check_signer(&authority.key())
+        @SoarError::InvalidAuthority
     )]
     pub authority: Signer<'info>,
     #[account(has_one = user)]
-    pub player_info: Account<'info, Player>,
+    pub player_account: Account<'info, Player>,
     pub game: Account<'info, Game>,
     #[account(has_one = game)]
     pub leaderboard: Account<'info, LeaderBoard>,
-    #[account(mut, constraint = check_top_entries(&leaderboard, top_entries))]
+    #[account(
+        mut,
+        constraint =
+            check_top_entries(&leaderboard, top_entries)
+    )]
     pub top_entries: Option<Account<'info, LeaderTopEntries>>,
-    #[account(mut, has_one = player_info, has_one = leaderboard)]
-    pub player_entries: Account<'info, PlayerEntryList>,
+    #[account(
+        mut,
+        has_one = player_account,
+        has_one = leaderboard
+    )]
+    pub player_scores: Account<'info, PlayerScoresList>,
     pub system_program: Program<'info, System>,
 }
 
@@ -342,12 +364,15 @@ pub struct InitiateMerge<'info> {
     pub payer: Signer<'info>,
     pub user: Signer<'info>,
     #[account(has_one = user)]
-    pub player: Account<'info, Player>,
+    pub player_account: Account<'info, Player>,
     /// CHECK: Account to be initialized in handler.
     #[account(
         init,
         payer = payer,
-        space = Merged::size(dedup_input(&player.key(), keys).1)
+        space =
+            Merged::size(
+                dedup_input(&player_account.key(), keys).1
+            )
     )]
     pub merge_account: Account<'info, Merged>,
     pub system_program: Program<'info, System>,
@@ -371,7 +396,7 @@ pub fn dedup_input(initiator_player_account: &Pubkey, input: Vec<Pubkey>) -> (Ve
 pub struct ApproveMerge<'info> {
     pub user: Signer<'info>,
     #[account(has_one = user)]
-    pub player_info: Account<'info, Player>,
+    pub player_account: Account<'info, Player>,
     #[account(mut)]
     pub merge_account: Account<'info, Merged>,
 }
@@ -379,19 +404,22 @@ pub struct ApproveMerge<'info> {
 #[derive(Accounts)]
 pub struct UnlockPlayerAchievement<'info> {
     #[account(
-        constraint = game.check_signer_is_authority(&authority.key())
-        @ SoarError::InvalidAuthority
+        constraint = game.check_signer(&authority.key())
+        @SoarError::InvalidAuthority
     )]
     pub authority: Signer<'info>,
     #[account(mut)]
     pub payer: Signer<'info>,
     pub user: Signer<'info>,
     #[account(has_one = user)]
-    pub player_info: Account<'info, Player>,
-    // The presence of the next two accounts ensures that the player has
+    pub player_account: Account<'info, Player>,
+    // The presence of the next two accounts is to ensure that the player has
     // some entry for the game.
-    #[account(has_one = player_info, has_one = leaderboard)]
-    pub player_entry: Account<'info, PlayerEntryList>,
+    #[account(
+        has_one = player_account,
+        has_one = leaderboard
+    )]
+    pub player_scores: Account<'info, PlayerScoresList>,
     #[account(has_one = game)]
     pub leaderboard: Account<'info, LeaderBoard>,
     pub game: Account<'info, Game>,
@@ -401,7 +429,11 @@ pub struct UnlockPlayerAchievement<'info> {
         init,
         payer = payer,
         space = PlayerAchievement::SIZE,
-        seeds = [seeds::PLAYER_ACHIEVEMENT, player_info.key().as_ref(), achievement.key().as_ref()],
+        seeds = [
+            seeds::PLAYER_ACHIEVEMENT,
+            player_account.key().as_ref(),
+            achievement.key().as_ref()
+        ],
         bump
     )]
     pub player_achievement: Account<'info, PlayerAchievement>,
@@ -411,27 +443,29 @@ pub struct UnlockPlayerAchievement<'info> {
 #[derive(Accounts)]
 pub struct AddReward<'info> {
     #[account(
-        constraint = game.check_signer_is_authority(&authority.key())
-        @ SoarError::InvalidAuthority
+        constraint = game.check_signer(&authority.key())
+        @SoarError::InvalidAuthority
     )]
     pub authority: Signer<'info>,
     #[account(mut)]
     pub payer: Signer<'info>,
     pub game: Box<Account<'info, Game>>,
-    #[account(mut, has_one = game)]
+    #[account(
+        mut,
+        has_one = game
+    )]
     pub achievement: Box<Account<'info, Achievement>>,
     #[account(
         init,
         payer = payer,
         space = Reward::SIZE,
-        seeds = [seeds::REWARD, achievement.key().as_ref()],
-        bump,
     )]
     pub new_reward: Box<Account<'info, Reward>>,
     pub system_program: Program<'info, System>,
 
     // Accounts required `ONLY` for ft reward.
     pub ft_reward_token_mint: Option<Box<Account<'info, Mint>>>,
+    #[account(mut)]
     pub ft_reward_delegate_account: Option<Box<Account<'info, TokenAccount>>>,
     pub ft_reward_delegate_account_owner: Option<Signer<'info>>,
     pub token_program: Option<Program<'info, Token>>,
@@ -449,28 +483,36 @@ pub struct AddReward<'info> {
 
 #[derive(Accounts)]
 pub struct ClaimReward<'info> {
+    pub user: Signer<'info>,
+    pub game: Account<'info, Game>,
     #[account(
-        constraint = game.check_signer_is_authority(&authority.key())
-        @ SoarError::InvalidAuthority
-    )]
-    pub authority: Signer<'info>,
-    /// CHECK: Checked in has_one relationship with `player`.
-    pub user: UncheckedAccount<'info>,
-    pub game: Box<Account<'info, Game>>,
-    #[account(
-        has_one = game,
-        constraint = achievement.reward.unwrap() == reward.key()
+        seeds = [
+            seeds::ACHIEVEMENT,
+            game.key().as_ref(),
+            &achievement.id.to_le_bytes()
+        ],
+        bump,
+        constraint = achievement.reward.is_some()
+        @SoarError::NoRewardForAchievement,
+        constraint = matches!(achievement.reward, Some(reward))
     )]
     pub achievement: Box<Account<'info, Achievement>>,
-    #[account(mut, has_one = achievement)]
+
+    #[account(
+        mut,
+        has_one = achievement
+    )]
     pub reward: Box<Account<'info, Reward>>,
     #[account(has_one = user)]
-    pub player: Box<Account<'info, Player>>,
+    pub player_account: Box<Account<'info, Player>>,
     #[account(
-        has_one = player,
+        mut,
+        has_one = player_account,
         has_one = achievement,
-        constraint = player_achievement.claimed == false
-        @ SoarError::DuplicateRewardClaim
+        constraint = player_achievement.unlocked
+        @SoarError::PlayerAchievementLocked,
+        constraint = !player_achievement.claimed
+        @SoarError::FullyClaimedReward
     )]
     pub player_achievement: Box<Account<'info, PlayerAchievement>>,
     pub token_program: Program<'info, Token>,
@@ -478,20 +520,31 @@ pub struct ClaimReward<'info> {
     // Accounts required for an achievement with an NFT RewardKind.
     #[account(mut)]
     pub payer: Option<Signer<'info>>,
+    #[account(
+        init,
+        payer = payer,
+        space = NftClaim::SIZE,
+        seeds = [
+            seeds::NFT_CLAIM,
+            reward.key().as_ref(),
+            nft_reward_mint.as_ref().unwrap().key().as_ref()
+        ],
+        bump
+    )]
+    pub claim: Option<Account<'info, NftClaim>>,
     #[account(mut)]
-    /// Initialized as mint in instruction.
     pub nft_reward_mint: Option<Signer<'info>>,
     #[account(mut)]
-    /// CHECK: Checked in metaplex program.
+    /// CHECK: Checked in Metaplex CPI..
     pub nft_reward_metadata: Option<UncheckedAccount<'info>>,
     #[account(mut)]
-    /// CHECK: Checked in metaplex program.
+    /// CHECK: Checked in Metaplex CPI.
     pub nft_reward_master_edition: Option<UncheckedAccount<'info>>,
     #[account(mut)]
     /// CHECK: Initialized in handler as token account owned by `user`.
     pub nft_reward_mint_to: Option<UncheckedAccount<'info>>,
     #[account(address = mpl_token_metadata::ID)]
-    /// CHECK: Verified Token Metadata Program address.
+    /// CHECK: mpl_token_metadata ID.
     pub token_metadata_program: Option<UncheckedAccount<'info>>,
     pub associated_token_program: Option<Program<'info, AssociatedToken>>,
     pub system_program: Option<Program<'info, System>>,
@@ -501,68 +554,75 @@ pub struct ClaimReward<'info> {
     #[account(mut)]
     pub source_token_account: Option<Account<'info, TokenAccount>>,
     #[account(mut)]
-    pub user_token_account: Option<Account<'info, TokenAccount>>
+    pub user_token_account: Option<Account<'info, TokenAccount>>,
 }
 
 #[derive(Accounts)]
 pub struct VerifyReward<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
-    #[account(
-        constraint = game.check_signer_is_authority(&authority.key())
-        @ SoarError::InvalidAuthority
-    )]
-    pub authority: Signer<'info>,
     pub game: Box<Account<'info, Game>>,
     #[account(
         has_one = game,
+        seeds = [
+            seeds::ACHIEVEMENT,
+            game.key().as_ref(),
+            &achievement.id.to_le_bytes()
+        ],
+        bump,
         constraint = achievement.reward.unwrap() == reward.key()
     )]
     pub achievement: Box<Account<'info, Achievement>>,
-    #[account(
-        has_one = achievement,
-        seeds = [seeds::REWARD, achievement.key().as_ref()], bump,
-        //constraint = reward.collection_mint == Some(collection_mint.key())
-    )]
+    #[account(has_one = achievement)]
     pub reward: Box<Account<'info, Reward>>,
     /// CHECK: Checked in has_one relationship with `player`.
-    pub user: UncheckedAccount<'info>,
+    pub user: Signer<'info>,
     #[account(has_one = user)]
-    pub player: Box<Account<'info, Player>>,
+    pub player_account: Box<Account<'info, Player>>,
     #[account(
-        has_one = player, has_one = achievement,
-        constraint = player_achievement.nft_reward_mint.unwrap() == mint.key()
+        seeds = [
+            seeds::NFT_CLAIM,
+            reward.key().as_ref(),
+            mint.key().as_ref()
+        ],
+        bump
+    )]
+    pub claim: Account<'info, NftClaim>,
+    #[account(
+        has_one = player_account,
+        has_one = achievement
     )]
     pub player_achievement: Box<Account<'info, PlayerAchievement>>,
-    /// CHECK: Checked that this is the mint in player_achievement.
+    /// CHECK: Checked with constraint on `claim`.
     pub mint: UncheckedAccount<'info>,
-    /// CHECK: Checked in handler that this is the metadata account for this mint.
+    /// CHECK: Checked in handler.
+    #[account(mut)]
     pub metadata_to_verify: UncheckedAccount<'info>,
-    /// CHECK: We check that it's the reward's collection mint.
-    #[account(constraint = verify_reward_collection(&reward, collection_mint.key()))]
+    /// CHECK: Checked in constraint.
+    #[account(
+        constraint =
+            check_reward_collection(&reward, collection_mint.key())
+    )]
     pub collection_mint: UncheckedAccount<'info>,
     #[account(mut)]
-    /// CHECK: Checked in CPI to Metaplex.
+    /// CHECK: Checked in Metaplex CPI.
     pub collection_metadata: UncheckedAccount<'info>,
-    /// CHECK: Checked in CPI to Metaplex.
+    /// CHECK: Checked in Metaplex CPI.
     pub collection_master_edition: UncheckedAccount<'info>,
+    #[account(address = mpl_token_metadata::ID)]
+    /// CHECK: mpl_token_metadata address.
+    pub token_metadata_program: UncheckedAccount<'info>,
 }
 
-fn verify_reward_collection(reward: &Reward, maybe_collection_mint: Pubkey) -> bool {
+fn check_reward_collection(reward: &Reward, maybe_collection_mint: Pubkey) -> bool {
     match &reward.reward {
         RewardKind::NonFungibleToken {
             uri: _,
             name: _,
             symbol: _,
             minted: _,
-            collection_mint,
-        } => {
-            if collection_mint.is_some() && collection_mint.unwrap() == maybe_collection_mint {
-                true
-            } else {
-                false
-            }
-        }
+            collection: Some(key),
+        } => *key == maybe_collection_mint,
         _ => false,
     }
 }

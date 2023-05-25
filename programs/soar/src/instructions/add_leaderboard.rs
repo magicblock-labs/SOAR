@@ -1,19 +1,29 @@
-use crate::state::{LeaderBoardScore, RegisterLeaderBoardInput};
+use crate::error::SoarError;
+use crate::state::{FieldsCheck, LeaderBoardScore, RegisterLeaderBoardInput};
 use crate::AddLeaderBoard;
 use anchor_lang::prelude::*;
 
 pub fn handler(ctx: Context<AddLeaderBoard>, input: RegisterLeaderBoardInput) -> Result<()> {
-    input.check_field_lengths()?;
+    input.check()?;
 
     let game = &ctx.accounts.game;
-    let new_count = crate::next_leaderboard(game);
+    let new_count = game.next_leaderboard();
 
     let retain_count = input.scores_to_retain;
     let order = input.scores_order;
 
-    let leaderboard = input.into_leaderboard(game.key(), new_count);
+    let leaderboard = input.into();
     ctx.accounts.leaderboard.set_inner(leaderboard);
+    ctx.accounts.leaderboard.id = new_count;
+    ctx.accounts.leaderboard.game = game.key();
     ctx.accounts.game.leaderboard_count = new_count;
+
+    if retain_count > 0 {
+        require!(
+            ctx.accounts.top_entries.is_some(),
+            SoarError::MissingExpectedAccount
+        );
+    }
 
     if retain_count > 0 && ctx.accounts.top_entries.is_some() {
         let top_entries = &mut ctx.accounts.top_entries.as_mut().unwrap();

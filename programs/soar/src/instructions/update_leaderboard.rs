@@ -1,3 +1,4 @@
+use crate::state::FieldsCheck;
 use crate::UpdateLeaderBoard;
 use anchor_lang::prelude::*;
 
@@ -14,7 +15,7 @@ pub fn handler(
     if let Some(nft_meta) = new_nft_meta {
         leaderboard.nft_meta = nft_meta;
     }
-    leaderboard.check_field_lengths()?;
+    leaderboard.check()?;
 
     Ok(())
 }

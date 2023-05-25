@@ -7,14 +7,14 @@ pub enum SoarError {
     InvalidFieldLength,
 
     /// Returned if the wrong authority attempts to sign for an instruction
-    #[msg("Invalid authority for instruction.")]
+    #[msg("Invalid authority for instruction")]
     InvalidAuthority,
 
     /// Returned if an account that's expected to sign doesn't.
-    #[msg("An expected signature isn't present.")]
+    #[msg("An expected signature isn't present")]
     MissingSignature,
 
-    #[msg("Reward not specified for this achievement.")]
+    #[msg("Reward not specified for this achievement")]
     NoRewardForAchievement,
 
     #[msg("The merge account does not include this player account")]
@@ -23,15 +23,21 @@ pub enum SoarError {
     #[msg("Tried to input score that is below the minimum or above the maximum")]
     ScoreNotWithinBounds,
 
-    #[msg("An account required for setting up this reward kind is missing.")]
+    #[msg("An optional but expected account is missing")]
+    MissingExpectedAccount,
+
+    #[msg("An account required for setting up this reward kind is missing")]
     MissingRequiredAccountsForFtReward,
 
-    #[msg("An account required for setting up this reward kind is missing.")]
+    #[msg("An account required for setting up this reward kind is missing")]
     MissingRequiredAccountsForNftReward,
 
-    #[msg("No more rewards are being given out for this game.")]
+    #[msg("No more rewards are being given out for this game")]
     NoAvailableRewards,
 
-    #[msg("This user has already claimed their reward")]
-    DuplicateRewardClaim,
+    #[msg("This user has fully claimed their reward")]
+    FullyClaimedReward,
+
+    #[msg("This player has not yet unlocked this achievement")]
+    PlayerAchievementLocked,
 }

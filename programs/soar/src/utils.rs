@@ -316,6 +316,7 @@ pub fn update_metadata_account<'a>(
     Ok(())
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn verify_nft<'a>(
     unverified_metadata: &AccountInfo<'a>,
     payer: &AccountInfo<'a>,
@@ -323,6 +324,7 @@ pub fn verify_nft<'a>(
     collection_metadata: &AccountInfo<'a>,
     collection_master_edition: &AccountInfo<'a>,
     collection_update_authority: &AccountInfo<'a>,
+    token_metadata_program: &AccountInfo<'a>,
     signer: Option<&[&[&[u8]]]>,
 ) -> Result<()> {
     let instruction = mpl_token_metadata::instruction::verify_sized_collection_item(
@@ -336,6 +338,7 @@ pub fn verify_nft<'a>(
         None,
     );
     let accounts = [
+        token_metadata_program.clone(),
         unverified_metadata.clone(),
         collection_update_authority.clone(),
         payer.clone(),

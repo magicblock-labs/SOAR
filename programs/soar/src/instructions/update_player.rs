@@ -1,3 +1,4 @@
+use crate::state::FieldsCheck;
 use crate::UpdatePlayer;
 use anchor_lang::prelude::*;
 
@@ -6,7 +7,7 @@ pub fn handler(
     username: Option<String>,
     nft_metadata: Option<Pubkey>,
 ) -> Result<()> {
-    let player_account = &mut ctx.accounts.player_info;
+    let player_account = &mut ctx.accounts.player_account;
 
     if let Some(name) = username {
         player_account.username = name;
@@ -15,6 +16,6 @@ pub fn handler(
         player_account.nft_meta = meta;
     }
 
-    player_account.check_field_lengths()?;
+    player_account.check()?;
     Ok(())
 }

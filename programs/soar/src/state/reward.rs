@@ -1,41 +1,79 @@
-use super::{Reward, RewardKind};
-use crate::SoarError;
 use anchor_lang::prelude::*;
 
-#[constant]
-const MAX_URI_LENGTH: usize = 200;
-#[constant]
-const MAX_NAME_LENGTH: usize = 32;
-#[constant]
-const MAX_SYMBOL_LENGTH: usize = 10;
+// Existence serves as proof of a valid claimed nft and
+// is checked during collection verification.
+#[account]
+pub struct NftClaim {}
+impl NftClaim {
+    pub const SIZE: usize = 8;
+}
+
+#[account]
+#[derive(Debug)]
+/// An account representing a reward for a given achievement.
+pub struct Reward {
+    /// The achievement this reward is given for.
+    pub achievement: Pubkey,
+
+    /// Number of available reward spots.
+    pub available: u64,
+
+    /// Reward amount per user.
+    pub amount_per_user: u64,
+
+    /// The reward kind. Current supports Nft and Ft rewards only.
+    pub reward: RewardKind,
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
+/// The kind of reward to be given out.
+pub enum RewardKind {
+    /// Fungible token rewards.
+    FungibleToken {
+        /// The mint of the token to be given out.
+        mint: Pubkey,
+
+        /// The token account to withdraw from.
+        account: Pubkey,
+    },
+    /// NFT rewards.
+    NonFungibleToken {
+        /// URI of the NFT to be minted.
+        uri: String,
+
+        /// Name of the NFT to be minted.
+        name: String,
+
+        /// Symbol of the NFT to be minted.
+        symbol: String,
+
+        /// Total NFTs minted so far.
+        minted: u64,
+
+        /// Optional field for a collection mint used for
+        /// verifying minted rewards.
+        collection: Option<Pubkey>,
+    },
+}
 
 impl Reward {
-    pub const SIZE: usize = 8 + 32 + 8 + 8 + RewardKind::MAX_SIZE;
+    pub const MAX_URI_LENGTH: usize = 200;
+    pub const MAX_NAME_LENGTH: usize = 32;
+    pub const MAX_SYMBOL_LENGTH: usize = 10;
 
-    pub fn check_field_lengths(&self) -> Result<()> {
-        use RewardKind::*;
-        match &self.reward {
-            NonFungibleToken {
-                uri,
-                name,
-                symbol,
-                minted: _,
-                collection_mint: _,
-            } => {
-                if uri.len() > MAX_URI_LENGTH
-                    || name.len() > MAX_NAME_LENGTH
-                    || symbol.len() > MAX_SYMBOL_LENGTH
-                {
-                    Err(SoarError::InvalidFieldLength.into())
-                } else {
-                    Ok(())
-                }
-            }
-            _ => Ok(()),
-        }
-    }
+    /// Size of a borsh-serialized [Reward].
+    pub const SIZE: usize = 8 + // discriminator
+        32 + // achievement
+        8 +  // available
+        8 +  // amount_per_user
+        RewardKind::MAX_SIZE; // reward_kind
 }
 
 impl RewardKind {
-    const MAX_SIZE: usize = (200 + 4) + (32 + 4) + (10 + 4) + 8 + (1 + 32);
+    /// Size of an [nft][RewardKind::NonFungibleToken] reward type.
+    const MAX_SIZE: usize = (200 + 4) + // uri
+        (32 + 4) +  // name
+        (10 + 4) +  // symbol
+        8 + // minted
+        1 + 32; // collection
 }

@@ -1,11 +1,12 @@
-use crate::error::SoarError;
-use crate::state::{LeaderBoardScore, PlayerEntryList, ScoreEntry};
-use crate::utils::resize_account;
-use crate::SubmitScore;
+use crate::{
+    error::SoarError,
+    state::{LeaderBoardScore, PlayerScoresList, ScoreEntry},
+    utils, SubmitScore,
+};
 use anchor_lang::prelude::*;
 
 pub fn handler(ctx: Context<SubmitScore>, score: u64) -> Result<()> {
-    let player_entries = &mut ctx.accounts.player_entries;
+    let player_scores = &mut ctx.accounts.player_scores;
     let leaderboard = &ctx.accounts.leaderboard;
 
     if score < leaderboard.min_score || score > leaderboard.max_score {
@@ -15,31 +16,31 @@ pub fn handler(ctx: Context<SubmitScore>, score: u64) -> Result<()> {
     let clock = Clock::get().unwrap();
     let entry = ScoreEntry::new(score, clock.unix_timestamp);
 
-    let count = player_entries.scores.len();
-    if count == player_entries.alloc_count as usize {
-        let window = PlayerEntryList::REALLOC_WINDOW;
+    let count = player_scores.scores.len();
+    if count == player_scores.alloc_count as usize {
+        let window = PlayerScoresList::REALLOC_WINDOW;
         msg!(
             "count: {}. Reallocating space for {} entries",
             count,
             window
         );
 
-        let size = player_entries.current_size();
+        let size = player_scores.current_size();
         let to_add = window.checked_mul(ScoreEntry::SIZE).unwrap();
         let new_size = size.checked_add(to_add).unwrap();
 
-        resize_account(
-            &player_entries.to_account_info(),
+        utils::resize_account(
+            &player_scores.to_account_info(),
             &ctx.accounts.payer.to_account_info(),
             &ctx.accounts.system_program.to_account_info(),
             new_size,
         )?;
-        player_entries.alloc_count = player_entries
+        player_scores.alloc_count = player_scores
             .alloc_count
-            .checked_add(PlayerEntryList::REALLOC_WINDOW as u16)
+            .checked_add(PlayerScoresList::REALLOC_WINDOW as u16)
             .unwrap();
 
-        let new_space = player_entries.to_account_info().data_len();
+        let new_space = player_scores.to_account_info().data_len();
         msg!(
             "Resized account with initial space {}. New space: {}.",
             size,
@@ -47,7 +48,7 @@ pub fn handler(ctx: Context<SubmitScore>, score: u64) -> Result<()> {
         );
     }
 
-    player_entries.scores.push(entry);
+    player_scores.scores.push(entry);
     let user_key = ctx.accounts.user.key();
 
     if let Some(top_entries) = &mut ctx.accounts.top_entries {

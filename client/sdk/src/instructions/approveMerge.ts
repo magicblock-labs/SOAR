@@ -10,7 +10,7 @@ export const registerMergeApprovalInstruction = async (
 ): Promise<TransactionInstruction> => {
   const accounts = {
     user,
-    playerInfo: userPlayerAccount,
+    playerAccount: userPlayerAccount,
     mergeAccount,
   };
   return program.methods.approveMerge().accounts(accounts).instruction();

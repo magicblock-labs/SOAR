@@ -6,7 +6,7 @@ export class MergedAccount {
   private constructor(
     public readonly address: PublicKey,
     public readonly initiator: PublicKey,
-    public readonly others: MergeInfo[],
+    public readonly approvals: MergeApproval[],
     public readonly mergeComplete: boolean
   ) {}
 
@@ -17,12 +17,12 @@ export class MergedAccount {
     return new MergedAccount(
       address,
       account.initiator,
-      account.others,
+      account.approvals,
       account.mergeComplete
     );
   }
 
-  public print(): {
+  public pretty(): {
     address: string;
     initiator: string;
     others: Array<{
@@ -34,19 +34,19 @@ export class MergedAccount {
     return {
       address: this.address.toBase58(),
       initiator: this.initiator.toBase58(),
-      others: this.others.map((other) => printMergeInfo(other)),
+      others: this.approvals.map((approval) => printMergeApproval(approval)),
       mergeComplete: this.mergeComplete,
     };
   }
 }
 
-interface MergeInfo {
+interface MergeApproval {
   key: PublicKey;
   approved: boolean;
 }
 
-const printMergeInfo = (
-  raw: MergeInfo
+const printMergeApproval = (
+  raw: MergeApproval
 ): {
   key: string;
   approved: boolean;

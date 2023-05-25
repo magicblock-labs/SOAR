@@ -58,7 +58,7 @@ export const addRewardInstruction = async (
   } else if (ft !== undefined) {
     kind = { ft };
   } else {
-    throw Error("Either or nft or ft must be defined");
+    throw Error("Either nft or ft must be defined");
   }
 
   return program.methods

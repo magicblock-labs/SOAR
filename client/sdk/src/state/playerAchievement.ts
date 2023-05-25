@@ -10,8 +10,8 @@ export class PlayerAchievementAccount {
     public readonly achievement: PublicKey,
     public readonly timestamp: BN,
     public readonly unlocked: boolean,
-    public readonly claimed: boolean,
-    public readonly nftRewardMint: PublicKey | null
+    public readonly claims: BN,
+    public readonly claimed: boolean
   ) {}
 
   public static fromIdlAccount(
@@ -20,23 +20,23 @@ export class PlayerAchievementAccount {
   ): PlayerAchievementAccount {
     return new PlayerAchievementAccount(
       address,
-      account.player,
+      account.playerAccount,
       account.achievement,
       account.timestamp,
       account.unlocked,
-      account.claimed,
-      account.nftRewardMint
+      account.claims,
+      account.claimed
     );
   }
 
-  public print(): {
+  public pretty(): {
     address: string;
     player: string;
     achievement: string;
     timestamp: string;
     unlocked: boolean;
+    claims: string;
     claimed: boolean;
-    nftRewardMint: string | null;
   } {
     return {
       address: this.address.toBase58(),
@@ -44,11 +44,8 @@ export class PlayerAchievementAccount {
       achievement: this.achievement.toBase58(),
       timestamp: this.timestamp.toString(),
       unlocked: this.unlocked,
+      claims: this.claims.toString(),
       claimed: this.claimed,
-      nftRewardMint:
-        this.nftRewardMint !== null
-          ? this.nftRewardMint.toBase58()
-          : this.nftRewardMint,
     };
   }
 }

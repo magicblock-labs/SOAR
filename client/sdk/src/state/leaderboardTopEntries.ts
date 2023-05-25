@@ -21,7 +21,7 @@ export class TopEntriesAccount {
     );
   }
 
-  public print(): {
+  public pretty(): {
     address: string;
     isAscending: boolean;
     topScores: Array<{

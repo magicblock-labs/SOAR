@@ -17,7 +17,7 @@ export const initiateMergeInstruction = async (
   const accounts = {
     user,
     payer,
-    player: userPlayerAccount,
+    playerAccount: userPlayerAccount,
     mergeAccount: newMergeAccount,
     systemProgram: SystemProgram.programId,
   };

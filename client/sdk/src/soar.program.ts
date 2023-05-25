@@ -1,7 +1,6 @@
-import { type AnchorProvider, type IdlTypes, Program } from "@coral-xyz/anchor";
+import { type AnchorProvider, Program } from "@coral-xyz/anchor";
 import {
   type ConfirmOptions,
-  Keypair,
   PublicKey,
   type GetProgramAccountsFilter,
   type Signer,
@@ -25,40 +24,40 @@ import {
   submitScoreInstruction,
   unlockPlayerAchievementInstruction,
   addRewardInstruction,
-  mintRewardInstruction,
+  claimRewardInstruction,
   verifyRewardInstruction,
   initiateMergeInstruction,
   registerMergeApprovalInstruction,
 } from "./instructions";
-import {
-  Seeds,
-  deriveEditionAddress,
-  deriveMetadataAddress,
-  deriveAssociatedTokenAddress,
-  zip,
-} from "./utils";
+import { Seeds, Utils } from "./utils";
 import { type InstructionResult } from "./types";
 import {
   type GameType,
   type Genre,
+  type GameAttributes,
   GameAccount,
   AchievementAccount,
   PlayerAccount,
   LeaderBoardAccount,
   TopEntriesAccount,
   MergedAccount,
-  PlayerEntryListAccount,
+  PlayerScoresListAccount,
   PlayerAchievementAccount,
   RewardAccount,
 } from "./state";
 import bs58 from "bs58";
-import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import {
+  createAssociatedTokenAccountIdempotentInstruction,
+  TOKEN_PROGRAM_ID,
+} from "@solana/spl-token";
 import { GameClient } from "./soar.game";
 
 export class SoarProgram {
   readonly program: Program<Soar>;
+  readonly utils: Utils;
 
   private constructor(readonly provider: AnchorProvider) {
+    this.utils = new Utils();
     this.program = new Program<Soar>(IDL, PROGRAM_ID, provider);
   }
 
@@ -124,7 +123,7 @@ export class SoarProgram {
   public async updateGameAccount(
     game: PublicKey,
     authority: PublicKey,
-    newMeta: IdlTypes<Soar>["GameMeta"] | null,
+    newMeta: GameAttributes | null,
     newAuths: PublicKey[] | null
   ): Promise<InstructionResult.UpdateGame> {
     const transaction = new Transaction();
@@ -353,9 +352,10 @@ export class SoarProgram {
     const topEntries = this.deriveLeaderTopEntriesAddress(leaderboard)[0];
 
     const preInstructions = new Array<TransactionInstruction>();
-    const playerEntryInfo = await this.program.account.playerEntryList.fetch(
+    const playerEntryInfo = await this.fetchPlayerScoresListAccount(
       playerEntryList
     );
+
     if (playerEntryInfo === null) {
       const register = await registerPlayerEntryInstruction(
         this.program,
@@ -455,6 +455,7 @@ export class SoarProgram {
 
   public async addFungibleReward(
     authority: PublicKey,
+    newReward: PublicKey,
     achievement: PublicKey,
     amountPerUser: BN,
     availableRewards: BN,
@@ -466,7 +467,6 @@ export class SoarProgram {
   ): Promise<InstructionResult.AddReward> {
     const gameAddress =
       game ?? (await this.fetchAchievementAccount(achievement)).game;
-    const newRewardAddress = this.deriveRewardAddress(achievement)[0];
 
     const instruction = await addRewardInstruction(
       this.program,
@@ -481,7 +481,7 @@ export class SoarProgram {
       this.provider.publicKey,
       gameAddress,
       achievement,
-      newRewardAddress,
+      newReward,
       SystemProgram.programId,
       mint,
       sourceTokenAccount,
@@ -489,14 +489,32 @@ export class SoarProgram {
       TOKEN_PROGRAM_ID
     );
 
+    const oldReward = await this.fetchAchievementAccount(achievement).then(
+      (res) => res.reward
+    );
     return {
-      newReward: newRewardAddress,
+      oldReward,
+      newReward,
       transaction: new Transaction().add(instruction),
     };
   }
 
+  private createAssociatedTokenAccount(
+    mint: PublicKey,
+    ata: PublicKey,
+    owner: PublicKey
+  ): TransactionInstruction {
+    return createAssociatedTokenAccountIdempotentInstruction(
+      this.provider.publicKey,
+      ata,
+      owner,
+      mint
+    );
+  }
+
   public async addNonFungibleReward(
     authority: PublicKey,
+    newReward: PublicKey,
     achievement: PublicKey,
     amountPerUser: BN,
     availableRewards: BN,
@@ -509,12 +527,11 @@ export class SoarProgram {
   ): Promise<InstructionResult.AddReward> {
     const gameAddress =
       game ?? (await this.fetchAchievementAccount(achievement)).game;
-    const newRewardAddress = this.deriveRewardAddress(achievement)[0];
 
     let collectionMetadata: PublicKey | undefined;
     let metadataProgram: PublicKey | undefined;
     if (collectionMint !== undefined) {
-      collectionMetadata = deriveMetadataAddress(collectionMint)[0];
+      collectionMetadata = this.utils.deriveMetadataAddress(collectionMint)[0];
       metadataProgram = TOKEN_METADATA_PROGRAM_ID;
     }
 
@@ -532,7 +549,7 @@ export class SoarProgram {
       this.provider.publicKey,
       gameAddress,
       achievement,
-      newRewardAddress,
+      newReward,
       SystemProgram.programId,
       undefined,
       undefined,
@@ -544,37 +561,167 @@ export class SoarProgram {
       metadataProgram
     );
 
+    const oldReward = await this.fetchAchievementAccount(achievement).then(
+      (res) => res.reward
+    );
     return {
-      newReward: newRewardAddress,
+      oldReward,
+      newReward,
       transaction: new Transaction().add(instruction),
     };
   }
 
-  public async mintPlayerRewardForAchievement(
-    authority: PublicKey,
+  public async claimNftReward(
     achievement: PublicKey,
-    payer: PublicKey,
+    mint: PublicKey,
     user: PublicKey,
+    reward?: PublicKey,
     game?: PublicKey
   ): Promise<InstructionResult.MintReward> {
+    const transaction = new Transaction();
+
     const gameAddress =
       game ?? (await this.fetchAchievementAccount(achievement)).game;
+
+    const rewardAddress =
+      reward ?? (await this.fetchAchievementAccount(achievement)).reward;
+    if (rewardAddress === null) {
+      throw new Error("No reward for achievement");
+    }
+
     const userPlayerAccount = this.derivePlayerAddress(user)[0];
-    const rewardAddress = this.deriveRewardAddress(achievement)[0];
     const playerAchievement = this.derivePlayerAchievementAddress(
-      userPlayerAccount,
+      user,
       achievement
     )[0];
 
-    const mint = Keypair.generate();
-    const metadata = deriveMetadataAddress(mint.publicKey)[0];
-    const masterEdition = deriveEditionAddress(mint.publicKey)[0];
-    const ata = deriveAssociatedTokenAddress(mint.publicKey, user);
+    const metadata = this.utils.deriveMetadataAddress(mint)[0];
+    const masterEdition = this.utils.deriveEditionAddress(mint)[0];
+    const userAta = this.utils.deriveAssociatedTokenAddress(mint, user);
 
-    const instruction = await mintRewardInstruction(
+    const claim = this.deriveNftClaimAddress(rewardAddress, mint)[0];
+    const instruction = await claimRewardInstruction(
       this.program,
-      authority,
-      payer,
+      user,
+      userPlayerAccount,
+      gameAddress,
+      achievement,
+      rewardAddress,
+      playerAchievement,
+      {
+        feePayer: this.provider.publicKey,
+        claim,
+        newMint: mint,
+        newMetadata: metadata,
+        newMasterEdition: masterEdition,
+        mintNftTo: userAta,
+      }
+    );
+
+    return {
+      newMint: mint,
+      transaction: transaction.add(instruction),
+    };
+  }
+
+  public async claimFtReward(
+    achievement: PublicKey,
+    user: PublicKey,
+    reward?: PublicKey,
+    game?: PublicKey
+  ): Promise<InstructionResult.MintReward> {
+    const transaction = new Transaction();
+
+    const gameAddress =
+      game ?? (await this.fetchAchievementAccount(achievement)).game;
+
+    const rewardAddress =
+      reward ?? (await this.fetchAchievementAccount(achievement)).reward;
+    if (rewardAddress === null) {
+      throw new Error("No reward for achievement");
+    }
+
+    const userPlayerAccount = this.derivePlayerAddress(user)[0];
+    const playerAchievement = this.derivePlayerAchievementAddress(
+      user,
+      achievement
+    )[0];
+
+    const rewardAccount = await this.fetchRewardAccount(rewardAddress);
+    if (rewardAccount.FungibleToken === undefined) {
+      throw new Error("Not a fungible-token reward");
+    }
+    const mint = rewardAccount.FungibleToken.mint;
+
+    const userAta = this.utils.deriveAssociatedTokenAddress(mint, user);
+    const account = await this.provider.connection.getAccountInfo(userAta);
+    if (account === null) {
+      transaction.add(this.createAssociatedTokenAccount(mint, userAta, user));
+    }
+
+    const instruction = await claimRewardInstruction(
+      this.program,
+      user,
+      userPlayerAccount,
+      gameAddress,
+      achievement,
+      rewardAddress,
+      playerAchievement,
+      undefined,
+      {
+        sourceTokenAccount: rewardAccount.FungibleToken.account,
+        userTokenAccount: userAta,
+      }
+    );
+
+    return {
+      newMint: mint,
+      transaction: transaction.add(instruction),
+    };
+  }
+
+  public async verifyPlayerNftReward(
+    user: PublicKey,
+    achievement: PublicKey,
+    mint: PublicKey,
+    reward?: PublicKey,
+    game?: PublicKey
+  ): Promise<InstructionResult.VerifyReward> {
+    const gameAddress =
+      game ?? (await this.program.account.achievement.fetch(achievement)).game;
+
+    const rewardAddress =
+      reward ?? (await this.fetchAchievementAccount(achievement)).reward;
+    if (rewardAddress === null) {
+      throw new Error("No reward for achievement");
+    }
+
+    const userPlayerAccount = this.derivePlayerAddress(user)[0];
+    const playerAchievement = this.derivePlayerAchievementAddress(
+      user,
+      achievement
+    )[0];
+
+    const claim = this.deriveNftClaimAddress(rewardAddress, mint)[0];
+    const metadata = this.utils.deriveMetadataAddress(mint)[0];
+
+    const rewardAccount = await this.fetchRewardAccount(rewardAddress);
+    if (
+      rewardAccount.NonFungibleToken === undefined ||
+      rewardAccount.NonFungibleToken?.collection === null
+    ) {
+      throw new Error("No collection to verify rewards for.");
+    }
+
+    const collectionMint = rewardAccount.NonFungibleToken.collection;
+    const collectionMetadata =
+      this.utils.deriveMetadataAddress(collectionMint)[0];
+    const collectionEdition =
+      this.utils.deriveEditionAddress(collectionMint)[0];
+
+    const instruction = await verifyRewardInstruction(
+      this.program,
+      this.provider.publicKey,
       user,
       userPlayerAccount,
       gameAddress,
@@ -582,65 +729,9 @@ export class SoarProgram {
       rewardAddress,
       playerAchievement,
       mint,
+      claim,
       metadata,
-      masterEdition,
-      ata
-    );
-
-    return {
-      newMint: mint.publicKey,
-      transaction: new Transaction().add(instruction),
-    };
-  }
-
-  public async verifyPlayerNftReward(
-    authority: PublicKey,
-    user: PublicKey,
-    payer: PublicKey,
-    achievement: PublicKey,
-    game?: PublicKey
-  ): Promise<InstructionResult.VerifyReward> {
-    const gameAddress =
-      game ?? (await this.program.account.achievement.fetch(achievement)).game;
-
-    const userPlayerAccount = this.derivePlayerAddress(user)[0];
-    const rewardAddress = this.deriveRewardAddress(achievement)[0];
-    const playerAchievement = this.derivePlayerAchievementAddress(
-      userPlayerAccount,
-      achievement
-    )[0];
-
-    const account = await this.fetchPlayerAchievementAccount(playerAchievement);
-    if (account === null || account.nftRewardMint === null) {
-      throw new Error("No reward minted for this user.");
-    }
-    const metadata = deriveMetadataAddress(account.nftRewardMint)[0];
-
-    const rewardAccount = await this.fetchRewardAccount(rewardAddress);
-    if (
-      rewardAccount.NonFungibleToken === undefined ||
-      rewardAccount.NonFungibleToken?.collection_mint === null
-    ) {
-      throw new Error("No collection to verify rewards for.");
-    }
-
-    const collectionMint = rewardAccount.NonFungibleToken.collection_mint;
-    const collectionMetadata = deriveMetadataAddress(collectionMint)[0];
-    const collectionEdition = deriveEditionAddress(collectionMint)[0];
-
-    const instruction = await verifyRewardInstruction(
-      this.program,
-      authority,
-      payer,
-      user,
-      userPlayerAccount,
-      gameAddress,
-      achievement,
-      rewardAddress,
-      playerAchievement,
-      account.nftRewardMint,
-      metadata,
-      rewardAccount.NonFungibleToken.collection_mint,
+      rewardAccount.NonFungibleToken.collection,
       collectionMetadata,
       collectionEdition
     );
@@ -667,7 +758,7 @@ export class SoarProgram {
     signers: Signer[][] = [],
     opts?: ConfirmOptions
   ): Promise<string[]> {
-    const txesWithSigners = zip(transactions, signers, []);
+    const txesWithSigners = this.utils.zip(transactions, signers, []);
     const txSigs: string[] = [];
 
     for (const [tx, signers] of txesWithSigners) {
@@ -744,6 +835,16 @@ export class SoarProgram {
     );
   }
 
+  public deriveNftClaimAddress(
+    reward: PublicKey,
+    mint: PublicKey
+  ): [PublicKey, number] {
+    return PublicKey.findProgramAddressSync(
+      [Buffer.from(Seeds.NFT_CLAIM), reward.toBuffer(), mint.toBuffer()],
+      this.program.programId
+    );
+  }
+
   public async fetchAchievementAccount(
     address: PublicKey
   ): Promise<AchievementAccount> {
@@ -782,11 +883,11 @@ export class SoarProgram {
     return PlayerAchievementAccount.fromIdlAccount(info, address);
   }
 
-  public async fetchPlayerEntryListAccount(
+  public async fetchPlayerScoresListAccount(
     address: PublicKey
-  ): Promise<PlayerEntryListAccount> {
-    const info = await this.program.account.playerEntryList.fetch(address);
-    return PlayerEntryListAccount.fromIdlAccount(info, address);
+  ): Promise<PlayerScoresListAccount> {
+    const info = await this.program.account.playerScoresList.fetch(address);
+    return PlayerScoresListAccount.fromIdlAccount(info, address);
   }
 
   public async fetchPlayerAccount(address: PublicKey): Promise<PlayerAccount> {
@@ -797,13 +898,6 @@ export class SoarProgram {
   public async fetchRewardAccount(address: PublicKey): Promise<RewardAccount> {
     const info = await this.program.account.reward.fetch(address);
     return RewardAccount.fromIdlAccount(info, address);
-  }
-
-  public deriveRewardAddress(achievement: PublicKey): [PublicKey, number] {
-    return PublicKey.findProgramAddressSync(
-      [Buffer.from(Seeds.REWARD), achievement.toBuffer()],
-      this.program.programId
-    );
   }
 
   public async fetchAllGameAccounts(

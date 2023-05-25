@@ -33,7 +33,7 @@ export class LeaderBoardAccount {
     );
   }
 
-  public print(): {
+  public pretty(): {
     address: string;
     id: string;
     game: string;

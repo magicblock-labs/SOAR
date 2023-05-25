@@ -98,7 +98,7 @@ export class GameClient {
 
   public async update(
     authority: PublicKey,
-    newMeta: IdlTypes<Soar>["GameMeta"],
+    newMeta: IdlTypes<Soar>["GameAttributes"],
     newAuths: PublicKey[] | null
   ): Promise<InstructionResult.UpdateGame> {
     return this.program.updateGameAccount(

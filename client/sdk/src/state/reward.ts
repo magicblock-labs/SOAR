@@ -12,7 +12,7 @@ export class RewardAccount {
     public readonly FungibleToken:
       | {
           mint: PublicKey;
-          token_account: PublicKey;
+          account: PublicKey;
         }
       | undefined,
     public readonly NonFungibleToken:
@@ -21,7 +21,7 @@ export class RewardAccount {
           name: string;
           symbol: string;
           minted: BN;
-          collection_mint: PublicKey | null;
+          collection: PublicKey | null;
         }
       | undefined
   ) {}
@@ -40,7 +40,7 @@ export class RewardAccount {
     );
   }
 
-  public print(): {
+  public pretty(): {
     address: string;
     achievement: string;
     available: string;
@@ -48,7 +48,7 @@ export class RewardAccount {
     FungibleToken:
       | {
           mint: string;
-          token_account: string;
+          account: string;
         }
       | undefined;
     NonFungibleToken:
@@ -57,7 +57,7 @@ export class RewardAccount {
           name: string;
           symbol: string;
           minted: string;
-          collection_mint: string | null;
+          collection: string | null;
         }
       | undefined;
   } {
@@ -70,7 +70,7 @@ export class RewardAccount {
         this.FungibleToken !== undefined
           ? {
               mint: this.FungibleToken.mint.toBase58(),
-              token_account: this.FungibleToken.token_account.toBase58(),
+              account: this.FungibleToken.account.toBase58(),
             }
           : undefined,
       NonFungibleToken:
@@ -80,9 +80,9 @@ export class RewardAccount {
               name: this.NonFungibleToken.name,
               symbol: this.NonFungibleToken.symbol,
               minted: this.NonFungibleToken.minted.toString(),
-              collection_mint:
-                this.NonFungibleToken.collection_mint !== null
-                  ? this.NonFungibleToken.collection_mint.toBase58()
+              collection:
+                this.NonFungibleToken.collection !== null
+                  ? this.NonFungibleToken.collection.toBase58()
                   : null,
             }
           : undefined,

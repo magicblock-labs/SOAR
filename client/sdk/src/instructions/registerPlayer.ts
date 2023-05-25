@@ -18,7 +18,7 @@ export const registerPlayerEntryInstruction = async (
   const accounts = {
     user,
     payer,
-    playerInfo: userPlayerAccount,
+    playerAccount: userPlayerAccount,
     game: gameAddress,
     leaderboard,
     newList: newEntryList,

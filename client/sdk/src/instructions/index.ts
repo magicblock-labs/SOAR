@@ -10,7 +10,7 @@ export * from "./updatePlayer";
 export * from "./unlockAchievement";
 export * from "./addReward";
 export * from "./claimReward";
-export * from "./verify_reward";
+export * from "./verifyReward";
 export * from "./initMerge";
 export * from "./approveMerge";
 export * from "./updateLeaderboard";

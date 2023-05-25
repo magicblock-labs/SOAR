@@ -1,11 +1,13 @@
 import { type PublicKey } from "@solana/web3.js";
 import { type IdlAccounts } from "@coral-xyz/anchor";
 import { type Soar } from "../idl/soar";
+import type BN from "bn.js";
 
 export class AchievementAccount {
   private constructor(
     public readonly address: PublicKey,
     public readonly game: PublicKey,
+    public readonly id: BN,
     public readonly title: string,
     public readonly description: string,
     public readonly nftMeta: PublicKey,
@@ -19,6 +21,7 @@ export class AchievementAccount {
     return new AchievementAccount(
       address,
       account.game,
+      account.id,
       account.title,
       account.description,
       account.nftMeta,
@@ -26,9 +29,10 @@ export class AchievementAccount {
     );
   }
 
-  public print(): {
+  public pretty(): {
     address: string;
     game: string;
+    id: string;
     title: string;
     description: string;
     nftMeta: string;
@@ -37,6 +41,7 @@ export class AchievementAccount {
     return {
       address: this.address.toBase58(),
       game: this.game.toBase58(),
+      id: this.id.toString(),
       title: this.title,
       description: this.description,
       nftMeta: this.nftMeta.toBase58(),

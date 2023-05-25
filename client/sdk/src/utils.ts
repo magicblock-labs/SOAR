@@ -11,40 +11,43 @@ export const enum Seeds {
   PLAYER_ACHIEVEMENT = "player_achievement",
   REWARD = "reward",
   LEADER_TOP_ENTRIES = "top-scores",
+  NFT_CLAIM = "nft-claim",
 }
 
-export const deriveMetadataAddress = (mint: PublicKey): [PublicKey, number] => {
-  return PublicKey.findProgramAddressSync(
-    [
-      Buffer.from("metadata"),
-      TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-      mint.toBuffer(),
-    ],
-    TOKEN_METADATA_PROGRAM_ID
-  );
-};
+export class Utils {
+  deriveMetadataAddress = (mint: PublicKey): [PublicKey, number] => {
+    return PublicKey.findProgramAddressSync(
+      [
+        Buffer.from("metadata"),
+        TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+        mint.toBuffer(),
+      ],
+      TOKEN_METADATA_PROGRAM_ID
+    );
+  };
 
-export const deriveEditionAddress = (mint: PublicKey): [PublicKey, number] => {
-  return PublicKey.findProgramAddressSync(
-    [
-      Buffer.from("metadata"),
-      TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-      mint.toBuffer(),
-      Buffer.from("edition"),
-    ],
-    TOKEN_METADATA_PROGRAM_ID
-  );
-};
+  deriveEditionAddress = (mint: PublicKey): [PublicKey, number] => {
+    return PublicKey.findProgramAddressSync(
+      [
+        Buffer.from("metadata"),
+        TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+        mint.toBuffer(),
+        Buffer.from("edition"),
+      ],
+      TOKEN_METADATA_PROGRAM_ID
+    );
+  };
 
-export const deriveAssociatedTokenAddress = (
-  mint: PublicKey,
-  user: PublicKey
-): PublicKey => {
-  return getAssociatedTokenAddressSync(mint, user);
-};
+  deriveAssociatedTokenAddress = (
+    mint: PublicKey,
+    user: PublicKey
+  ): PublicKey => {
+    return getAssociatedTokenAddressSync(mint, user);
+  };
 
-export const zip = <T, U>(a: T[], b: U[], defaultB: U): Array<[T, U]> =>
-  a.map((k, i) => {
-    if (b.length <= i) return [k, defaultB];
-    return [k, b[i]];
-  });
+  zip = <T, U>(a: T[], b: U[], defaultB: U): Array<[T, U]> =>
+    a.map((k, i) => {
+      if (b.length <= i) return [k, defaultB];
+      return [k, b[i]];
+    });
+}

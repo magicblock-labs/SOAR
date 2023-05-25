@@ -8,7 +8,7 @@ import { type Soar } from "../idl/soar";
 
 export const createPlayerInstruction = async (
   program: Program<Soar>,
-  newPlayerInfo: PublicKey,
+  newPlayerAccount: PublicKey,
   user: PublicKey,
   payer: PublicKey,
   username: string,
@@ -17,7 +17,7 @@ export const createPlayerInstruction = async (
   const accounts = {
     user,
     payer,
-    playerInfo: newPlayerInfo,
+    playerAccount: newPlayerAccount,
     systemProgram: SystemProgram.programId,
   };
   return program.methods

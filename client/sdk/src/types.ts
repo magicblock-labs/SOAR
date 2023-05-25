@@ -40,6 +40,7 @@ export module InstructionResult {
     transaction: Transaction;
   }
   export interface AddReward {
+    oldReward: PublicKey | null;
     newReward: PublicKey;
     transaction: Transaction;
   }

@@ -11,7 +11,7 @@ export const updatePlayerInstruction = async (
 ): Promise<TransactionInstruction> => {
   const accounts = {
     user,
-    playerInfo: userPlayerAccount,
+    playerAccount: userPlayerAccount,
   };
   return program.methods
     .updatePlayer(updatedUsername, updatedNftMeta)

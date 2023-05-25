@@ -7,13 +7,7 @@ import { GameClient } from "../soar.game";
 
 export class GameAccount {
   public readonly address: PublicKey;
-  public readonly meta: {
-    title: string;
-    description: string;
-    genre: Genre;
-    gameType: GameType;
-    nftMeta: PublicKey;
-  };
+  public readonly meta: GameAttributes;
 
   public readonly achievementCount: BN;
   public readonly leaderboardCount: BN;
@@ -41,7 +35,7 @@ export class GameAccount {
     return new GameClient(soar, this.address, this);
   }
 
-  public print(): {
+  public pretty(): {
     address: string;
     meta: {
       title: string;
@@ -65,6 +59,14 @@ export class GameAccount {
       auth: this.auth.map((auth) => auth.toBase58()),
     };
   }
+}
+
+export interface GameAttributes {
+  title: string;
+  description: string;
+  genre: Genre;
+  gameType: GameType;
+  nftMeta: PublicKey;
 }
 
 export const enum GameType {

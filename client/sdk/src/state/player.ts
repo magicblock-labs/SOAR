@@ -22,7 +22,7 @@ export class PlayerAccount {
     );
   }
 
-  public print(): {
+  public pretty(): {
     address: string;
     user: string;
     username: string;

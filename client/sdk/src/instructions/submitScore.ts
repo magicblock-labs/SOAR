@@ -24,11 +24,11 @@ export const submitScoreInstruction = async (
     user,
     payer,
     authority,
-    playerInfo: userPlayerAccount,
+    playerAccount: userPlayerAccount,
     game,
     leaderboard,
     topEntries, // TODO:
-    playerEntries: playerEntryListAddress,
+    playerScores: playerEntryListAddress,
     systemProgram: SystemProgram.programId,
   };
   return program.methods

@@ -99,7 +99,6 @@ describe("soar", () => {
     }
     expect(thrown).to.be.true;
 
-    thrown = false;
     let newMeta = {
       title,
       description,
@@ -107,7 +106,7 @@ describe("soar", () => {
       gameType: GameType.Desktop,
       nftMeta: PublicKey.default,
     };
-
+    thrown = false;
     try {
       await client.sendAndConfirmTransaction(
         await gameClient.update(auths[0].publicKey, newMeta, []).then((res) => res.transaction),
@@ -685,7 +684,7 @@ describe("soar", () => {
       let balance = await client.provider.connection.getTokenAccountBalance(wallet);
       expect(balance.value.uiAmount).to.equal(0);
     }
-    
+
     let { transaction } = await client.claimFtReward(achievements[1], user1.publicKey);
     await client.sendAndConfirmTransaction(transaction, [user1]);
 

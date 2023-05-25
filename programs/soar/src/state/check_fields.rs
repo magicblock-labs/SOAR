@@ -2,6 +2,11 @@ use super::*;
 use crate::SoarError;
 use anchor_lang::prelude::*;
 
+#[constant]
+pub const MAX_TITLE_LEN: usize = 30;
+#[constant]
+pub const MAX_DESCRIPTION_LEN: usize = 200;
+
 /// Check that field lengths don't exceed the maximum space.
 ///
 /// Returns an error if any field has an invalid length.

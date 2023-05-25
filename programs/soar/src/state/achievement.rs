@@ -1,5 +1,4 @@
 use super::{MAX_DESCRIPTION_LEN, MAX_TITLE_LEN};
-use crate::SoarError;
 use anchor_lang::prelude::*;
 
 #[account]
@@ -57,13 +56,5 @@ impl Achievement {
             nft_meta,
             reward: None,
         }
-    }
-
-    pub fn check_field_lengths(&self) -> Result<()> {
-        if self.title.len() > MAX_TITLE_LEN || self.description.len() > MAX_DESCRIPTION_LEN {
-            return Err(SoarError::InvalidFieldLength.into());
-        }
-
-        Ok(())
     }
 }

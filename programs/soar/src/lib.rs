@@ -117,30 +117,48 @@ pub mod soar {
         approve_merge::handler(ctx)
     }
 
-    /// Indicate that a player has completed some [Achievement] and create a [PlayerAchievement]
+    /// Indicate that a player has completed some [Achievement] and creates a [PlayerAchievement]
     /// as proof.
+    ///
+    /// The existence of this player-achievement account and its `unlocked` flag being set
+    /// to true can serve as a gated verification-method for custom-instruction rewards.
     pub fn unlock_player_achievement(ctx: Context<UnlockPlayerAchievement>) -> Result<()> {
         unlock_player_achievement::handler(ctx)
     }
 
-    /// Optional: Add an NFT-based [Reward] for unlocking some [Achievement]. Overwrite the current
-    /// reward if any exists.
-    pub fn add_reward(ctx: Context<AddReward>, input: AddNewRewardInput) -> Result<()> {
-        add_reward::handler(ctx, input)
+    /// Add a fungible token [Reward] to an [Achievement] to mint to users on unlock.
+    ///
+    /// Overwrites the current reward if one exists.
+    pub fn add_ft_reward(ctx: Context<AddFtReward>, input: AddNewRewardInput) -> Result<()> {
+        add_reward::ft::handler(ctx, input)
+    }
+
+    /// Add a nft [Reward] to an [Achievement] to mint to users on unlock.
+    ///
+    /// Overwrites the current reward if one exists.
+    pub fn add_nft_reward(ctx: Context<AddNftReward>, input: AddNewRewardInput) -> Result<()> {
+        add_reward::nft::handler(ctx, input)
     }
 
     /// Mint an NFT reward for unlocking a [PlayerAchievement] account.
     ///
-    /// Optional: Only relevant if an NFT reward is specified for that achievement.
-    pub fn claim_reward(ctx: Context<ClaimReward>) -> Result<()> {
-        claim_reward::handler(ctx)
+    /// Relevant `ONLY` if an FT reward is specified for that achievement.    
+    pub fn claim_ft_reward(ctx: Context<ClaimFtReward>) -> Result<()> {
+        claim_reward::ft::handler(ctx)
+    }
+
+    /// Mint an NFT reward for unlocking a [PlayerAchievement] account.
+    ///
+    /// Relevant `ONLY` if an NFT reward is specified for that achievement.
+    pub fn claim_nft_reward(ctx: Context<ClaimNftReward>) -> Result<()> {
+        claim_reward::nft::handler(ctx)
     }
 
     /// Verify NFT reward as belonging to a particular collection.
     ///
     /// Optional: Only relevant if an NFT reward is specified and the reward's
     /// `collection_mint` is Some(...)
-    pub fn verify_reward(ctx: Context<VerifyReward>) -> Result<()> {
+    pub fn verify_nft_reward(ctx: Context<VerifyNftReward>) -> Result<()> {
         verify_reward::handler(ctx)
     }
 }
@@ -441,7 +459,37 @@ pub struct UnlockPlayerAchievement<'info> {
 }
 
 #[derive(Accounts)]
-pub struct AddReward<'info> {
+pub struct AddFtReward<'info> {
+    #[account(
+        constraint = game.check_signer(&authority.key())
+        @SoarError::InvalidAuthority
+    )]
+    pub authority: Signer<'info>,
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    pub game: Box<Account<'info, Game>>,
+    #[account(
+        mut,
+        has_one = game
+    )]
+    pub achievement: Box<Account<'info, Achievement>>,
+    #[account(
+        init,
+        payer = payer,
+        space = Reward::SIZE,
+    )]
+    pub new_reward: Box<Account<'info, Reward>>,
+
+    pub reward_token_mint: Box<Account<'info, Mint>>,
+    #[account(mut)]
+    pub delegate_from_token_account: Box<Account<'info, TokenAccount>>,
+    pub token_account_owner: Signer<'info>,
+    pub token_program: Program<'info, Token>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct AddNftReward<'info> {
     #[account(
         constraint = game.check_signer(&authority.key())
         @SoarError::InvalidAuthority
@@ -463,26 +511,18 @@ pub struct AddReward<'info> {
     pub new_reward: Box<Account<'info, Reward>>,
     pub system_program: Program<'info, System>,
 
-    // Accounts required `ONLY` for ft reward.
-    pub ft_reward_token_mint: Option<Box<Account<'info, Mint>>>,
+    pub reward_collection_mint: Option<Box<Account<'info, Mint>>>,
+    pub collection_update_auth: Option<Signer<'info>>,
     #[account(mut)]
-    pub ft_reward_delegate_account: Option<Box<Account<'info, TokenAccount>>>,
-    pub ft_reward_delegate_account_owner: Option<Signer<'info>>,
-    pub token_program: Option<Program<'info, Token>>,
-
-    // Accounts required `ONLY` for nft reward.
-    pub nft_reward_collection_update_auth: Option<Signer<'info>>,
-    pub nft_reward_collection_mint: Option<Box<Account<'info, Mint>>>,
-    #[account(mut)]
-    /// CHECK: Checked in instruction handler.
-    pub nft_reward_collection_metadata: Option<UncheckedAccount<'info>>,
+    /// CHECK: Checked in handler.
+    pub collection_metadata: Option<UncheckedAccount<'info>>,
     #[account(address = mpl_token_metadata::ID)]
     /// CHECK: We check that the ID is the correct one.
     pub token_metadata_program: Option<UncheckedAccount<'info>>,
 }
 
 #[derive(Accounts)]
-pub struct ClaimReward<'info> {
+pub struct ClaimFtReward<'info> {
     pub user: Signer<'info>,
     pub game: Account<'info, Game>,
     #[account(
@@ -497,10 +537,10 @@ pub struct ClaimReward<'info> {
         constraint = matches!(achievement.reward, Some(reward))
     )]
     pub achievement: Box<Account<'info, Achievement>>,
-
     #[account(
         mut,
-        has_one = achievement
+        has_one = achievement,
+        constraint = reward.available != 0 @SoarError::NoAvailableRewards
     )]
     pub reward: Box<Account<'info, Reward>>,
     #[account(has_one = user)]
@@ -509,17 +549,54 @@ pub struct ClaimReward<'info> {
         mut,
         has_one = player_account,
         has_one = achievement,
-        constraint = player_achievement.unlocked
-        @SoarError::PlayerAchievementLocked,
-        constraint = !player_achievement.claimed
-        @SoarError::FullyClaimedReward
+        constraint = player_achievement.unlocked @SoarError::PlayerAchievementLocked,
+        constraint = !player_achievement.claimed @SoarError::FullyClaimedReward
     )]
     pub player_achievement: Box<Account<'info, PlayerAchievement>>,
-    pub token_program: Program<'info, Token>,
-
-    // Accounts required for an achievement with an NFT RewardKind.
     #[account(mut)]
-    pub payer: Option<Signer<'info>>,
+    pub source_token_account: Account<'info, TokenAccount>,
+    #[account(
+        mut,
+        constraint = user_token_account.owner == user.key()
+    )]
+    pub user_token_account: Account<'info, TokenAccount>,
+    pub token_program: Program<'info, Token>,
+}
+
+#[derive(Accounts)]
+pub struct ClaimNftReward<'info> {
+    pub user: Signer<'info>,
+    pub game: Account<'info, Game>,
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    #[account(
+        seeds = [
+            seeds::ACHIEVEMENT,
+            game.key().as_ref(),
+            &achievement.id.to_le_bytes()
+        ],
+        bump,
+        constraint = achievement.reward.is_some()
+        @SoarError::NoRewardForAchievement,
+        constraint = matches!(achievement.reward, Some(reward))
+    )]
+    pub achievement: Box<Account<'info, Achievement>>,
+    #[account(
+        mut,
+        has_one = achievement,
+        constraint = reward.available != 0 @SoarError::NoAvailableRewards
+    )]
+    pub reward: Box<Account<'info, Reward>>,
+    #[account(has_one = user)]
+    pub player_account: Box<Account<'info, Player>>,
+    #[account(
+        mut,
+        has_one = player_account,
+        has_one = achievement,
+        constraint = player_achievement.unlocked @SoarError::PlayerAchievementLocked,
+        constraint = !player_achievement.claimed @SoarError::FullyClaimedReward
+    )]
+    pub player_achievement: Box<Account<'info, PlayerAchievement>>,
     #[account(
         init,
         payer = payer,
@@ -527,38 +604,33 @@ pub struct ClaimReward<'info> {
         seeds = [
             seeds::NFT_CLAIM,
             reward.key().as_ref(),
-            nft_reward_mint.as_ref().unwrap().key().as_ref()
+            new_mint.key().as_ref()
         ],
         bump
     )]
-    pub claim: Option<Account<'info, NftClaim>>,
+    pub claim: Account<'info, NftClaim>,
     #[account(mut)]
-    pub nft_reward_mint: Option<Signer<'info>>,
-    #[account(mut)]
-    /// CHECK: Checked in Metaplex CPI..
-    pub nft_reward_metadata: Option<UncheckedAccount<'info>>,
+    pub new_mint: Signer<'info>,
     #[account(mut)]
     /// CHECK: Checked in Metaplex CPI.
-    pub nft_reward_master_edition: Option<UncheckedAccount<'info>>,
+    pub new_metadata: UncheckedAccount<'info>,
+    #[account(mut)]
+    /// CHECK: Checked in Metaplex CPI.
+    pub new_master_edition: UncheckedAccount<'info>,
     #[account(mut)]
     /// CHECK: Initialized in handler as token account owned by `user`.
-    pub nft_reward_mint_to: Option<UncheckedAccount<'info>>,
+    pub mint_to: UncheckedAccount<'info>,
     #[account(address = mpl_token_metadata::ID)]
     /// CHECK: mpl_token_metadata ID.
-    pub token_metadata_program: Option<UncheckedAccount<'info>>,
-    pub associated_token_program: Option<Program<'info, AssociatedToken>>,
-    pub system_program: Option<Program<'info, System>>,
-    pub rent: Option<Sysvar<'info, Rent>>,
-
-    // Accounts required for an achievement with an FT RewardKind.
-    #[account(mut)]
-    pub source_token_account: Option<Account<'info, TokenAccount>>,
-    #[account(mut)]
-    pub user_token_account: Option<Account<'info, TokenAccount>>,
+    pub token_metadata_program: UncheckedAccount<'info>,
+    pub associated_token_program: Program<'info, AssociatedToken>,
+    pub system_program: Program<'info, System>,
+    pub token_program: Program<'info, Token>,
+    pub rent: Sysvar<'info, Rent>,
 }
 
 #[derive(Accounts)]
-pub struct VerifyReward<'info> {
+pub struct VerifyNftReward<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
     pub game: Box<Account<'info, Game>>,

@@ -24,11 +24,6 @@ pub use top_entries::*;
 
 use anchor_lang::prelude::*;
 
-#[constant]
-pub const MAX_TITLE_LEN: usize = 30;
-#[constant]
-pub const MAX_DESCRIPTION_LEN: usize = 200;
-
 /// Parameters needed when registering a leaderboard.
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug, Default)]
 pub struct RegisterLeaderBoardInput {
@@ -69,12 +64,16 @@ pub struct AddNewRewardInput {
 /// Specific variant of [AddNewRewardInput].
 pub enum RewardKindInput {
     Ft {
+        /// Amount to be delegated to this program's PDA
+        /// so it can spend for reward claims.
         deposit: u64,
-        mint: Pubkey,
     },
     Nft {
+        /// Uri of the minted nft.
         uri: String,
+        /// Name of the minted nft.
         name: String,
+        /// Symbol of the minted nft.
         symbol: String,
     },
 }

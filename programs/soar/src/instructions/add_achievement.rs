@@ -1,5 +1,7 @@
-use crate::state::Achievement;
-use crate::AddAchievement;
+use crate::{
+    state::{Achievement, FieldsCheck},
+    AddAchievement,
+};
 use anchor_lang::prelude::*;
 
 pub fn handler(
@@ -18,7 +20,7 @@ pub fn handler(
         game.achievement_count,
     );
 
-    obj.check_field_lengths()?;
+    obj.check()?;
     ctx.accounts.new_achievement.set_inner(obj);
     Ok(())
 }

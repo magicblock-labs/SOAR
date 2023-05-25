@@ -1,7 +1,7 @@
-use crate::{seeds, utils, VerifyReward};
+use crate::{seeds, utils, VerifyNftReward};
 use anchor_lang::prelude::*;
 
-pub fn handler(ctx: Context<VerifyReward>) -> Result<()> {
+pub fn handler(ctx: Context<VerifyNftReward>) -> Result<()> {
     let achievement_account = &ctx.accounts.achievement;
     let metadata_account = &ctx.accounts.metadata_to_verify;
     let mint = &ctx.accounts.mint;

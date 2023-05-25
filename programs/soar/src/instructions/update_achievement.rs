@@ -1,3 +1,4 @@
+use crate::state::FieldsCheck;
 use crate::UpdateAchievement;
 use anchor_lang::prelude::*;
 
@@ -19,6 +20,6 @@ pub fn handler(
         achievement.nft_meta = meta;
     }
 
-    achievement.check_field_lengths()?;
+    achievement.check()?;
     Ok(())
 }

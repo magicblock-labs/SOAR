@@ -3,27 +3,6 @@ export type Soar = {
   "name": "soar",
   "constants": [
     {
-      "name": "MAX_URI_LENGTH",
-      "type": {
-        "defined": "usize"
-      },
-      "value": "200"
-    },
-    {
-      "name": "MAX_NAME_LENGTH",
-      "type": {
-        "defined": "usize"
-      },
-      "value": "32"
-    },
-    {
-      "name": "MAX_SYMBOL_LENGTH",
-      "type": {
-        "defined": "usize"
-      },
-      "value": "10"
-    },
-    {
       "name": "MAX_TITLE_LEN",
       "type": {
         "defined": "usize"
@@ -65,7 +44,7 @@ export type Soar = {
         {
           "name": "gameMeta",
           "type": {
-            "defined": "GameMeta"
+            "defined": "GameAttributes"
           }
         },
         {
@@ -108,7 +87,7 @@ export type Soar = {
           "name": "newMeta",
           "type": {
             "option": {
-              "defined": "GameMeta"
+              "defined": "GameAttributes"
             }
           }
         },
@@ -313,7 +292,7 @@ export type Soar = {
           "isSigner": true
         },
         {
-          "name": "playerInfo",
+          "name": "playerAccount",
           "isMut": true,
           "isSigner": false
         },
@@ -346,7 +325,7 @@ export type Soar = {
           "isSigner": true
         },
         {
-          "name": "playerInfo",
+          "name": "playerAccount",
           "isMut": true,
           "isSigner": false
         }
@@ -384,7 +363,7 @@ export type Soar = {
           "isSigner": true
         },
         {
-          "name": "playerInfo",
+          "name": "playerAccount",
           "isMut": false,
           "isSigner": false
         },
@@ -434,7 +413,7 @@ export type Soar = {
           "isSigner": true
         },
         {
-          "name": "playerInfo",
+          "name": "playerAccount",
           "isMut": false,
           "isSigner": false
         },
@@ -455,7 +434,7 @@ export type Soar = {
           "isOptional": true
         },
         {
-          "name": "playerEntries",
+          "name": "playerScores",
           "isMut": true,
           "isSigner": false
         },
@@ -490,7 +469,7 @@ export type Soar = {
           "isSigner": true
         },
         {
-          "name": "player",
+          "name": "playerAccount",
           "isMut": false,
           "isSigner": false
         },
@@ -526,7 +505,7 @@ export type Soar = {
           "isSigner": true
         },
         {
-          "name": "playerInfo",
+          "name": "playerAccount",
           "isMut": false,
           "isSigner": false
         },
@@ -561,12 +540,12 @@ export type Soar = {
           "isSigner": true
         },
         {
-          "name": "playerInfo",
+          "name": "playerAccount",
           "isMut": false,
           "isSigner": false
         },
         {
-          "name": "playerEntry",
+          "name": "playerScores",
           "isMut": false,
           "isSigner": false
         },
@@ -601,7 +580,8 @@ export type Soar = {
     {
       "name": "addReward",
       "docs": [
-        "Optional: Add an NFT-based [Reward] for unlocking some [Achievement]."
+        "Optional: Add an NFT-based [Reward] for unlocking some [Achievement]. Overwrite the current",
+        "reward if any exists."
       ],
       "accounts": [
         {
@@ -627,7 +607,7 @@ export type Soar = {
         {
           "name": "newReward",
           "isMut": true,
-          "isSigner": false
+          "isSigner": true
         },
         {
           "name": "systemProgram",
@@ -642,7 +622,7 @@ export type Soar = {
         },
         {
           "name": "ftRewardDelegateAccount",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false,
           "isOptional": true
         },
@@ -687,7 +667,7 @@ export type Soar = {
         {
           "name": "input",
           "type": {
-            "defined": "AddNewRewardArgs"
+            "defined": "AddNewRewardInput"
           }
         }
       ]
@@ -701,14 +681,9 @@ export type Soar = {
       ],
       "accounts": [
         {
-          "name": "authority",
-          "isMut": false,
-          "isSigner": true
-        },
-        {
           "name": "user",
           "isMut": false,
-          "isSigner": false
+          "isSigner": true
         },
         {
           "name": "game",
@@ -726,13 +701,13 @@ export type Soar = {
           "isSigner": false
         },
         {
-          "name": "player",
+          "name": "playerAccount",
           "isMut": false,
           "isSigner": false
         },
         {
           "name": "playerAchievement",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -747,13 +722,16 @@ export type Soar = {
           "isOptional": true
         },
         {
+          "name": "claim",
+          "isMut": true,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
           "name": "nftRewardMint",
           "isMut": true,
           "isSigner": true,
-          "isOptional": true,
-          "docs": [
-            "Initialized as mint in instruction."
-          ]
+          "isOptional": true
         },
         {
           "name": "nftRewardMetadata",
@@ -827,11 +805,6 @@ export type Soar = {
           "isSigner": true
         },
         {
-          "name": "authority",
-          "isMut": false,
-          "isSigner": true
-        },
-        {
           "name": "game",
           "isMut": false,
           "isSigner": false
@@ -849,10 +822,15 @@ export type Soar = {
         {
           "name": "user",
           "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "playerAccount",
+          "isMut": false,
           "isSigner": false
         },
         {
-          "name": "player",
+          "name": "claim",
           "isMut": false,
           "isSigner": false
         },
@@ -868,7 +846,7 @@ export type Soar = {
         },
         {
           "name": "metadataToVerify",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -885,6 +863,11 @@ export type Soar = {
           "name": "collectionMasterEdition",
           "isMut": false,
           "isSigner": false
+        },
+        {
+          "name": "tokenMetadataProgram",
+          "isMut": false,
+          "isSigner": false
         }
       ],
       "args": []
@@ -892,10 +875,70 @@ export type Soar = {
   ],
   "accounts": [
     {
+      "name": "achievement",
+      "docs": [
+        "Represents an achievement(with optional rewards) for this game",
+        "that can be attained by players.",
+        "",
+        "PDA with seeds = `[b\"achievement\", game.key().as_ref(), &id.to_le_bytes()]`",
+        "",
+        "`id` is an incrementing index stored in the game account."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "game",
+            "docs": [
+              "Public key of the game account this achievement is derived from."
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "id",
+            "docs": [
+              "The achievement_count of the game account when this account was",
+              "created, also used as a seed for its PDA."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "title",
+            "docs": [
+              "Achievement title."
+            ],
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "docs": [
+              "Achievement description."
+            ],
+            "type": "string"
+          },
+          {
+            "name": "nftMeta",
+            "docs": [
+              "Public key of a nft metadata account describing this achievement."
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "reward",
+            "docs": [
+              "Optional: Specify a reward to players for unlocking this achievement."
+            ],
+            "type": {
+              "option": "publicKey"
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "game",
       "docs": [
-        "An account representing a single game.",
-        ""
+        "An account representing a single game."
       ],
       "type": {
         "kind": "struct",
@@ -903,32 +946,34 @@ export type Soar = {
           {
             "name": "meta",
             "docs": [
-              "Game information."
+              "Game meta-information."
             ],
             "type": {
-              "defined": "GameMeta"
+              "defined": "GameAttributes"
             }
           },
           {
             "name": "leaderboardCount",
             "docs": [
-              "Number of leaderboards this game has created. Used both in determining the",
-              "most recent leaderboard address, and as a seed for the next leaderboard."
+              "Number of leaderboards this game has created. Used both",
+              "in determining the most recent leaderboard address, and",
+              "as a seed for the next leaderboard."
             ],
             "type": "u64"
           },
           {
             "name": "achievementCount",
             "docs": [
-              "Number of achievements that exist for this game. Used in determining",
-              "the u64 index for the next achievement."
+              "Number of achievements that exist for this game. Also",
+              "used to determine the u64 seed for the next achievement."
             ],
             "type": "u64"
           },
           {
             "name": "auth",
             "docs": [
-              "A collection of pubkeys which are valid authorities for the game."
+              "A collection of pubkeys which each represent a valid",
+              "authority for this game."
             ],
             "type": {
               "vec": "publicKey"
@@ -940,9 +985,9 @@ export type Soar = {
     {
       "name": "leaderBoard",
       "docs": [
-        "Represents a [Game]'s leaderboard.",
+        "Represents a [Game][super::Game]'s leaderboard.",
         "",
-        "Seeds: `[b\"leaderboard\", game.key().as_ref()]`"
+        "Seeds: `[b\"leaderboard\", game.key().as_ref(), &id.to_le_bytes()]`"
       ],
       "type": {
         "kind": "struct",
@@ -957,7 +1002,7 @@ export type Soar = {
           {
             "name": "game",
             "docs": [
-              "The game this leaderboard belongs to."
+              "The game this leaderboard belongs to and is derived from."
             ],
             "type": "publicKey"
           },
@@ -971,14 +1016,14 @@ export type Soar = {
           {
             "name": "nftMeta",
             "docs": [
-              "Metadata to represent the leaderboard."
+              "Pubkey of an nft metadata account that describes this leaderboard."
             ],
             "type": "publicKey"
           },
           {
             "name": "decimals",
             "docs": [
-              "Interpreted as a factor of 10 and used as a divisor for contextualizing scores."
+              "Used to contextualize scores for this leaderboard."
             ],
             "type": "u8"
           },
@@ -998,6 +1043,9 @@ export type Soar = {
           },
           {
             "name": "topEntries",
+            "docs": [
+              "Top [entries](ScoreEntry) for a leaderboard."
+            ],
             "type": {
               "option": "publicKey"
             }
@@ -1006,119 +1054,138 @@ export type Soar = {
       }
     },
     {
-      "name": "leaderTopEntries",
+      "name": "merged",
       "docs": [
-        "Extra leaderboard details for keeping track of scores.",
-        "",
-        "Seeds = [b\"top-scores\", leaderboard.key().as_ref()]"
+        "An account that represents a single user's ownership of",
+        "multiple [Player][super::Player] accounts."
       ],
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "isAscending",
+            "name": "initiator",
             "docs": [
-              "Arrangement order."
+              "The user that initialized this merge."
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "approvals",
+            "docs": [
+              "Details of all the player accounts to be merged with the main_user's."
+            ],
+            "type": {
+              "vec": {
+                "defined": "MergeApproval"
+              }
+            }
+          },
+          {
+            "name": "mergeComplete",
+            "docs": [
+              "Set to true when every user in `others` has registered their approval."
+            ],
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "playerAchievement",
+      "docs": [
+        "Represents a player's status for a particular [Achievement](super::Achievement).",
+        "",
+        "Seeds = `[b\"player-achievement\", player.key().as_ref(), achievement.key().as_ref()]`."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "playerAccount",
+            "docs": [
+              "The user's [player][super::Player] account."
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "achievement",
+            "docs": [
+              "The key of the achievement unlocked for this player."
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "timestamp",
+            "docs": [
+              "Timestamp showing when this achievement was unlocked."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "unlocked",
+            "docs": [
+              "A player's unlock status for this achievement."
             ],
             "type": "bool"
           },
           {
-            "name": "topScores",
+            "name": "claims",
             "docs": [
-              "Top scores."
+              "Number of claims a user has for this achievement's reward."
             ],
-            "type": {
-              "vec": {
-                "defined": "LeaderBoardScore"
-              }
-            }
+            "type": "u64"
+          },
+          {
+            "name": "claimed",
+            "docs": [
+              "Whether or not this player has completely claimed their reward."
+            ],
+            "type": "bool"
           }
         ]
       }
     },
     {
-      "name": "achievement",
+      "name": "playerScoresList",
       "docs": [
-        "Represents a single achievement for a [Game].",
+        "Holds a list of a [player][super::Player]'s [scores][ScoreEntry])",
+        "for a particular [LeaderBoard].",
         "",
-        "Seeds = `[b\"achievement\", game.key().as_ref(), title.as_bytes()]`"
+        "Seeds: `[b\"entry\", player_account.key().as_ref(), leaderboard.key().as_ref()]`"
       ],
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "game",
+            "name": "playerAccount",
             "docs": [
-              "The game account it derives from."
+              "The player[super::Player] account this entry is derived from"
             ],
             "type": "publicKey"
           },
           {
-            "name": "title",
+            "name": "leaderboard",
             "docs": [
-              "The title of this achievement."
-            ],
-            "type": "string"
-          },
-          {
-            "name": "description",
-            "docs": [
-              "A description of the achievement."
-            ],
-            "type": "string"
-          },
-          {
-            "name": "nftMeta",
-            "docs": [
-              "Metadata representing this achievement."
+              "The leaderboard these scores are for."
             ],
             "type": "publicKey"
           },
           {
-            "name": "reward",
+            "name": "allocCount",
             "docs": [
-              "A reward for unlocking this achievement."
+              "Max number of [scores][ScoreEntry] the current space allocation supports."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "scores",
+            "docs": [
+              "Collection of [scores][ScoreEntry]."
             ],
             "type": {
-              "option": "publicKey"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "reward",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "achievement",
-            "docs": [
-              "The achievement this reward is given for."
-            ],
-            "type": "publicKey"
-          },
-          {
-            "name": "available",
-            "docs": [
-              "Number of available rewards."
-            ],
-            "type": "u64"
-          },
-          {
-            "name": "amountPerUser",
-            "docs": [
-              "Reward amount per user."
-            ],
-            "type": "u64"
-          },
-          {
-            "name": "reward",
-            "docs": [
-              "The reward type and information."
-            ],
-            "type": {
-              "defined": "RewardKind"
+              "vec": {
+                "defined": "ScoreEntry"
+              }
             }
           }
         ]
@@ -1159,139 +1226,79 @@ export type Soar = {
       }
     },
     {
-      "name": "merged",
-      "docs": [
-        "An account that represents a single user's ownership of",
-        "multiple [Player] accounts."
-      ],
+      "name": "nftClaim",
       "type": {
         "kind": "struct",
-        "fields": [
-          {
-            "name": "initiator",
-            "docs": [
-              "The user that initialized this merge."
-            ],
-            "type": "publicKey"
-          },
-          {
-            "name": "others",
-            "docs": [
-              "Details of all the [Player] accounts to be merged with the main_user's."
-            ],
-            "type": {
-              "vec": {
-                "defined": "MergeInfo"
-              }
-            }
-          },
-          {
-            "name": "mergeComplete",
-            "docs": [
-              "Whether or not full permissions are granted and the merge complete."
-            ],
-            "type": "bool"
-          }
-        ]
+        "fields": []
       }
     },
     {
-      "name": "playerEntryList",
+      "name": "reward",
       "docs": [
-        "Represents a [Player]'s collection of score entries([ScoreEntry]) for a particular [LeaderBoard].",
-        "",
-        "Seeds: `[b\"entry\", player_info.key().as_ref(), leaderboard.key().as_ref()]`"
+        "An account representing a reward for a given achievement."
       ],
       "type": {
         "kind": "struct",
         "fields": [
-          {
-            "name": "playerInfo",
-            "docs": [
-              "The player_info account this entry is derived from"
-            ],
-            "type": "publicKey"
-          },
-          {
-            "name": "leaderboard",
-            "docs": [
-              "The leaderboard this entry derives from."
-            ],
-            "type": "publicKey"
-          },
-          {
-            "name": "allocCount",
-            "docs": [
-              "Max number of [ScoreEntry] objects the current space allocation supports."
-            ],
-            "type": "u16"
-          },
-          {
-            "name": "scores",
-            "docs": [
-              "Collection of entries."
-            ],
-            "type": {
-              "vec": {
-                "defined": "ScoreEntry"
-              }
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "playerAchievement",
-      "docs": [
-        "Represents a player's status for a particular [Achievement].",
-        "",
-        "Seeds = `[b\"player-achievement\", player.key().as_ref(), achievement.key().as_ref()]`."
-      ],
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "player",
-            "docs": [
-              "The player's [Player] account."
-            ],
-            "type": "publicKey"
-          },
           {
             "name": "achievement",
             "docs": [
-              "The key of the [Achievement] unlocked for this player."
+              "The achievement this reward is given for."
             ],
             "type": "publicKey"
           },
           {
-            "name": "timestamp",
+            "name": "available",
             "docs": [
-              "Timestamp showing when this achievement was unlocked."
+              "Number of available reward spots."
             ],
-            "type": "i64"
+            "type": "u64"
           },
           {
-            "name": "unlocked",
+            "name": "amountPerUser",
             "docs": [
-              "True for unlocked, false for locked."
+              "Reward amount per user."
             ],
-            "type": "bool"
+            "type": "u64"
           },
           {
-            "name": "claimed",
+            "name": "reward",
             "docs": [
-              "Whether or not this player has claimed their reward."
-            ],
-            "type": "bool"
-          },
-          {
-            "name": "nftRewardMint",
-            "docs": [
-              "This is [Some] only if the player has minted an NFT reward pending verification."
+              "The reward kind. Current supports Nft and Ft rewards only."
             ],
             "type": {
-              "option": "publicKey"
+              "defined": "RewardKind"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "leaderTopEntries",
+      "docs": [
+        "Keeps track of a sorted list of top scores for a leaderboard.",
+        "",
+        "Seeds = [b\"top-scores\", leaderboard.key().as_ref()]"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "isAscending",
+            "docs": [
+              "Arrangement order."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "topScores",
+            "docs": [
+              "Top scores."
+            ],
+            "type": {
+              "vec": {
+                "defined": "LeaderBoardScore"
+              }
             }
           }
         ]
@@ -1300,9 +1307,9 @@ export type Soar = {
   ],
   "types": [
     {
-      "name": "GameMeta",
+      "name": "GameAttributes",
       "docs": [
-        "Parameters used together with a [Vec] of [Pubkey]s in initializing a [Game]"
+        "A type that represents game-specific information."
       ],
       "type": {
         "kind": "struct",
@@ -1310,75 +1317,37 @@ export type Soar = {
           {
             "name": "title",
             "docs": [
-              "The title of the game, max length = 30 bytes"
+              "The title of the game, max length = 30 bytes."
             ],
             "type": "string"
           },
           {
             "name": "description",
             "docs": [
-              "The game description, max length = 200 bytes"
+              "The game description, max length = 200 bytes."
             ],
             "type": "string"
           },
           {
             "name": "genre",
             "docs": [
-              "The [Genre], stored as a u8."
+              "The game's [genre](super::Genre), as a u8."
             ],
             "type": "u8"
           },
           {
             "name": "gameType",
             "docs": [
-              "The [GameType], stored as a u8"
+              "The game's [type](super::GameType), as a u8."
             ],
             "type": "u8"
           },
           {
             "name": "nftMeta",
             "docs": [
-              "A mpl collection key representing this game"
+              "An nft metadata account describing the game."
             ],
             "type": "publicKey"
-          }
-        ]
-      }
-    },
-    {
-      "name": "LeaderBoardScore",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "user",
-            "type": "publicKey"
-          },
-          {
-            "name": "entry",
-            "type": {
-              "defined": "ScoreEntry"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "MergeInfo",
-      "docs": [
-        "Represents a [Player] account that's included in the merge and indicates",
-        "if the authority of that account has granted permission."
-      ],
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "key",
-            "type": "publicKey"
-          },
-          {
-            "name": "approved",
-            "type": "bool"
           }
         ]
       }
@@ -1394,7 +1363,7 @@ export type Soar = {
           {
             "name": "score",
             "docs": [
-              "The player's score for this entry."
+              "The player's score."
             ],
             "type": "u64"
           },
@@ -1404,6 +1373,59 @@ export type Soar = {
               "When this entry was made."
             ],
             "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MergeApproval",
+      "docs": [
+        "Represents a [Player][super::Player] account involved in a merge",
+        "and if that account's user/authority has granted approval."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "key",
+            "docs": [
+              "The player_account pubkey."
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "approved",
+            "docs": [
+              "User's approval status."
+            ],
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LeaderBoardScore",
+      "docs": [
+        "An single entry to a [LeaderTopEntries]."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "docs": [
+              "The user."
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "entry",
+            "docs": [
+              "The user's [score][super::ScoreEntry]."
+            ],
+            "type": {
+              "defined": "ScoreEntry"
+            }
           }
         ]
       }
@@ -1475,133 +1497,35 @@ export type Soar = {
       }
     },
     {
-      "name": "AddNewRewardArgs",
+      "name": "AddNewRewardInput",
       "docs": [
-        "Parameters used for registering metadata information for an nft reward."
+        "Input to add a new reward for an achievement."
       ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "amountPerUser",
+            "docs": [
+              "Rewards given per user."
+            ],
             "type": "u64"
           },
           {
             "name": "availableRewards",
+            "docs": [
+              "Number of reward spots."
+            ],
             "type": "u64"
           },
           {
             "name": "kind",
+            "docs": [
+              "Specific reward kind."
+            ],
             "type": {
-              "defined": "RewardKindArgs"
+              "defined": "RewardKindInput"
             }
-          }
-        ]
-      }
-    },
-    {
-      "name": "RewardKind",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "FungibleToken",
-            "fields": [
-              {
-                "name": "mint",
-                "docs": [
-                  "The mint of the token to be given out."
-                ],
-                "type": "publicKey"
-              },
-              {
-                "name": "token_account",
-                "docs": [
-                  "The token account to withdraw from."
-                ],
-                "type": "publicKey"
-              }
-            ]
-          },
-          {
-            "name": "NonFungibleToken",
-            "fields": [
-              {
-                "name": "uri",
-                "docs": [
-                  "URI of the NFT to be minted."
-                ],
-                "type": "string"
-              },
-              {
-                "name": "name",
-                "docs": [
-                  "Name of the NFT to be minted."
-                ],
-                "type": "string"
-              },
-              {
-                "name": "symbol",
-                "docs": [
-                  "Symbol of the NFT to be minted."
-                ],
-                "type": "string"
-              },
-              {
-                "name": "minted",
-                "docs": [
-                  "Number of nft rewards given so far."
-                ],
-                "type": "u64"
-              },
-              {
-                "name": "collection_mint",
-                "docs": [
-                  "Optional: A collection to verify a minted nft as belonging to."
-                ],
-                "type": {
-                  "option": "publicKey"
-                }
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "name": "RewardKindArgs",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "Ft",
-            "fields": [
-              {
-                "name": "deposit",
-                "type": "u64"
-              },
-              {
-                "name": "mint",
-                "type": "publicKey"
-              }
-            ]
-          },
-          {
-            "name": "Nft",
-            "fields": [
-              {
-                "name": "uri",
-                "type": "string"
-              },
-              {
-                "name": "name",
-                "type": "string"
-              },
-              {
-                "name": "symbol",
-                "type": "string"
-              }
-            ]
           }
         ]
       }
@@ -1654,6 +1578,120 @@ export type Soar = {
           }
         ]
       }
+    },
+    {
+      "name": "RewardKind",
+      "docs": [
+        "The kind of reward to be given out."
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "FungibleToken",
+            "fields": [
+              {
+                "name": "mint",
+                "docs": [
+                  "The mint of the token to be given out."
+                ],
+                "type": "publicKey"
+              },
+              {
+                "name": "account",
+                "docs": [
+                  "The token account to withdraw from."
+                ],
+                "type": "publicKey"
+              }
+            ]
+          },
+          {
+            "name": "NonFungibleToken",
+            "fields": [
+              {
+                "name": "uri",
+                "docs": [
+                  "URI of the NFT to be minted."
+                ],
+                "type": "string"
+              },
+              {
+                "name": "name",
+                "docs": [
+                  "Name of the NFT to be minted."
+                ],
+                "type": "string"
+              },
+              {
+                "name": "symbol",
+                "docs": [
+                  "Symbol of the NFT to be minted."
+                ],
+                "type": "string"
+              },
+              {
+                "name": "minted",
+                "docs": [
+                  "Total NFTs minted so far."
+                ],
+                "type": "u64"
+              },
+              {
+                "name": "collection",
+                "docs": [
+                  "Optional field for a collection mint used for",
+                  "verifying minted rewards."
+                ],
+                "type": {
+                  "option": "publicKey"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "RewardKindInput",
+      "docs": [
+        "Specific variant of [AddNewRewardInput]."
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Ft",
+            "fields": [
+              {
+                "name": "deposit",
+                "type": "u64"
+              },
+              {
+                "name": "mint",
+                "type": "publicKey"
+              }
+            ]
+          },
+          {
+            "name": "Nft",
+            "fields": [
+              {
+                "name": "uri",
+                "type": "string"
+              },
+              {
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "name": "symbol",
+                "type": "string"
+              }
+            ]
+          }
+        ]
+      }
     }
   ],
   "errors": [
@@ -1665,17 +1703,17 @@ export type Soar = {
     {
       "code": 6001,
       "name": "InvalidAuthority",
-      "msg": "Invalid authority for instruction."
+      "msg": "Invalid authority for instruction"
     },
     {
       "code": 6002,
       "name": "MissingSignature",
-      "msg": "An expected signature isn't present."
+      "msg": "An expected signature isn't present"
     },
     {
       "code": 6003,
       "name": "NoRewardForAchievement",
-      "msg": "Reward not specified for this achievement."
+      "msg": "Reward not specified for this achievement"
     },
     {
       "code": 6004,
@@ -1689,23 +1727,33 @@ export type Soar = {
     },
     {
       "code": 6006,
-      "name": "MissingRequiredAccountsForFtReward",
-      "msg": "An account required for setting up this reward kind is missing."
+      "name": "MissingExpectedAccount",
+      "msg": "An optional but expected account is missing"
     },
     {
       "code": 6007,
-      "name": "MissingRequiredAccountsForNftReward",
-      "msg": "An account required for setting up this reward kind is missing."
+      "name": "MissingRequiredAccountsForFtReward",
+      "msg": "An account required for setting up this reward kind is missing"
     },
     {
       "code": 6008,
-      "name": "NoAvailableRewards",
-      "msg": "No more rewards are being given out for this game."
+      "name": "MissingRequiredAccountsForNftReward",
+      "msg": "An account required for setting up this reward kind is missing"
     },
     {
       "code": 6009,
-      "name": "DuplicateRewardClaim",
-      "msg": "This user has already claimed their reward"
+      "name": "NoAvailableRewards",
+      "msg": "No more rewards are being given out for this game"
+    },
+    {
+      "code": 6010,
+      "name": "FullyClaimedReward",
+      "msg": "This user has fully claimed their reward"
+    },
+    {
+      "code": 6011,
+      "name": "PlayerAchievementLocked",
+      "msg": "This player has not yet unlocked this achievement"
     }
   ]
 };
@@ -1715,27 +1763,6 @@ export const IDL: Soar = {
   "name": "soar",
   "constants": [
     {
-      "name": "MAX_URI_LENGTH",
-      "type": {
-        "defined": "usize"
-      },
-      "value": "200"
-    },
-    {
-      "name": "MAX_NAME_LENGTH",
-      "type": {
-        "defined": "usize"
-      },
-      "value": "32"
-    },
-    {
-      "name": "MAX_SYMBOL_LENGTH",
-      "type": {
-        "defined": "usize"
-      },
-      "value": "10"
-    },
-    {
       "name": "MAX_TITLE_LEN",
       "type": {
         "defined": "usize"
@@ -1777,7 +1804,7 @@ export const IDL: Soar = {
         {
           "name": "gameMeta",
           "type": {
-            "defined": "GameMeta"
+            "defined": "GameAttributes"
           }
         },
         {
@@ -1820,7 +1847,7 @@ export const IDL: Soar = {
           "name": "newMeta",
           "type": {
             "option": {
-              "defined": "GameMeta"
+              "defined": "GameAttributes"
             }
           }
         },
@@ -2025,7 +2052,7 @@ export const IDL: Soar = {
           "isSigner": true
         },
         {
-          "name": "playerInfo",
+          "name": "playerAccount",
           "isMut": true,
           "isSigner": false
         },
@@ -2058,7 +2085,7 @@ export const IDL: Soar = {
           "isSigner": true
         },
         {
-          "name": "playerInfo",
+          "name": "playerAccount",
           "isMut": true,
           "isSigner": false
         }
@@ -2096,7 +2123,7 @@ export const IDL: Soar = {
           "isSigner": true
         },
         {
-          "name": "playerInfo",
+          "name": "playerAccount",
           "isMut": false,
           "isSigner": false
         },
@@ -2146,7 +2173,7 @@ export const IDL: Soar = {
           "isSigner": true
         },
         {
-          "name": "playerInfo",
+          "name": "playerAccount",
           "isMut": false,
           "isSigner": false
         },
@@ -2167,7 +2194,7 @@ export const IDL: Soar = {
           "isOptional": true
         },
         {
-          "name": "playerEntries",
+          "name": "playerScores",
           "isMut": true,
           "isSigner": false
         },
@@ -2202,7 +2229,7 @@ export const IDL: Soar = {
           "isSigner": true
         },
         {
-          "name": "player",
+          "name": "playerAccount",
           "isMut": false,
           "isSigner": false
         },
@@ -2238,7 +2265,7 @@ export const IDL: Soar = {
           "isSigner": true
         },
         {
-          "name": "playerInfo",
+          "name": "playerAccount",
           "isMut": false,
           "isSigner": false
         },
@@ -2273,12 +2300,12 @@ export const IDL: Soar = {
           "isSigner": true
         },
         {
-          "name": "playerInfo",
+          "name": "playerAccount",
           "isMut": false,
           "isSigner": false
         },
         {
-          "name": "playerEntry",
+          "name": "playerScores",
           "isMut": false,
           "isSigner": false
         },
@@ -2313,7 +2340,8 @@ export const IDL: Soar = {
     {
       "name": "addReward",
       "docs": [
-        "Optional: Add an NFT-based [Reward] for unlocking some [Achievement]."
+        "Optional: Add an NFT-based [Reward] for unlocking some [Achievement]. Overwrite the current",
+        "reward if any exists."
       ],
       "accounts": [
         {
@@ -2339,7 +2367,7 @@ export const IDL: Soar = {
         {
           "name": "newReward",
           "isMut": true,
-          "isSigner": false
+          "isSigner": true
         },
         {
           "name": "systemProgram",
@@ -2354,7 +2382,7 @@ export const IDL: Soar = {
         },
         {
           "name": "ftRewardDelegateAccount",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false,
           "isOptional": true
         },
@@ -2399,7 +2427,7 @@ export const IDL: Soar = {
         {
           "name": "input",
           "type": {
-            "defined": "AddNewRewardArgs"
+            "defined": "AddNewRewardInput"
           }
         }
       ]
@@ -2413,14 +2441,9 @@ export const IDL: Soar = {
       ],
       "accounts": [
         {
-          "name": "authority",
-          "isMut": false,
-          "isSigner": true
-        },
-        {
           "name": "user",
           "isMut": false,
-          "isSigner": false
+          "isSigner": true
         },
         {
           "name": "game",
@@ -2438,13 +2461,13 @@ export const IDL: Soar = {
           "isSigner": false
         },
         {
-          "name": "player",
+          "name": "playerAccount",
           "isMut": false,
           "isSigner": false
         },
         {
           "name": "playerAchievement",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -2459,13 +2482,16 @@ export const IDL: Soar = {
           "isOptional": true
         },
         {
+          "name": "claim",
+          "isMut": true,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
           "name": "nftRewardMint",
           "isMut": true,
           "isSigner": true,
-          "isOptional": true,
-          "docs": [
-            "Initialized as mint in instruction."
-          ]
+          "isOptional": true
         },
         {
           "name": "nftRewardMetadata",
@@ -2539,11 +2565,6 @@ export const IDL: Soar = {
           "isSigner": true
         },
         {
-          "name": "authority",
-          "isMut": false,
-          "isSigner": true
-        },
-        {
           "name": "game",
           "isMut": false,
           "isSigner": false
@@ -2561,10 +2582,15 @@ export const IDL: Soar = {
         {
           "name": "user",
           "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "playerAccount",
+          "isMut": false,
           "isSigner": false
         },
         {
-          "name": "player",
+          "name": "claim",
           "isMut": false,
           "isSigner": false
         },
@@ -2580,7 +2606,7 @@ export const IDL: Soar = {
         },
         {
           "name": "metadataToVerify",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -2597,6 +2623,11 @@ export const IDL: Soar = {
           "name": "collectionMasterEdition",
           "isMut": false,
           "isSigner": false
+        },
+        {
+          "name": "tokenMetadataProgram",
+          "isMut": false,
+          "isSigner": false
         }
       ],
       "args": []
@@ -2604,10 +2635,70 @@ export const IDL: Soar = {
   ],
   "accounts": [
     {
+      "name": "achievement",
+      "docs": [
+        "Represents an achievement(with optional rewards) for this game",
+        "that can be attained by players.",
+        "",
+        "PDA with seeds = `[b\"achievement\", game.key().as_ref(), &id.to_le_bytes()]`",
+        "",
+        "`id` is an incrementing index stored in the game account."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "game",
+            "docs": [
+              "Public key of the game account this achievement is derived from."
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "id",
+            "docs": [
+              "The achievement_count of the game account when this account was",
+              "created, also used as a seed for its PDA."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "title",
+            "docs": [
+              "Achievement title."
+            ],
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "docs": [
+              "Achievement description."
+            ],
+            "type": "string"
+          },
+          {
+            "name": "nftMeta",
+            "docs": [
+              "Public key of a nft metadata account describing this achievement."
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "reward",
+            "docs": [
+              "Optional: Specify a reward to players for unlocking this achievement."
+            ],
+            "type": {
+              "option": "publicKey"
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "game",
       "docs": [
-        "An account representing a single game.",
-        ""
+        "An account representing a single game."
       ],
       "type": {
         "kind": "struct",
@@ -2615,32 +2706,34 @@ export const IDL: Soar = {
           {
             "name": "meta",
             "docs": [
-              "Game information."
+              "Game meta-information."
             ],
             "type": {
-              "defined": "GameMeta"
+              "defined": "GameAttributes"
             }
           },
           {
             "name": "leaderboardCount",
             "docs": [
-              "Number of leaderboards this game has created. Used both in determining the",
-              "most recent leaderboard address, and as a seed for the next leaderboard."
+              "Number of leaderboards this game has created. Used both",
+              "in determining the most recent leaderboard address, and",
+              "as a seed for the next leaderboard."
             ],
             "type": "u64"
           },
           {
             "name": "achievementCount",
             "docs": [
-              "Number of achievements that exist for this game. Used in determining",
-              "the u64 index for the next achievement."
+              "Number of achievements that exist for this game. Also",
+              "used to determine the u64 seed for the next achievement."
             ],
             "type": "u64"
           },
           {
             "name": "auth",
             "docs": [
-              "A collection of pubkeys which are valid authorities for the game."
+              "A collection of pubkeys which each represent a valid",
+              "authority for this game."
             ],
             "type": {
               "vec": "publicKey"
@@ -2652,9 +2745,9 @@ export const IDL: Soar = {
     {
       "name": "leaderBoard",
       "docs": [
-        "Represents a [Game]'s leaderboard.",
+        "Represents a [Game][super::Game]'s leaderboard.",
         "",
-        "Seeds: `[b\"leaderboard\", game.key().as_ref()]`"
+        "Seeds: `[b\"leaderboard\", game.key().as_ref(), &id.to_le_bytes()]`"
       ],
       "type": {
         "kind": "struct",
@@ -2669,7 +2762,7 @@ export const IDL: Soar = {
           {
             "name": "game",
             "docs": [
-              "The game this leaderboard belongs to."
+              "The game this leaderboard belongs to and is derived from."
             ],
             "type": "publicKey"
           },
@@ -2683,14 +2776,14 @@ export const IDL: Soar = {
           {
             "name": "nftMeta",
             "docs": [
-              "Metadata to represent the leaderboard."
+              "Pubkey of an nft metadata account that describes this leaderboard."
             ],
             "type": "publicKey"
           },
           {
             "name": "decimals",
             "docs": [
-              "Interpreted as a factor of 10 and used as a divisor for contextualizing scores."
+              "Used to contextualize scores for this leaderboard."
             ],
             "type": "u8"
           },
@@ -2710,6 +2803,9 @@ export const IDL: Soar = {
           },
           {
             "name": "topEntries",
+            "docs": [
+              "Top [entries](ScoreEntry) for a leaderboard."
+            ],
             "type": {
               "option": "publicKey"
             }
@@ -2718,119 +2814,138 @@ export const IDL: Soar = {
       }
     },
     {
-      "name": "leaderTopEntries",
+      "name": "merged",
       "docs": [
-        "Extra leaderboard details for keeping track of scores.",
-        "",
-        "Seeds = [b\"top-scores\", leaderboard.key().as_ref()]"
+        "An account that represents a single user's ownership of",
+        "multiple [Player][super::Player] accounts."
       ],
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "isAscending",
+            "name": "initiator",
             "docs": [
-              "Arrangement order."
+              "The user that initialized this merge."
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "approvals",
+            "docs": [
+              "Details of all the player accounts to be merged with the main_user's."
+            ],
+            "type": {
+              "vec": {
+                "defined": "MergeApproval"
+              }
+            }
+          },
+          {
+            "name": "mergeComplete",
+            "docs": [
+              "Set to true when every user in `others` has registered their approval."
+            ],
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "playerAchievement",
+      "docs": [
+        "Represents a player's status for a particular [Achievement](super::Achievement).",
+        "",
+        "Seeds = `[b\"player-achievement\", player.key().as_ref(), achievement.key().as_ref()]`."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "playerAccount",
+            "docs": [
+              "The user's [player][super::Player] account."
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "achievement",
+            "docs": [
+              "The key of the achievement unlocked for this player."
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "timestamp",
+            "docs": [
+              "Timestamp showing when this achievement was unlocked."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "unlocked",
+            "docs": [
+              "A player's unlock status for this achievement."
             ],
             "type": "bool"
           },
           {
-            "name": "topScores",
+            "name": "claims",
             "docs": [
-              "Top scores."
+              "Number of claims a user has for this achievement's reward."
             ],
-            "type": {
-              "vec": {
-                "defined": "LeaderBoardScore"
-              }
-            }
+            "type": "u64"
+          },
+          {
+            "name": "claimed",
+            "docs": [
+              "Whether or not this player has completely claimed their reward."
+            ],
+            "type": "bool"
           }
         ]
       }
     },
     {
-      "name": "achievement",
+      "name": "playerScoresList",
       "docs": [
-        "Represents a single achievement for a [Game].",
+        "Holds a list of a [player][super::Player]'s [scores][ScoreEntry])",
+        "for a particular [LeaderBoard].",
         "",
-        "Seeds = `[b\"achievement\", game.key().as_ref(), title.as_bytes()]`"
+        "Seeds: `[b\"entry\", player_account.key().as_ref(), leaderboard.key().as_ref()]`"
       ],
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "game",
+            "name": "playerAccount",
             "docs": [
-              "The game account it derives from."
+              "The player[super::Player] account this entry is derived from"
             ],
             "type": "publicKey"
           },
           {
-            "name": "title",
+            "name": "leaderboard",
             "docs": [
-              "The title of this achievement."
-            ],
-            "type": "string"
-          },
-          {
-            "name": "description",
-            "docs": [
-              "A description of the achievement."
-            ],
-            "type": "string"
-          },
-          {
-            "name": "nftMeta",
-            "docs": [
-              "Metadata representing this achievement."
+              "The leaderboard these scores are for."
             ],
             "type": "publicKey"
           },
           {
-            "name": "reward",
+            "name": "allocCount",
             "docs": [
-              "A reward for unlocking this achievement."
+              "Max number of [scores][ScoreEntry] the current space allocation supports."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "scores",
+            "docs": [
+              "Collection of [scores][ScoreEntry]."
             ],
             "type": {
-              "option": "publicKey"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "reward",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "achievement",
-            "docs": [
-              "The achievement this reward is given for."
-            ],
-            "type": "publicKey"
-          },
-          {
-            "name": "available",
-            "docs": [
-              "Number of available rewards."
-            ],
-            "type": "u64"
-          },
-          {
-            "name": "amountPerUser",
-            "docs": [
-              "Reward amount per user."
-            ],
-            "type": "u64"
-          },
-          {
-            "name": "reward",
-            "docs": [
-              "The reward type and information."
-            ],
-            "type": {
-              "defined": "RewardKind"
+              "vec": {
+                "defined": "ScoreEntry"
+              }
             }
           }
         ]
@@ -2871,139 +2986,79 @@ export const IDL: Soar = {
       }
     },
     {
-      "name": "merged",
-      "docs": [
-        "An account that represents a single user's ownership of",
-        "multiple [Player] accounts."
-      ],
+      "name": "nftClaim",
       "type": {
         "kind": "struct",
-        "fields": [
-          {
-            "name": "initiator",
-            "docs": [
-              "The user that initialized this merge."
-            ],
-            "type": "publicKey"
-          },
-          {
-            "name": "others",
-            "docs": [
-              "Details of all the [Player] accounts to be merged with the main_user's."
-            ],
-            "type": {
-              "vec": {
-                "defined": "MergeInfo"
-              }
-            }
-          },
-          {
-            "name": "mergeComplete",
-            "docs": [
-              "Whether or not full permissions are granted and the merge complete."
-            ],
-            "type": "bool"
-          }
-        ]
+        "fields": []
       }
     },
     {
-      "name": "playerEntryList",
+      "name": "reward",
       "docs": [
-        "Represents a [Player]'s collection of score entries([ScoreEntry]) for a particular [LeaderBoard].",
-        "",
-        "Seeds: `[b\"entry\", player_info.key().as_ref(), leaderboard.key().as_ref()]`"
+        "An account representing a reward for a given achievement."
       ],
       "type": {
         "kind": "struct",
         "fields": [
-          {
-            "name": "playerInfo",
-            "docs": [
-              "The player_info account this entry is derived from"
-            ],
-            "type": "publicKey"
-          },
-          {
-            "name": "leaderboard",
-            "docs": [
-              "The leaderboard this entry derives from."
-            ],
-            "type": "publicKey"
-          },
-          {
-            "name": "allocCount",
-            "docs": [
-              "Max number of [ScoreEntry] objects the current space allocation supports."
-            ],
-            "type": "u16"
-          },
-          {
-            "name": "scores",
-            "docs": [
-              "Collection of entries."
-            ],
-            "type": {
-              "vec": {
-                "defined": "ScoreEntry"
-              }
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "playerAchievement",
-      "docs": [
-        "Represents a player's status for a particular [Achievement].",
-        "",
-        "Seeds = `[b\"player-achievement\", player.key().as_ref(), achievement.key().as_ref()]`."
-      ],
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "player",
-            "docs": [
-              "The player's [Player] account."
-            ],
-            "type": "publicKey"
-          },
           {
             "name": "achievement",
             "docs": [
-              "The key of the [Achievement] unlocked for this player."
+              "The achievement this reward is given for."
             ],
             "type": "publicKey"
           },
           {
-            "name": "timestamp",
+            "name": "available",
             "docs": [
-              "Timestamp showing when this achievement was unlocked."
+              "Number of available reward spots."
             ],
-            "type": "i64"
+            "type": "u64"
           },
           {
-            "name": "unlocked",
+            "name": "amountPerUser",
             "docs": [
-              "True for unlocked, false for locked."
+              "Reward amount per user."
             ],
-            "type": "bool"
+            "type": "u64"
           },
           {
-            "name": "claimed",
+            "name": "reward",
             "docs": [
-              "Whether or not this player has claimed their reward."
-            ],
-            "type": "bool"
-          },
-          {
-            "name": "nftRewardMint",
-            "docs": [
-              "This is [Some] only if the player has minted an NFT reward pending verification."
+              "The reward kind. Current supports Nft and Ft rewards only."
             ],
             "type": {
-              "option": "publicKey"
+              "defined": "RewardKind"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "leaderTopEntries",
+      "docs": [
+        "Keeps track of a sorted list of top scores for a leaderboard.",
+        "",
+        "Seeds = [b\"top-scores\", leaderboard.key().as_ref()]"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "isAscending",
+            "docs": [
+              "Arrangement order."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "topScores",
+            "docs": [
+              "Top scores."
+            ],
+            "type": {
+              "vec": {
+                "defined": "LeaderBoardScore"
+              }
             }
           }
         ]
@@ -3012,9 +3067,9 @@ export const IDL: Soar = {
   ],
   "types": [
     {
-      "name": "GameMeta",
+      "name": "GameAttributes",
       "docs": [
-        "Parameters used together with a [Vec] of [Pubkey]s in initializing a [Game]"
+        "A type that represents game-specific information."
       ],
       "type": {
         "kind": "struct",
@@ -3022,75 +3077,37 @@ export const IDL: Soar = {
           {
             "name": "title",
             "docs": [
-              "The title of the game, max length = 30 bytes"
+              "The title of the game, max length = 30 bytes."
             ],
             "type": "string"
           },
           {
             "name": "description",
             "docs": [
-              "The game description, max length = 200 bytes"
+              "The game description, max length = 200 bytes."
             ],
             "type": "string"
           },
           {
             "name": "genre",
             "docs": [
-              "The [Genre], stored as a u8."
+              "The game's [genre](super::Genre), as a u8."
             ],
             "type": "u8"
           },
           {
             "name": "gameType",
             "docs": [
-              "The [GameType], stored as a u8"
+              "The game's [type](super::GameType), as a u8."
             ],
             "type": "u8"
           },
           {
             "name": "nftMeta",
             "docs": [
-              "A mpl collection key representing this game"
+              "An nft metadata account describing the game."
             ],
             "type": "publicKey"
-          }
-        ]
-      }
-    },
-    {
-      "name": "LeaderBoardScore",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "user",
-            "type": "publicKey"
-          },
-          {
-            "name": "entry",
-            "type": {
-              "defined": "ScoreEntry"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "MergeInfo",
-      "docs": [
-        "Represents a [Player] account that's included in the merge and indicates",
-        "if the authority of that account has granted permission."
-      ],
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "key",
-            "type": "publicKey"
-          },
-          {
-            "name": "approved",
-            "type": "bool"
           }
         ]
       }
@@ -3106,7 +3123,7 @@ export const IDL: Soar = {
           {
             "name": "score",
             "docs": [
-              "The player's score for this entry."
+              "The player's score."
             ],
             "type": "u64"
           },
@@ -3116,6 +3133,59 @@ export const IDL: Soar = {
               "When this entry was made."
             ],
             "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MergeApproval",
+      "docs": [
+        "Represents a [Player][super::Player] account involved in a merge",
+        "and if that account's user/authority has granted approval."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "key",
+            "docs": [
+              "The player_account pubkey."
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "approved",
+            "docs": [
+              "User's approval status."
+            ],
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LeaderBoardScore",
+      "docs": [
+        "An single entry to a [LeaderTopEntries]."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "docs": [
+              "The user."
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "entry",
+            "docs": [
+              "The user's [score][super::ScoreEntry]."
+            ],
+            "type": {
+              "defined": "ScoreEntry"
+            }
           }
         ]
       }
@@ -3187,133 +3257,35 @@ export const IDL: Soar = {
       }
     },
     {
-      "name": "AddNewRewardArgs",
+      "name": "AddNewRewardInput",
       "docs": [
-        "Parameters used for registering metadata information for an nft reward."
+        "Input to add a new reward for an achievement."
       ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "amountPerUser",
+            "docs": [
+              "Rewards given per user."
+            ],
             "type": "u64"
           },
           {
             "name": "availableRewards",
+            "docs": [
+              "Number of reward spots."
+            ],
             "type": "u64"
           },
           {
             "name": "kind",
+            "docs": [
+              "Specific reward kind."
+            ],
             "type": {
-              "defined": "RewardKindArgs"
+              "defined": "RewardKindInput"
             }
-          }
-        ]
-      }
-    },
-    {
-      "name": "RewardKind",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "FungibleToken",
-            "fields": [
-              {
-                "name": "mint",
-                "docs": [
-                  "The mint of the token to be given out."
-                ],
-                "type": "publicKey"
-              },
-              {
-                "name": "token_account",
-                "docs": [
-                  "The token account to withdraw from."
-                ],
-                "type": "publicKey"
-              }
-            ]
-          },
-          {
-            "name": "NonFungibleToken",
-            "fields": [
-              {
-                "name": "uri",
-                "docs": [
-                  "URI of the NFT to be minted."
-                ],
-                "type": "string"
-              },
-              {
-                "name": "name",
-                "docs": [
-                  "Name of the NFT to be minted."
-                ],
-                "type": "string"
-              },
-              {
-                "name": "symbol",
-                "docs": [
-                  "Symbol of the NFT to be minted."
-                ],
-                "type": "string"
-              },
-              {
-                "name": "minted",
-                "docs": [
-                  "Number of nft rewards given so far."
-                ],
-                "type": "u64"
-              },
-              {
-                "name": "collection_mint",
-                "docs": [
-                  "Optional: A collection to verify a minted nft as belonging to."
-                ],
-                "type": {
-                  "option": "publicKey"
-                }
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "name": "RewardKindArgs",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "Ft",
-            "fields": [
-              {
-                "name": "deposit",
-                "type": "u64"
-              },
-              {
-                "name": "mint",
-                "type": "publicKey"
-              }
-            ]
-          },
-          {
-            "name": "Nft",
-            "fields": [
-              {
-                "name": "uri",
-                "type": "string"
-              },
-              {
-                "name": "name",
-                "type": "string"
-              },
-              {
-                "name": "symbol",
-                "type": "string"
-              }
-            ]
           }
         ]
       }
@@ -3366,6 +3338,120 @@ export const IDL: Soar = {
           }
         ]
       }
+    },
+    {
+      "name": "RewardKind",
+      "docs": [
+        "The kind of reward to be given out."
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "FungibleToken",
+            "fields": [
+              {
+                "name": "mint",
+                "docs": [
+                  "The mint of the token to be given out."
+                ],
+                "type": "publicKey"
+              },
+              {
+                "name": "account",
+                "docs": [
+                  "The token account to withdraw from."
+                ],
+                "type": "publicKey"
+              }
+            ]
+          },
+          {
+            "name": "NonFungibleToken",
+            "fields": [
+              {
+                "name": "uri",
+                "docs": [
+                  "URI of the NFT to be minted."
+                ],
+                "type": "string"
+              },
+              {
+                "name": "name",
+                "docs": [
+                  "Name of the NFT to be minted."
+                ],
+                "type": "string"
+              },
+              {
+                "name": "symbol",
+                "docs": [
+                  "Symbol of the NFT to be minted."
+                ],
+                "type": "string"
+              },
+              {
+                "name": "minted",
+                "docs": [
+                  "Total NFTs minted so far."
+                ],
+                "type": "u64"
+              },
+              {
+                "name": "collection",
+                "docs": [
+                  "Optional field for a collection mint used for",
+                  "verifying minted rewards."
+                ],
+                "type": {
+                  "option": "publicKey"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "RewardKindInput",
+      "docs": [
+        "Specific variant of [AddNewRewardInput]."
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Ft",
+            "fields": [
+              {
+                "name": "deposit",
+                "type": "u64"
+              },
+              {
+                "name": "mint",
+                "type": "publicKey"
+              }
+            ]
+          },
+          {
+            "name": "Nft",
+            "fields": [
+              {
+                "name": "uri",
+                "type": "string"
+              },
+              {
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "name": "symbol",
+                "type": "string"
+              }
+            ]
+          }
+        ]
+      }
     }
   ],
   "errors": [
@@ -3377,17 +3463,17 @@ export const IDL: Soar = {
     {
       "code": 6001,
       "name": "InvalidAuthority",
-      "msg": "Invalid authority for instruction."
+      "msg": "Invalid authority for instruction"
     },
     {
       "code": 6002,
       "name": "MissingSignature",
-      "msg": "An expected signature isn't present."
+      "msg": "An expected signature isn't present"
     },
     {
       "code": 6003,
       "name": "NoRewardForAchievement",
-      "msg": "Reward not specified for this achievement."
+      "msg": "Reward not specified for this achievement"
     },
     {
       "code": 6004,
@@ -3401,23 +3487,33 @@ export const IDL: Soar = {
     },
     {
       "code": 6006,
-      "name": "MissingRequiredAccountsForFtReward",
-      "msg": "An account required for setting up this reward kind is missing."
+      "name": "MissingExpectedAccount",
+      "msg": "An optional but expected account is missing"
     },
     {
       "code": 6007,
-      "name": "MissingRequiredAccountsForNftReward",
-      "msg": "An account required for setting up this reward kind is missing."
+      "name": "MissingRequiredAccountsForFtReward",
+      "msg": "An account required for setting up this reward kind is missing"
     },
     {
       "code": 6008,
-      "name": "NoAvailableRewards",
-      "msg": "No more rewards are being given out for this game."
+      "name": "MissingRequiredAccountsForNftReward",
+      "msg": "An account required for setting up this reward kind is missing"
     },
     {
       "code": 6009,
-      "name": "DuplicateRewardClaim",
-      "msg": "This user has already claimed their reward"
+      "name": "NoAvailableRewards",
+      "msg": "No more rewards are being given out for this game"
+    },
+    {
+      "code": 6010,
+      "name": "FullyClaimedReward",
+      "msg": "This user has fully claimed their reward"
+    },
+    {
+      "code": 6011,
+      "name": "PlayerAchievementLocked",
+      "msg": "This player has not yet unlocked this achievement"
     }
   ]
 };

@@ -1,7 +1,5 @@
 import { Keypair, type PublicKey } from "@solana/web3.js";
 import type BN from "bn.js";
-import { type IdlTypes } from "@coral-xyz/anchor";
-import { type Soar } from "./idl/soar";
 import { type SoarProgram } from "./soar.program";
 import { type InstructionResult } from "./types";
 import {
@@ -10,6 +8,7 @@ import {
   type GameType,
   type AchievementAccount,
   type LeaderBoardAccount,
+  type GameAttributes,
 } from "./state";
 
 export class GameClient {
@@ -98,8 +97,8 @@ export class GameClient {
 
   public async update(
     authority: PublicKey,
-    newMeta: IdlTypes<Soar>["GameAttributes"],
-    newAuths: PublicKey[] | null
+    newMeta?: GameAttributes,
+    newAuths?: PublicKey[]
   ): Promise<InstructionResult.UpdateGame> {
     return this.program.updateGameAccount(
       this.address,
@@ -113,11 +112,11 @@ export class GameClient {
     authority: PublicKey,
     description: string,
     nftMeta: PublicKey,
-    scoresToRetain: number | null,
-    scoresOrder: boolean | null,
-    decimals: number | null,
-    minScore: BN | null,
-    maxScore: BN | null
+    scoresToRetain: number,
+    scoresOrder: boolean,
+    decimals?: number,
+    minScore?: BN,
+    maxScore?: BN
   ): Promise<InstructionResult.AddLeaderBoard> {
     return this.program.addNewGameLeaderBoard(
       this.address,
@@ -128,8 +127,7 @@ export class GameClient {
       scoresOrder,
       decimals,
       minScore,
-      maxScore,
-      this.nextLeaderBoardAddress()
+      maxScore
     );
   }
 
@@ -144,8 +142,7 @@ export class GameClient {
       authority,
       title,
       description,
-      nftMeta,
-      this.nextAchievementAddress()
+      nftMeta
     );
   }
 
@@ -154,11 +151,7 @@ export class GameClient {
     leaderBoard?: PublicKey
   ): Promise<InstructionResult.RegisterPlayerEntry> {
     const leaderboard = leaderBoard ?? this.currentLeaderBoardAddress();
-    return this.program.registerPlayerEntryForLeaderBoard(
-      user,
-      leaderboard,
-      this.address
-    );
+    return this.program.registerPlayerEntryForLeaderBoard(user, leaderboard);
   }
 
   public async submitScore(
@@ -172,25 +165,23 @@ export class GameClient {
       user,
       authority,
       leaderboard,
-      score,
-      this.address
+      score
     );
   }
 
   public async updateAchievement(
     authority: PublicKey,
     achievement: PublicKey,
-    newTitle: string | null,
-    newDescription: string | null,
-    newNftMeta: PublicKey | null
+    newTitle?: string,
+    newDescription?: string,
+    newNftMeta?: PublicKey
   ): Promise<InstructionResult.UpdateAchievement> {
     return this.program.updateGameAchievement(
       authority,
       achievement,
       newTitle,
       newDescription,
-      newNftMeta,
-      this.address
+      newNftMeta
     );
   }
 

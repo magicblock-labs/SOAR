@@ -1,4 +1,6 @@
 import { type PublicKey, type Transaction } from "@solana/web3.js";
+import { type GameType, type Genre } from "./state/game";
+import type BN from "bn.js";
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export module InstructionResult {
@@ -9,7 +11,7 @@ export module InstructionResult {
   export interface UpdateGame {
     transaction: Transaction;
   }
-  export interface CreatePlayer {
+  export interface InitializePlayer {
     newPlayer: PublicKey;
     transaction: Transaction;
   }
@@ -44,8 +46,11 @@ export module InstructionResult {
     newReward: PublicKey;
     transaction: Transaction;
   }
-  export interface MintReward {
+  export interface ClaimNftReward {
     newMint: PublicKey;
+    transaction: Transaction;
+  }
+  export interface ClaimFtReward {
     transaction: Transaction;
   }
   export interface VerifyReward {
@@ -61,4 +66,78 @@ export module InstructionResult {
   export interface UpdateLeaderboard {
     transaction: Transaction;
   }
+}
+
+export interface InitializeGameArgs {
+  gameMeta: {
+    title: string;
+    description: string;
+    genre: Genre;
+    gameType: GameType;
+    nftMeta: PublicKey;
+  };
+  authorities: PublicKey[];
+}
+export interface AddAchievementArgs {
+  title: string;
+  description: string;
+  nftMeta: PublicKey;
+}
+export interface AddLeaderBoardArgs {
+  description: string;
+  nftMeta: PublicKey;
+  decimals: number | null;
+  minScore: BN | null;
+  maxScore: BN | null;
+  scoresToRetain: number;
+  scoresOrder: boolean;
+}
+export interface AddNftRewardArgs {
+  amountPerUser: BN;
+  availableRewards: BN;
+  kind: {
+    uri: string;
+    name: string;
+    symbol: string;
+  };
+}
+export interface AddFtRewardArgs {
+  amountPerUser: BN;
+  availableRewards: BN;
+  kind: {
+    deposit: BN;
+  };
+}
+export interface InitializePlayerArgs {
+  username: string;
+  nftMeta: PublicKey;
+}
+export interface InitMergeArgs {
+  keys: PublicKey[];
+}
+export interface SubmitScoreArgs {
+  score: BN;
+}
+export interface UpdateAchievementArgs {
+  newTitle: string | null;
+  newDescription: string | null;
+  newNftMeta: PublicKey | null;
+}
+export interface UpdateGameArgs {
+  newMeta: {
+    title: string;
+    description: string;
+    genre: Genre;
+    gameType: GameType;
+    nftMeta: PublicKey;
+  } | null;
+  newAuths: PublicKey[] | null;
+}
+export interface UpdateLeaderboardArgs {
+  newDescription: string | null;
+  newNftMeta: PublicKey | null;
+}
+export interface UpdatePlayerArgs {
+  newUsername: string | null;
+  newNftMeta: PublicKey | null;
 }

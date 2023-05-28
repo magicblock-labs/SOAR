@@ -202,7 +202,7 @@ describe("soar", () => {
     let newMeta = Keypair.generate().publicKey;
 
     let { transaction } = await client.updateGameLeaderboard(auths[0].publicKey, leaderboard, 
-      newDescription, newMeta, gameClient.address);
+      newDescription, newMeta);
     await client.sendAndConfirmTransaction(transaction, [auths[0]]);
 
     let info = await client.fetchLeaderBoardAccount(leaderboard);
@@ -378,7 +378,7 @@ describe("soar", () => {
 
     const newReward = Keypair.generate();
     let { transaction } = await client.addFungibleReward(auths[0].publicKey, newReward.publicKey, achievements[1],
-      amountPerUser, availableRewards, new BN(2), tokenAccount, tokenAccountOwner.publicKey, mint);
+      amountPerUser, availableRewards, new BN(2), mint, tokenAccount, tokenAccountOwner.publicKey);
     await client.sendAndConfirmTransaction(transaction, [auths[0], tokenAccountOwner, newReward]);
     let account = await client.fetchRewardAccount(newReward.publicKey);
 
@@ -393,8 +393,7 @@ describe("soar", () => {
   });
 
   it("Can register a player to a leaderboard", async() => {
-    let { transaction, newList } = await client.registerPlayerEntryForLeaderBoard(user1.publicKey, leaderBoards[0],
-      gameClient.address);
+    let { transaction, newList } = await client.registerPlayerEntryForLeaderBoard(user1.publicKey, leaderBoards[0]);
     await client.sendAndConfirmTransaction(transaction, [user1]);
 
     let account = await client.fetchPlayerScoresListAccount(newList);
@@ -573,7 +572,7 @@ describe("soar", () => {
 
     // Overwrite achievement[0]'s reward.
     let { transaction } = await client.addNonFungibleReward(auths[0].publicKey, newReward.publicKey, 
-      achievements[0], amountPerUser, availableRewards, uri, name, symbol, undefined, collectionMint.publicKey, 
+      achievements[0], amountPerUser, availableRewards, uri, name, symbol, collectionMint.publicKey, 
       client.provider.publicKey);
 
     await client.sendAndConfirmTransaction(transaction, [auths[0], newReward]);

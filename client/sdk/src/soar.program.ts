@@ -5,31 +5,12 @@ import {
   type GetProgramAccountsFilter,
   type Signer,
   type TransactionInstruction,
-  Transaction,
+  type Transaction,
 } from "@solana/web3.js";
 import { IDL, type Soar } from "./idl/soar";
-import { PROGRAM_ID, TOKEN_METADATA_PROGRAM_ID } from "./constants";
+import { PROGRAM_ID } from "./constants";
 import type BN from "bn.js";
-import {
-  addLeaderBoardInstruction,
-  addAchievementInstruction,
-  createPlayerInstruction,
-  initializeGameInstruction,
-  registerPlayerEntryInstruction,
-  updateAchievementInstruction,
-  updateGameInstruction,
-  updatePlayerInstruction,
-  updateLeaderBoardInstruction,
-  submitScoreInstruction,
-  unlockPlayerAchievementInstruction,
-  initiateMergeInstruction,
-  registerMergeApprovalInstruction,
-  addFtRewardInstruction,
-  addNftRewardInstruction,
-  claimFtRewardInstruction,
-  claimNftRewardInstruction,
-  verifyNftRewardInstruction,
-} from "./instructions";
+import { InstructionBuilder } from "./instructions";
 import { Seeds, Utils } from "./utils";
 import { type InstructionResult } from "./types";
 import {
@@ -53,10 +34,12 @@ import { GameClient } from "./soar.game";
 export class SoarProgram {
   readonly program: Program<Soar>;
   readonly utils: Utils;
+  private readonly builder: InstructionBuilder;
 
   private constructor(readonly provider: AnchorProvider) {
-    this.utils = new Utils();
     this.program = new Program<Soar>(IDL, PROGRAM_ID, provider);
+    this.utils = new Utils(this.program.programId);
+    this.builder = new InstructionBuilder(provider);
   }
 
   public static get(provider: AnchorProvider): SoarProgram {
@@ -73,24 +56,26 @@ export class SoarProgram {
     nftMeta: PublicKey,
     authorities: PublicKey[]
   ): Promise<InstructionResult.InitializeGame> {
-    const transaction = new Transaction();
-
-    const initGame = await initializeGameInstruction(
-      this.program,
-      newGame,
-      this.provider.publicKey,
-      title,
-      description,
-      genre,
-      gameType,
-      nftMeta,
-      authorities
-    );
-    transaction.add(initGame);
+    this.builder.clean();
+    const transaction = await this.builder
+      .andInitializeGame(
+        {
+          gameMeta: {
+            title,
+            description,
+            genre,
+            gameType,
+            nftMeta,
+          },
+          authorities,
+        },
+        newGame
+      )
+      .then((builder) => builder.build());
 
     return {
-      newGame,
       transaction,
+      newGame,
     };
   }
 
@@ -98,63 +83,72 @@ export class SoarProgram {
     user: PublicKey,
     username: string,
     nftMeta: PublicKey
-  ): Promise<InstructionResult.CreatePlayer> {
-    const transaction = new Transaction();
-    const newPlayer = this.derivePlayerAddress(user)[0];
-
-    const initPlayer = await createPlayerInstruction(
-      this.program,
-      newPlayer,
-      user,
-      this.provider.publicKey,
-      username,
-      nftMeta
-    );
-    transaction.add(initPlayer);
+  ): Promise<InstructionResult.InitializePlayer> {
+    this.builder.clean();
+    const transaction = await this.builder
+      .andInitializePlayer(
+        {
+          username,
+          nftMeta,
+        },
+        user
+      )
+      .then((builder) => builder.build());
 
     return {
-      newPlayer,
       transaction,
+      newPlayer: this.derivePlayerAddress(user)[0],
     };
   }
 
   public async updateGameAccount(
     game: PublicKey,
     authority: PublicKey,
-    newMeta: GameAttributes | null,
-    newAuths: PublicKey[] | null
+    newMeta?: GameAttributes,
+    newAuths?: PublicKey[]
   ): Promise<InstructionResult.UpdateGame> {
-    const transaction = new Transaction();
+    if (newMeta === undefined && newAuths === undefined) {
+      throw new Error(
+        "Expected at least one of newMeta and newAuths to be defined"
+      );
+    }
 
-    const update = await updateGameInstruction(
-      this.program,
-      this.provider.publicKey,
-      game,
-      authority,
-      newMeta,
-      newAuths
-    );
-    transaction.add(update);
+    this.builder.clean();
+    const transaction = await this.builder
+      .andUpdateGame(
+        {
+          newMeta: newMeta ?? null,
+          newAuths: newAuths ?? null,
+        },
+        game,
+        authority
+      )
+      .then((builder) => builder.build());
 
     return { transaction };
   }
 
   public async updatePlayerAccount(
     user: PublicKey,
-    updatedUsername: string,
-    updatedNftMeta: PublicKey | null
+    newUsername?: string,
+    newNftMeta?: PublicKey
   ): Promise<InstructionResult.UpdatePlayer> {
-    const transaction = new Transaction();
-    const playerInfo = this.derivePlayerAddress(user)[0];
+    if (newUsername === undefined && newNftMeta === undefined) {
+      throw new Error(
+        "Expected one of newUsername and newNftMeta to be defined"
+      );
+    }
+    this.builder.clean();
 
-    const update = await updatePlayerInstruction(
-      this.program,
-      user,
-      playerInfo,
-      updatedUsername,
-      updatedNftMeta
-    );
-    transaction.add(update);
+    const transaction = await this.builder
+      .andUpdatePlayer(
+        {
+          newUsername: newUsername ?? null,
+          newNftMeta: newNftMeta ?? null,
+        },
+        user
+      )
+      .then((builder) => builder.build());
 
     return { transaction };
   }
@@ -164,21 +158,21 @@ export class SoarProgram {
     newMergeAccount: PublicKey,
     playerAccountKeys: PublicKey[]
   ): Promise<InstructionResult.InitiateMerge> {
-    const transaction = new Transaction();
-    const playerInfo = this.derivePlayerAddress(user)[0];
+    this.builder.clean();
 
-    const initMerge = await initiateMergeInstruction(
-      this.program,
-      user,
-      this.provider.publicKey,
-      playerInfo,
-      newMergeAccount,
-      playerAccountKeys
-    );
+    const transaction = await this.builder
+      .andInitiateMerge(
+        {
+          keys: playerAccountKeys,
+        },
+        user,
+        newMergeAccount
+      )
+      .then((builder) => builder.build());
 
     return {
       newMerge: newMergeAccount,
-      transaction: transaction.add(initMerge),
+      transaction,
     };
   }
 
@@ -186,19 +180,13 @@ export class SoarProgram {
     user: PublicKey,
     mergeAccount: PublicKey
   ): Promise<InstructionResult.RegisterMergeApproval> {
-    const transaction = new Transaction();
-    const playerInfo = this.derivePlayerAddress(user)[0];
+    this.builder.clean();
 
-    const registerApproval = await registerMergeApprovalInstruction(
-      this.program,
-      user,
-      playerInfo,
-      mergeAccount
-    );
+    const transaction = await this.builder
+      .andRegisterMergeApproval(user, mergeAccount)
+      .then((builder) => builder.build());
 
-    return {
-      transaction: transaction.add(registerApproval),
-    };
+    return { transaction };
   }
 
   public async addNewGameAchievement(
@@ -206,27 +194,28 @@ export class SoarProgram {
     authority: PublicKey,
     title: string,
     description: string,
-    nftMeta: PublicKey,
-    nextAchievement?: PublicKey
+    nftMeta: PublicKey
   ): Promise<InstructionResult.AddGameAchievement> {
-    const transaction = new Transaction();
+    this.builder.clean();
 
-    const gameAccount = await this.fetchGameAccount(gameAddress);
-    const id = gameAccount.achievementCount.addn(1);
-    const newAchievement =
-      nextAchievement ?? this.deriveAchievementAddress(id, gameAddress)[0];
+    const account = await this.fetchGameAccount(gameAddress);
+    const newAchievement = this.deriveAchievementAddress(
+      account.achievementCount.addn(1),
+      gameAddress
+    )[0];
 
-    const addAchievement = await addAchievementInstruction(
-      this.program,
-      newAchievement,
-      gameAddress,
-      this.provider.publicKey,
-      authority,
-      title,
-      description,
-      nftMeta
-    );
-    transaction.add(addAchievement);
+    const transaction = await this.builder
+      .andAddAchievement(
+        {
+          title,
+          description,
+          nftMeta,
+        },
+        gameAddress,
+        authority,
+        newAchievement
+      )
+      .then((builder) => builder.build());
 
     return { newAchievement, transaction };
   }
@@ -236,46 +225,34 @@ export class SoarProgram {
     authority: PublicKey,
     description: string,
     nftMeta: PublicKey,
-    scoresToRetain: number | null,
-    scoresOrder: boolean | null,
-    decimals: number | null,
-    minScore: BN | null,
-    maxScore: BN | null,
-    nextLeaderboard?: PublicKey
+    scoresToRetain: number,
+    scoresOrder: boolean,
+    decimals?: number,
+    minScore?: BN,
+    maxScore?: BN
   ): Promise<InstructionResult.AddLeaderBoard> {
-    const transaction = new Transaction();
+    this.builder.clean();
 
-    let newLeaderBoard: PublicKey;
-    if (nextLeaderboard !== undefined) {
-      newLeaderBoard = nextLeaderboard;
-    } else {
-      const gameAccount = await this.program.account.game.fetch(gameAddress);
-      const id = (gameAccount.leaderboard as any as BN).addn(1);
-      newLeaderBoard = this.deriveLeaderBoardAddress(id, gameAddress)[0];
-    }
+    const gameAccount = await this.fetchGameAccount(gameAddress);
+    const id = gameAccount.leaderboardCount.addn(1);
+    const newLeaderBoard = this.deriveLeaderBoardAddress(id, gameAddress)[0];
     const topEntries = this.deriveLeaderTopEntriesAddress(newLeaderBoard)[0];
 
-    let topEntriesAccount: PublicKey | null = null;
-    if (scoresToRetain !== null && scoresToRetain > 0) {
-      topEntriesAccount = this.deriveLeaderTopEntriesAddress(newLeaderBoard)[0];
-    }
-
-    const addBoard = await addLeaderBoardInstruction(
-      this.program,
-      newLeaderBoard,
-      this.provider.publicKey,
-      gameAddress,
-      topEntriesAccount,
-      authority,
-      description,
-      nftMeta,
-      scoresToRetain ?? 0,
-      scoresOrder ?? true,
-      decimals,
-      minScore,
-      maxScore
-    );
-    transaction.add(addBoard);
+    const transaction = await this.builder
+      .andAddLeaderBoard(
+        {
+          description,
+          nftMeta,
+          scoresToRetain,
+          scoresOrder,
+          decimals: decimals ?? null,
+          minScore: minScore ?? null,
+          maxScore: maxScore ?? null,
+        },
+        gameAddress,
+        authority
+      )
+      .then((builder) => builder.build());
 
     return { newLeaderBoard, topEntries, transaction };
   }
@@ -283,51 +260,52 @@ export class SoarProgram {
   public async updateGameLeaderboard(
     authority: PublicKey,
     leaderboard: PublicKey,
-    newDescription: string | null,
-    newNftMeta: PublicKey | null,
-    game?: PublicKey
+    newDescription?: string,
+    newNftMeta?: PublicKey
   ): Promise<InstructionResult.UpdateLeaderboard> {
-    const transaction = new Transaction();
-
-    const gameAddress =
-      game ?? (await this.fetchLeaderBoardAccount(leaderboard)).game;
-
-    const updateIx = await updateLeaderBoardInstruction(
-      this.program,
-      authority,
-      gameAddress,
-      leaderboard,
-      newDescription,
-      newNftMeta
+    this.builder.clean();
+    if (newDescription === undefined && newNftMeta === undefined) {
+      throw new Error(
+        "One of newDescription or newNftMeta is expected to be defined"
+      );
+    }
+    const game = await this.fetchLeaderBoardAccount(leaderboard).then(
+      (lb) => lb.game
     );
-    transaction.add(updateIx);
+
+    const transaction = await this.builder
+      .andUpdateLeaderboard(
+        {
+          newDescription: newDescription ?? null,
+          newNftMeta: newNftMeta ?? null,
+        },
+        authority,
+        leaderboard,
+        game
+      )
+      .then((builder) => builder.build());
 
     return { transaction };
   }
 
   public async registerPlayerEntryForLeaderBoard(
     user: PublicKey,
-    leaderboard: PublicKey,
-    game?: PublicKey
+    leaderboard: PublicKey
   ): Promise<InstructionResult.RegisterPlayerEntry> {
-    const transaction = new Transaction();
+    this.builder.clean();
 
-    const gameAddress =
-      game ?? (await this.fetchLeaderBoardAccount(leaderboard)).game;
-    const playerInfo = this.derivePlayerAddress(user)[0];
-    const newList = this.derivePlayerEntryListAddress(user, leaderboard)[0];
-
-    const register = await registerPlayerEntryInstruction(
-      this.program,
-      user,
-      this.provider.publicKey,
-      playerInfo,
-      newList,
-      gameAddress,
-      leaderboard
+    const game = await this.fetchLeaderBoardAccount(leaderboard).then(
+      (leaderboard) => leaderboard.game
     );
-    transaction.add(register);
 
+    const transaction = await this.builder
+      .andRegisterPlayerEntry(user, leaderboard, game)
+      .then((builder) => builder.build());
+
+    const newList = this.utils.derivePlayerScoresListAddress(
+      user,
+      leaderboard
+    )[0];
     return { newList, transaction };
   }
 
@@ -335,52 +313,20 @@ export class SoarProgram {
     user: PublicKey,
     authority: PublicKey,
     leaderboard: PublicKey,
-    score: BN,
-    game?: PublicKey
+    score: BN
   ): Promise<InstructionResult.SubmitScore> {
-    const transaction = new Transaction();
+    this.builder.clean();
 
-    const gameAddress =
-      game ?? (await this.fetchLeaderBoardAccount(leaderboard)).game;
-    const playerInfo = this.derivePlayerAddress(user)[0];
-    const playerEntryList = this.derivePlayerEntryListAddress(
-      user,
-      leaderboard
-    )[0];
-    const topEntries = this.deriveLeaderTopEntriesAddress(leaderboard)[0];
-
-    const preInstructions = new Array<TransactionInstruction>();
-    const playerEntryInfo = await this.fetchPlayerScoresListAccount(
-      playerEntryList
-    );
-
-    if (playerEntryInfo === null) {
-      const register = await registerPlayerEntryInstruction(
-        this.program,
+    const transaction = await this.builder
+      .andSubmitScore(
+        {
+          score,
+        },
         user,
-        this.provider.publicKey,
-        playerInfo,
-        playerEntryList,
-        gameAddress,
+        authority,
         leaderboard
-      );
-      preInstructions.push(register);
-    }
-
-    const submit = await submitScoreInstruction(
-      this.program,
-      user,
-      this.provider.publicKey,
-      playerInfo,
-      authority,
-      gameAddress,
-      leaderboard,
-      playerEntryList,
-      topEntries,
-      score,
-      preInstructions
-    );
-    transaction.add(submit);
+      )
+      .then((builder) => builder.build());
 
     return { transaction };
   }
@@ -388,26 +334,31 @@ export class SoarProgram {
   public async updateGameAchievement(
     authority: PublicKey,
     achievement: PublicKey,
-    newTitle: string | null,
-    newDescription: string | null,
-    newNftMeta: PublicKey | null,
-    game?: PublicKey
+    newTitle?: string,
+    newDescription?: string,
+    newNftMeta?: PublicKey
   ): Promise<InstructionResult.UpdateAchievement> {
-    const transaction = new Transaction();
+    this.builder.clean();
 
-    const gameAddress =
-      game ?? (await this.fetchAchievementAccount(achievement)).game;
+    if (
+      newTitle === undefined &&
+      newDescription === undefined &&
+      newNftMeta === undefined
+    ) {
+      throw new Error("At least one updated value expected to be specified");
+    }
 
-    const update = await updateAchievementInstruction(
-      this.program,
-      gameAddress,
-      achievement,
-      authority,
-      newTitle,
-      newDescription,
-      newNftMeta
-    );
-    transaction.add(update);
+    const transaction = await this.builder
+      .andUpdateAchievement(
+        {
+          newTitle: newTitle ?? null,
+          newDescription: newDescription ?? null,
+          newNftMeta: newNftMeta ?? null,
+        },
+        authority,
+        achievement
+      )
+      .then((builder) => builder.build());
 
     return { transaction };
   }
@@ -419,35 +370,20 @@ export class SoarProgram {
     leaderboard: PublicKey,
     game?: PublicKey
   ): Promise<InstructionResult.UnlockPlayerAchievement> {
-    const playerAccount = this.derivePlayerAddress(user)[0];
+    this.builder.clean();
 
-    const gameAddress =
-      game ?? (await this.fetchAchievementAccount(achievement)).game;
-    const playerEntryList = this.derivePlayerEntryListAddress(
-      user,
-      leaderboard
-    )[0];
+    const transaction = await this.builder
+      .andUnlockPlayerAchievement(user, authority, achievement, leaderboard)
+      .then((builder) => builder.build());
+
     const newPlayerAchievement = this.derivePlayerAchievementAddress(
       user,
       achievement
     )[0];
 
-    const unlock = await unlockPlayerAchievementInstruction(
-      this.program,
-      user,
-      this.provider.publicKey,
-      playerAccount,
-      playerEntryList,
-      gameAddress,
-      leaderboard,
-      achievement,
-      authority,
-      newPlayerAchievement
-    );
-
     return {
       newPlayerAchievement,
-      transaction: new Transaction().add(unlock),
+      transaction,
     };
   }
 
@@ -458,52 +394,38 @@ export class SoarProgram {
     amountPerUser: BN,
     availableRewards: BN,
     initialDelegation: BN,
-    sourceTokenAccount: PublicKey,
-    tokenAccountOwner: PublicKey,
     mint: PublicKey,
-    game?: PublicKey
+    sourceTokenAccount: PublicKey,
+    tokenAccountOwner: PublicKey
   ): Promise<InstructionResult.AddReward> {
-    const gameAddress =
-      game ?? (await this.fetchAchievementAccount(achievement)).game;
+    this.builder.clean();
 
-    const instruction = await addFtRewardInstruction(
-      this.program,
-      amountPerUser,
-      availableRewards,
-      {
-        deposit: initialDelegation,
-      },
-      authority,
-      this.provider.publicKey,
-      gameAddress,
-      achievement,
-      newReward,
-      mint,
-      sourceTokenAccount,
-      tokenAccountOwner
-    );
+    const transaction = await this.builder
+      .andAddFungibleReward(
+        {
+          amountPerUser,
+          availableRewards,
+          kind: {
+            deposit: initialDelegation,
+          },
+        },
+        authority,
+        newReward,
+        achievement,
+        sourceTokenAccount,
+        tokenAccountOwner,
+        mint
+      )
+      .then((builder) => builder.build());
 
-    const oldReward = await this.fetchAchievementAccount(achievement).then(
+    const prev = await this.fetchAchievementAccount(achievement).then(
       (res) => res.reward
     );
     return {
-      oldReward,
+      oldReward: prev,
       newReward,
-      transaction: new Transaction().add(instruction),
+      transaction,
     };
-  }
-
-  private createAssociatedTokenAccount(
-    mint: PublicKey,
-    ata: PublicKey,
-    owner: PublicKey
-  ): TransactionInstruction {
-    return createAssociatedTokenAccountIdempotentInstruction(
-      this.provider.publicKey,
-      ata,
-      owner,
-      mint
-    );
   }
 
   public async addNonFungibleReward(
@@ -512,129 +434,73 @@ export class SoarProgram {
     achievement: PublicKey,
     amountPerUser: BN,
     availableRewards: BN,
-    defineUri: string,
-    defineName: string,
-    defineSymbol: string,
-    game?: PublicKey,
+    uri: string,
+    name: string,
+    symbol: string,
     collectionMint?: PublicKey,
     collectionUpdateAuthority?: PublicKey
   ): Promise<InstructionResult.AddReward> {
-    const gameAddress =
-      game ?? (await this.fetchAchievementAccount(achievement)).game;
+    this.builder.clean();
 
-    let collectionMetadata: PublicKey | null = null;
-    let metadataProgram: PublicKey | null = null;
     if (collectionMint !== undefined) {
       if (collectionUpdateAuthority === undefined) {
         throw new Error("Collection update authority should be defined");
       }
-      collectionMetadata = this.utils.deriveMetadataAddress(collectionMint)[0];
-      metadataProgram = TOKEN_METADATA_PROGRAM_ID;
     }
 
-    const instruction = await addNftRewardInstruction(
-      this.program,
-      amountPerUser,
-      availableRewards,
-      {
-        uri: defineUri,
-        name: defineName,
-        symbol: defineSymbol,
-      },
-      authority,
-      this.provider.publicKey,
-      gameAddress,
-      achievement,
-      newReward,
-      collectionMint ?? null,
-      collectionUpdateAuthority ?? null,
-      collectionMetadata,
-      metadataProgram
-    );
+    const transaction = await this.builder
+      .andAddNonFungibleReward(
+        {
+          amountPerUser,
+          availableRewards,
+          kind: { uri, name, symbol },
+        },
+        authority,
+        newReward,
+        achievement,
+        collectionMint,
+        collectionUpdateAuthority
+      )
+      .then((builder) => builder.build());
 
-    const oldReward = await this.fetchAchievementAccount(achievement).then(
+    const prev = await this.fetchAchievementAccount(achievement).then(
       (res) => res.reward
     );
     return {
-      oldReward,
+      oldReward: prev,
       newReward,
-      transaction: new Transaction().add(instruction),
+      transaction,
     };
   }
 
   public async claimNftReward(
     achievement: PublicKey,
     mint: PublicKey,
-    user: PublicKey,
-    reward?: PublicKey,
-    game?: PublicKey
-  ): Promise<InstructionResult.MintReward> {
-    const transaction = new Transaction();
+    user: PublicKey
+  ): Promise<InstructionResult.ClaimNftReward> {
+    this.builder.clean();
 
-    const gameAddress =
-      game ?? (await this.fetchAchievementAccount(achievement)).game;
-
-    const rewardAddress =
-      reward ?? (await this.fetchAchievementAccount(achievement)).reward;
-    if (rewardAddress === null) {
-      throw new Error("No reward for achievement");
-    }
-
-    const userPlayerAccount = this.derivePlayerAddress(user)[0];
-    const playerAchievement = this.derivePlayerAchievementAddress(
-      user,
-      achievement
-    )[0];
-
-    const metadata = this.utils.deriveMetadataAddress(mint)[0];
-    const masterEdition = this.utils.deriveEditionAddress(mint)[0];
-    const userAta = this.utils.deriveAssociatedTokenAddress(mint, user);
-
-    const claim = this.deriveNftClaimAddress(rewardAddress, mint)[0];
-    const instruction = await claimNftRewardInstruction(
-      this.program,
-      user,
-      userPlayerAccount,
-      gameAddress,
-      achievement,
-      rewardAddress,
-      playerAchievement,
-      this.provider.publicKey,
-      claim,
-      mint,
-      metadata,
-      masterEdition,
-      userAta
-    );
+    const transaction = await this.builder
+      .andClaimNftReward(achievement, mint, user)
+      .then((builder) => builder.build());
 
     return {
       newMint: mint,
-      transaction: transaction.add(instruction),
+      transaction,
     };
   }
 
   public async claimFtReward(
     achievement: PublicKey,
-    user: PublicKey,
-    reward?: PublicKey,
-    game?: PublicKey
-  ): Promise<InstructionResult.MintReward> {
-    const transaction = new Transaction();
+    user: PublicKey
+  ): Promise<InstructionResult.ClaimFtReward> {
+    this.builder.clean();
 
-    const gameAddress =
-      game ?? (await this.fetchAchievementAccount(achievement)).game;
-
-    const rewardAddress =
-      reward ?? (await this.fetchAchievementAccount(achievement)).reward;
+    const achievementAccount = await this.fetchAchievementAccount(achievement);
+    const rewardAddress = achievementAccount.reward;
     if (rewardAddress === null) {
       throw new Error("No reward for achievement");
     }
-
-    const userPlayerAccount = this.derivePlayerAddress(user)[0];
-    const playerAchievement = this.derivePlayerAchievementAddress(
-      user,
-      achievement
-    )[0];
 
     const rewardAccount = await this.fetchRewardAccount(rewardAddress);
     if (rewardAccount.FungibleToken === undefined) {
@@ -642,89 +508,53 @@ export class SoarProgram {
     }
     const mint = rewardAccount.FungibleToken.mint;
 
+    const pre = [];
     const userAta = this.utils.deriveAssociatedTokenAddress(mint, user);
     const account = await this.provider.connection.getAccountInfo(userAta);
     if (account === null) {
-      transaction.add(this.createAssociatedTokenAccount(mint, userAta, user));
+      pre.push(this.createATA(mint, user, userAta));
     }
 
-    const instruction = await claimFtRewardInstruction(
-      this.program,
-      user,
-      userPlayerAccount,
-      gameAddress,
-      achievement,
-      rewardAddress,
-      playerAchievement,
-      rewardAccount.FungibleToken.account,
-      userAta
-    );
+    const transaction = await this.builder
+      .append(pre)
+      .andClaimFtReward(
+        achievement,
+        user,
+        rewardAddress,
+        achievementAccount.game
+      )
+      .then((builder) => builder.build());
 
     return {
-      newMint: mint,
-      transaction: transaction.add(instruction),
+      transaction,
     };
   }
 
   public async verifyPlayerNftReward(
     user: PublicKey,
     achievement: PublicKey,
-    mint: PublicKey,
-    reward?: PublicKey,
-    game?: PublicKey
+    mint: PublicKey
   ): Promise<InstructionResult.VerifyReward> {
-    const gameAddress =
-      game ?? (await this.program.account.achievement.fetch(achievement)).game;
+    this.builder.clean();
 
-    const rewardAddress =
-      reward ?? (await this.fetchAchievementAccount(achievement)).reward;
-    if (rewardAddress === null) {
-      throw new Error("No reward for achievement");
-    }
+    const transaction = await this.builder
+      .andVerifyPlayerNftReward(user, achievement, mint)
+      .then((builder) => builder.build());
 
-    const userPlayerAccount = this.derivePlayerAddress(user)[0];
-    const playerAchievement = this.derivePlayerAchievementAddress(
-      user,
-      achievement
-    )[0];
+    return { transaction };
+  }
 
-    const claim = this.deriveNftClaimAddress(rewardAddress, mint)[0];
-    const metadata = this.utils.deriveMetadataAddress(mint)[0];
-
-    const rewardAccount = await this.fetchRewardAccount(rewardAddress);
-    if (
-      rewardAccount.NonFungibleToken === undefined ||
-      rewardAccount.NonFungibleToken?.collection === null
-    ) {
-      throw new Error("No collection to verify rewards for.");
-    }
-
-    const collectionMint = rewardAccount.NonFungibleToken.collection;
-    const collectionMetadata =
-      this.utils.deriveMetadataAddress(collectionMint)[0];
-    const collectionEdition =
-      this.utils.deriveEditionAddress(collectionMint)[0];
-
-    const instruction = await verifyNftRewardInstruction(
-      this.program,
+  private createATA(
+    mint: PublicKey,
+    owner: PublicKey,
+    ata: PublicKey
+  ): TransactionInstruction {
+    return createAssociatedTokenAccountIdempotentInstruction(
       this.provider.publicKey,
-      user,
-      userPlayerAccount,
-      gameAddress,
-      achievement,
-      rewardAddress,
-      playerAchievement,
-      mint,
-      claim,
-      metadata,
-      rewardAccount.NonFungibleToken.collection,
-      collectionMetadata,
-      collectionEdition
+      ata,
+      owner,
+      mint
     );
-
-    return {
-      transaction: new Transaction().add(instruction),
-    };
   }
 
   public async sendAndConfirmTransaction(
@@ -801,7 +631,11 @@ export class SoarProgram {
   ): [PublicKey, number] {
     const player = this.derivePlayerAddress(user)[0];
     return PublicKey.findProgramAddressSync(
-      [Buffer.from(Seeds.ENTRY), player.toBuffer(), leaderboard.toBuffer()],
+      [
+        Buffer.from(Seeds.PLAYER_SCORES),
+        player.toBuffer(),
+        leaderboard.toBuffer(),
+      ],
       this.program.programId
     );
   }

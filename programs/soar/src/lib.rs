@@ -77,8 +77,8 @@ pub mod soar {
     }
 
     /// Create a [Player] account for a particular user.
-    pub fn create_player(
-        ctx: Context<NewPlayer>,
+    pub fn initialize_player(
+        ctx: Context<InitializePlayer>,
         username: String,
         nft_meta: Pubkey,
     ) -> Result<()> {
@@ -287,7 +287,7 @@ pub struct UpdateLeaderBoard<'info> {
 }
 
 #[derive(Accounts)]
-pub struct NewPlayer<'info> {
+pub struct InitializePlayer<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
     pub user: Signer<'info>,
@@ -317,7 +317,7 @@ pub struct RegisterPlayer<'info> {
         payer = payer,
         space = PlayerScoresList::initial_size(),
         seeds = [
-            seeds::ENTRY,
+            seeds::PLAYER_SCORES,
             player_account.key().as_ref(),
             leaderboard.key().as_ref()
         ],
@@ -680,7 +680,7 @@ pub struct VerifyNftReward<'info> {
     /// CHECK: Checked in Metaplex CPI.
     pub collection_metadata: UncheckedAccount<'info>,
     /// CHECK: Checked in Metaplex CPI.
-    pub collection_master_edition: UncheckedAccount<'info>,
+    pub collection_edition: UncheckedAccount<'info>,
     #[account(address = mpl_token_metadata::ID)]
     /// CHECK: mpl_token_metadata address.
     pub token_metadata_program: UncheckedAccount<'info>,

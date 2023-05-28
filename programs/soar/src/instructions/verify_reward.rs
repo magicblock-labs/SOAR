@@ -24,7 +24,7 @@ pub fn handler(ctx: Context<VerifyNftReward>) -> Result<()> {
         &ctx.accounts.payer,
         &ctx.accounts.collection_mint,
         &ctx.accounts.collection_metadata,
-        &ctx.accounts.collection_master_edition,
+        &ctx.accounts.collection_edition,
         &achievement_account.to_account_info(),
         &ctx.accounts.token_metadata_program,
         Some(&[&achievement_seeds[..]]),

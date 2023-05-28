@@ -6,7 +6,7 @@ use anchor_lang::prelude::*;
 /// Holds a list of a [player][super::Player]'s [scores][ScoreEntry])
 /// for a particular [LeaderBoard].
 ///
-/// Seeds: `[b"entry", player_account.key().as_ref(), leaderboard.key().as_ref()]`
+/// Seeds: `[b"player-scores-list", player_account.key().as_ref(), leaderboard.key().as_ref()]`
 pub struct PlayerScoresList {
     /// The player[super::Player] account this entry is derived from
     pub player_account: Pubkey,

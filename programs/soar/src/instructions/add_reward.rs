@@ -71,22 +71,24 @@ pub mod nft {
 
         match input.kind {
             RewardKindInput::Nft { uri, name, symbol } => {
-                let update_authority = &ctx.accounts.collection_update_auth;
-                let collection_mint = &ctx.accounts.reward_collection_mint;
-                let collection_metadata = &ctx.accounts.collection_metadata;
-                let metadata_program = &ctx.accounts.token_metadata_program;
-
                 let mut nft_reward_collection_mint: Option<Pubkey> = None;
 
-                if update_authority.is_some()
-                    && collection_mint.is_some()
-                    && collection_metadata.is_some()
-                    && metadata_program.is_some()
-                {
-                    let update_auth = update_authority.as_ref().unwrap();
-                    let collection_mint = collection_mint.as_ref().unwrap();
-                    let collection_metadata = collection_metadata.as_ref().unwrap();
-                    let token_metadata_program = metadata_program.as_ref().unwrap();
+                if let Some(collection_mint) = ctx.accounts.reward_collection_mint.as_ref() {
+                    let update_auth = ctx
+                        .accounts
+                        .collection_update_auth
+                        .as_ref()
+                        .ok_or(SoarError::MissingExpectedAccount)?;
+                    let collection_metadata = ctx
+                        .accounts
+                        .collection_metadata
+                        .as_ref()
+                        .ok_or(SoarError::MissingExpectedAccount)?;
+                    let token_metadata_program = ctx
+                        .accounts
+                        .token_metadata_program
+                        .as_ref()
+                        .ok_or(SoarError::MissingExpectedAccount)?;
 
                     let decoded = utils::decode_mpl_metadata_account(collection_metadata)?;
                     let mint_key = collection_mint.key();

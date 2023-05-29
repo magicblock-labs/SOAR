@@ -102,12 +102,17 @@ pub mod soar {
 
     /// Submit a score for a player and have it timestamped and added to the [PlayerEntryList].
     /// Optionally increase the player's rank if needed.
+    /// 
+    /// This instruction automatically resizes the [PlayerScoresList] account if needed.
     pub fn submit_score(ctx: Context<SubmitScore>, score: u64) -> Result<()> {
         submit_score::handler(ctx, score)
     }
 
     /// Initialize a new merge account and await approval from the verified users of all the
     /// specified [Player] accounts.
+    /// 
+    /// A merge is complete when all the users of the [Player] account keys referenced in it
+    /// have signed to set their approval to `true`.
     pub fn initiate_merge(ctx: Context<InitiateMerge>, keys: Vec<Pubkey>) -> Result<()> {
         initiate_merge::handler(ctx, keys)
     }
@@ -428,7 +433,8 @@ pub struct UnlockPlayerAchievement<'info> {
     pub authority: Signer<'info>,
     #[account(mut)]
     pub payer: Signer<'info>,
-    pub user: Signer<'info>,
+    /// CHECK: Checked with `player_account`
+    pub user: UncheckedAccount<'info>,
     #[account(has_one = user)]
     pub player_account: Account<'info, Player>,
     // The presence of the next two accounts is to ensure that the player has
@@ -523,7 +529,10 @@ pub struct AddNftReward<'info> {
 
 #[derive(Accounts)]
 pub struct ClaimFtReward<'info> {
-    pub user: Signer<'info>,
+    /// CHECK: Checked with `player_account`
+    pub user: UncheckedAccount<'info>,
+    pub authority: Signer<'info>,
+    #[account(constraint = game.check_signer(&authority.key()))]
     pub game: Account<'info, Game>,
     #[account(
         seeds = [
@@ -565,7 +574,10 @@ pub struct ClaimFtReward<'info> {
 
 #[derive(Accounts)]
 pub struct ClaimNftReward<'info> {
-    pub user: Signer<'info>,
+    /// CHECK: Checked with `player_account`
+    pub user: UncheckedAccount<'info>,
+    pub authority: Signer<'info>,
+    #[account(constraint = game.check_signer(&authority.key()))]
     pub game: Account<'info, Game>,
     #[account(mut)]
     pub payer: Signer<'info>,

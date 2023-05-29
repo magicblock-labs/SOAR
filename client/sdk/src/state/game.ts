@@ -5,6 +5,7 @@ import { type Soar } from "../idl/soar";
 import { type SoarProgram } from "../soar.program";
 import { GameClient } from "../soar.game";
 
+/** Class representing a deserialized on-chain `Game` account. */
 export class GameAccount {
   public readonly address: PublicKey;
   public readonly meta: GameAttributes;
@@ -24,6 +25,7 @@ export class GameAccount {
     this.auth = account.auth;
   }
 
+  /** Create a new instance from an anchor-deserialized account. */
   public static fromIdlAccount(
     account: IdlAccounts<Soar>["game"],
     address: PublicKey
@@ -35,6 +37,7 @@ export class GameAccount {
     return new GameClient(soar, this.address, this);
   }
 
+  /** Pretty print. */
   public pretty(): {
     address: string;
     meta: {

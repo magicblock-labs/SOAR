@@ -394,7 +394,9 @@ export type Soar = {
       "name": "submitScore",
       "docs": [
         "Submit a score for a player and have it timestamped and added to the [PlayerEntryList].",
-        "Optionally increase the player's rank if needed."
+        "Optionally increase the player's rank if needed.",
+        "",
+        "This instruction automatically resizes the [PlayerScoresList] account if needed."
       ],
       "accounts": [
         {
@@ -455,7 +457,10 @@ export type Soar = {
       "name": "initiateMerge",
       "docs": [
         "Initialize a new merge account and await approval from the verified users of all the",
-        "specified [Player] accounts."
+        "specified [Player] accounts.",
+        "",
+        "A merge is complete when all the users of the [Player] account keys referenced in it",
+        "have signed to set their approval to `true`."
       ],
       "accounts": [
         {
@@ -540,7 +545,7 @@ export type Soar = {
         {
           "name": "user",
           "isMut": false,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "playerAccount",
@@ -731,6 +736,11 @@ export type Soar = {
         {
           "name": "user",
           "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
           "isSigner": true
         },
         {
@@ -786,6 +796,11 @@ export type Soar = {
       "accounts": [
         {
           "name": "user",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
           "isMut": false,
           "isSigner": true
         },
@@ -2245,7 +2260,9 @@ export const IDL: Soar = {
       "name": "submitScore",
       "docs": [
         "Submit a score for a player and have it timestamped and added to the [PlayerEntryList].",
-        "Optionally increase the player's rank if needed."
+        "Optionally increase the player's rank if needed.",
+        "",
+        "This instruction automatically resizes the [PlayerScoresList] account if needed."
       ],
       "accounts": [
         {
@@ -2306,7 +2323,10 @@ export const IDL: Soar = {
       "name": "initiateMerge",
       "docs": [
         "Initialize a new merge account and await approval from the verified users of all the",
-        "specified [Player] accounts."
+        "specified [Player] accounts.",
+        "",
+        "A merge is complete when all the users of the [Player] account keys referenced in it",
+        "have signed to set their approval to `true`."
       ],
       "accounts": [
         {
@@ -2391,7 +2411,7 @@ export const IDL: Soar = {
         {
           "name": "user",
           "isMut": false,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "playerAccount",
@@ -2582,6 +2602,11 @@ export const IDL: Soar = {
         {
           "name": "user",
           "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
           "isSigner": true
         },
         {
@@ -2637,6 +2662,11 @@ export const IDL: Soar = {
       "accounts": [
         {
           "name": "user",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
           "isMut": false,
           "isSigner": true
         },

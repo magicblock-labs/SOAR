@@ -52,6 +52,7 @@ import {
 } from "@solana/spl-token";
 import { AchievementAccount, RewardAccount } from "../state";
 
+/** A class for constructing more-tailored and specific instructions. */
 export class InstructionBuilder {
   instructions: TransactionInstruction[];
   signers: Signer[];
@@ -410,6 +411,7 @@ export class InstructionBuilder {
   }
 
   public async andClaimNftReward(
+    authority: PublicKey,
     achievement: PublicKey,
     mint: PublicKey,
     user: PublicKey,
@@ -449,6 +451,7 @@ export class InstructionBuilder {
     const claim = this.utils.deriveNftClaimAddress(rewardAddress, mint)[0];
     const instruction = await claimNftRewardInstruction(this.program, {
       user,
+      authority,
       playerAccount,
       game: gameAddress,
       achievement,
@@ -471,6 +474,7 @@ export class InstructionBuilder {
   }
 
   public async andClaimFtReward(
+    authority: PublicKey,
     achievement: PublicKey,
     user: PublicKey,
     reward?: PublicKey,
@@ -529,6 +533,7 @@ export class InstructionBuilder {
 
     const instruction = await claimFtRewardInstruction(this.program, {
       user,
+      authority,
       playerAccount,
       game: gameAddress,
       achievement,
@@ -619,16 +624,20 @@ export class InstructionBuilder {
     this.signers = signers;
   }
 
+  /** Bundle instructions into a single transaction. */
   build(): Transaction {
     const transaction = new Transaction();
     this.instructions.forEach((ix) => transaction.add(ix));
+    this.clean();
     return transaction;
   }
 
+  /** Internally reset the instruction list in this instance.*/
   clean(): void {
     this.instructions = [];
   }
 
+  /** Send and confirm the bundled transaction. */
   public async complete(opts?: ConfirmOptions): Promise<string> {
     return this.provider
       .sendAndConfirm(this.build(), this.signers, opts)

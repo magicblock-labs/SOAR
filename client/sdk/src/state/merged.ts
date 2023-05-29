@@ -2,6 +2,7 @@ import { type PublicKey } from "@solana/web3.js";
 import { type IdlAccounts } from "@coral-xyz/anchor";
 import { type Soar } from "../idl/soar";
 
+/** Class representing a deserialized on-chain `Merged` account. */
 export class MergedAccount {
   private constructor(
     public readonly address: PublicKey,
@@ -10,6 +11,7 @@ export class MergedAccount {
     public readonly mergeComplete: boolean
   ) {}
 
+  /** Create a new instance from an anchor-deserialized account. */
   public static fromIdlAccount(
     account: IdlAccounts<Soar>["merged"],
     address: PublicKey
@@ -22,6 +24,7 @@ export class MergedAccount {
     );
   }
 
+  /** Pretty print. */
   public pretty(): {
     address: string;
     initiator: string;

@@ -42,11 +42,15 @@ export class SoarProgram {
     this.builder = new InstructionBuilder(provider);
   }
 
+  /// Static initializer for a SoarProgram instance.
   public static get(provider: AnchorProvider): SoarProgram {
     const client = new SoarProgram(provider);
     return client;
   }
 
+  /**
+   * Initialize a new Game account with the set parameters.
+   */
   public async initializeNewGame(
     newGame: PublicKey,
     title: string,
@@ -79,6 +83,9 @@ export class SoarProgram {
     };
   }
 
+  /**
+   * Initialize a player account required to perform game-related actions.
+   */
   public async initializePlayerAccount(
     user: PublicKey,
     username: string,
@@ -97,10 +104,13 @@ export class SoarProgram {
 
     return {
       transaction,
-      newPlayer: this.derivePlayerAddress(user)[0],
+      newPlayer: this.utils.derivePlayerAddress(user)[0],
     };
   }
 
+  /**
+   * Update a game's attributes.
+   */
   public async updateGameAccount(
     game: PublicKey,
     authority: PublicKey,
@@ -128,6 +138,9 @@ export class SoarProgram {
     return { transaction };
   }
 
+  /**
+   * Update a player account's attributes.
+   */
   public async updatePlayerAccount(
     user: PublicKey,
     newUsername?: string,
@@ -153,6 +166,10 @@ export class SoarProgram {
     return { transaction };
   }
 
+  /**
+   * Initiate an action to merge multiple player-accounts as belonging to a
+   * single user.
+   */
   public async initiateMerge(
     user: PublicKey,
     newMergeAccount: PublicKey,
@@ -176,6 +193,7 @@ export class SoarProgram {
     };
   }
 
+  /** Mark approval for a merge action. */
   public async registerMergeApproval(
     user: PublicKey,
     mergeAccount: PublicKey
@@ -189,6 +207,7 @@ export class SoarProgram {
     return { transaction };
   }
 
+  /** Add a new achievement for a Game. */
   public async addNewGameAchievement(
     gameAddress: PublicKey,
     authority: PublicKey,
@@ -199,7 +218,7 @@ export class SoarProgram {
     this.builder.clean();
 
     const account = await this.fetchGameAccount(gameAddress);
-    const newAchievement = this.deriveAchievementAddress(
+    const newAchievement = this.utils.deriveAchievementAddress(
       account.achievementCount.addn(1),
       gameAddress
     )[0];
@@ -220,6 +239,7 @@ export class SoarProgram {
     return { newAchievement, transaction };
   }
 
+  /** Add a new leaderboard for a Game. */
   public async addNewGameLeaderBoard(
     gameAddress: PublicKey,
     authority: PublicKey,
@@ -235,8 +255,8 @@ export class SoarProgram {
 
     const gameAccount = await this.fetchGameAccount(gameAddress);
     const id = gameAccount.leaderboardCount.addn(1);
-    const newLeaderBoard = this.deriveLeaderBoardAddress(id, gameAddress)[0];
-    const topEntries = this.deriveLeaderTopEntriesAddress(newLeaderBoard)[0];
+    const newLeaderBoard = this.utils.deriveLeaderBoardAddress(id, gameAddress)[0];
+    const topEntries = this.utils.deriveLeaderTopEntriesAddress(newLeaderBoard)[0];
 
     const transaction = await this.builder
       .andAddLeaderBoard(
@@ -257,6 +277,7 @@ export class SoarProgram {
     return { newLeaderBoard, topEntries, transaction };
   }
 
+  /** Update a leaderboard. */
   public async updateGameLeaderboard(
     authority: PublicKey,
     leaderboard: PublicKey,
@@ -288,6 +309,7 @@ export class SoarProgram {
     return { transaction };
   }
 
+  /** Register a player to a particular leaderboard. */
   public async registerPlayerEntryForLeaderBoard(
     user: PublicKey,
     leaderboard: PublicKey
@@ -309,6 +331,7 @@ export class SoarProgram {
     return { newList, transaction };
   }
 
+  /** Submit a player's score to a leaderboard they're registered to.*/
   public async submitScoreToLeaderBoard(
     user: PublicKey,
     authority: PublicKey,
@@ -326,11 +349,12 @@ export class SoarProgram {
         authority,
         leaderboard
       )
-      .then((builder) => builder.build());
+      .then((builder) => builder.build())
 
     return { transaction };
   }
 
+  /** Update an achievement's details. */
   public async updateGameAchievement(
     authority: PublicKey,
     achievement: PublicKey,
@@ -363,6 +387,7 @@ export class SoarProgram {
     return { transaction };
   }
 
+  /** Unlock an achievement for a player. */
   public async unlockPlayerAchievement(
     user: PublicKey,
     authority: PublicKey,
@@ -376,7 +401,7 @@ export class SoarProgram {
       .andUnlockPlayerAchievement(user, authority, achievement, leaderboard)
       .then((builder) => builder.build());
 
-    const newPlayerAchievement = this.derivePlayerAchievementAddress(
+    const newPlayerAchievement = this.utils.derivePlayerAchievementAddress(
       user,
       achievement
     )[0];
@@ -387,6 +412,7 @@ export class SoarProgram {
     };
   }
 
+  /** Add a fungible token reward for unlocking an achievement. */
   public async addFungibleReward(
     authority: PublicKey,
     newReward: PublicKey,
@@ -428,6 +454,7 @@ export class SoarProgram {
     };
   }
 
+  /** Add a non-fungible token reward for unlocking an achievement. */
   public async addNonFungibleReward(
     authority: PublicKey,
     newReward: PublicKey,
@@ -473,7 +500,9 @@ export class SoarProgram {
     };
   }
 
+  /** Claim an non-fungible token reward as a result of unlocking an achievement. */
   public async claimNftReward(
+    authority: PublicKey,
     achievement: PublicKey,
     mint: PublicKey,
     user: PublicKey
@@ -481,7 +510,7 @@ export class SoarProgram {
     this.builder.clean();
 
     const transaction = await this.builder
-      .andClaimNftReward(achievement, mint, user)
+      .andClaimNftReward(authority, achievement, mint, user)
       .then((builder) => builder.build());
 
     return {
@@ -490,7 +519,9 @@ export class SoarProgram {
     };
   }
 
+  /** Claim a fungible-token reward as a result for unlocking an achievement. */
   public async claimFtReward(
+    authority: PublicKey,
     achievement: PublicKey,
     user: PublicKey
   ): Promise<InstructionResult.ClaimFtReward> {
@@ -518,6 +549,7 @@ export class SoarProgram {
     const transaction = await this.builder
       .append(pre)
       .andClaimFtReward(
+        authority,
         achievement,
         user,
         rewardAddress,
@@ -530,6 +562,7 @@ export class SoarProgram {
     };
   }
 
+  /** Verify a minted NFT reward as part of the set collection. */
   public async verifyPlayerNftReward(
     user: PublicKey,
     achievement: PublicKey,
@@ -587,82 +620,6 @@ export class SoarProgram {
 
   public async newGameClient(gameAddress: PublicKey): Promise<GameClient> {
     return new GameClient(this, gameAddress);
-  }
-
-  public deriveLeaderBoardAddress(
-    id: BN,
-    game: PublicKey
-  ): [PublicKey, number] {
-    return PublicKey.findProgramAddressSync(
-      [Buffer.from(Seeds.LEADER), game.toBuffer(), id.toBuffer("le", 8)],
-      this.program.programId
-    );
-  }
-
-  public deriveLeaderTopEntriesAddress(
-    leaderboard: PublicKey
-  ): [PublicKey, number] {
-    return PublicKey.findProgramAddressSync(
-      [Buffer.from(Seeds.LEADER_TOP_ENTRIES), leaderboard.toBuffer()],
-      this.program.programId
-    );
-  }
-
-  public deriveAchievementAddress(
-    id: BN,
-    game: PublicKey
-  ): [PublicKey, number] {
-    return PublicKey.findProgramAddressSync(
-      [Buffer.from(Seeds.ACHIEVEMENT), game.toBuffer(), id.toBuffer("le", 8)],
-      this.program.programId
-    );
-  }
-
-  public derivePlayerAddress(user: PublicKey): [PublicKey, number] {
-    return PublicKey.findProgramAddressSync(
-      [Buffer.from(Seeds.PLAYER), user.toBuffer()],
-      this.program.programId
-    );
-  }
-
-  public derivePlayerEntryListAddress(
-    user: PublicKey,
-    leaderboard: PublicKey
-  ): [PublicKey, number] {
-    const player = this.derivePlayerAddress(user)[0];
-    return PublicKey.findProgramAddressSync(
-      [
-        Buffer.from(Seeds.PLAYER_SCORES),
-        player.toBuffer(),
-        leaderboard.toBuffer(),
-      ],
-      this.program.programId
-    );
-  }
-
-  public derivePlayerAchievementAddress(
-    user: PublicKey,
-    achievement: PublicKey
-  ): [PublicKey, number] {
-    const player = this.derivePlayerAddress(user)[0];
-    return PublicKey.findProgramAddressSync(
-      [
-        Buffer.from(Seeds.PLAYER_ACHIEVEMENT),
-        player.toBuffer(),
-        achievement.toBuffer(),
-      ],
-      this.program.programId
-    );
-  }
-
-  public deriveNftClaimAddress(
-    reward: PublicKey,
-    mint: PublicKey
-  ): [PublicKey, number] {
-    return PublicKey.findProgramAddressSync(
-      [Buffer.from(Seeds.NFT_CLAIM), reward.toBuffer(), mint.toBuffer()],
-      this.program.programId
-    );
   }
 
   public async fetchAchievementAccount(
@@ -782,10 +739,10 @@ export class SoarProgram {
     );
   }
 
-  public async fetchUserAchievementInfo(
+  public async fetchPlayerAchievementInfo(
     user: PublicKey
   ): Promise<PlayerAchievementAccount[]> {
-    const player = this.derivePlayerAddress(user)[0];
+    const player = this.utils.derivePlayerAddress(user)[0];
     const achievements = await this.program.account.playerAchievement.all([
       {
         memcmp: {

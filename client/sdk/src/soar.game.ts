@@ -11,6 +11,7 @@ import {
   type GameAttributes,
 } from "./state";
 
+/** Class representing actions on a single Game. */
 export class GameClient {
   program: SoarProgram;
   address: PublicKey;
@@ -59,11 +60,11 @@ export class GameClient {
     await this.init();
   }
 
-  currentLeaderBoardAddress = (): PublicKey => {
+  recentLeaderBoardAddress = (): PublicKey => {
     if (this.account === undefined) {
       throw new Error("init not called");
     }
-    return this.program.deriveLeaderBoardAddress(
+    return this.program.utils.deriveLeaderBoardAddress(
       this.account.leaderboardCount,
       this.address
     )[0];
@@ -74,14 +75,14 @@ export class GameClient {
       throw new Error("init not called");
     }
     const nextId = this.account.leaderboardCount.addn(1);
-    return this.program.deriveLeaderBoardAddress(nextId, this.address)[0];
+    return this.program.utils.deriveLeaderBoardAddress(nextId, this.address)[0];
   };
 
-  currentAchievementAddress = (): PublicKey => {
+  recentAchievementAddress = (): PublicKey => {
     if (this.account === undefined) {
       throw new Error("init not called");
     }
-    return this.program.deriveAchievementAddress(
+    return this.program.utils.deriveAchievementAddress(
       this.account.achievementCount,
       this.address
     )[0];
@@ -92,7 +93,7 @@ export class GameClient {
       throw new Error("init not called");
     }
     const nextId = this.account.achievementCount.addn(1);
-    return this.program.deriveAchievementAddress(nextId, this.address)[0];
+    return this.program.utils.deriveAchievementAddress(nextId, this.address)[0];
   };
 
   public async update(
@@ -150,7 +151,7 @@ export class GameClient {
     user: PublicKey,
     leaderBoard?: PublicKey
   ): Promise<InstructionResult.RegisterPlayerEntry> {
-    const leaderboard = leaderBoard ?? this.currentLeaderBoardAddress();
+    const leaderboard = leaderBoard ?? this.recentLeaderBoardAddress();
     return this.program.registerPlayerEntryForLeaderBoard(user, leaderboard);
   }
 
@@ -160,7 +161,7 @@ export class GameClient {
     score: BN,
     leaderBoard?: PublicKey
   ): Promise<InstructionResult.SubmitScore> {
-    const leaderboard = leaderBoard ?? this.currentLeaderBoardAddress();
+    const leaderboard = leaderBoard ?? this.recentLeaderBoardAddress();
     return this.program.submitScoreToLeaderBoard(
       user,
       authority,

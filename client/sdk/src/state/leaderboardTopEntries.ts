@@ -3,6 +3,7 @@ import type BN from "bn.js";
 import { type IdlAccounts } from "@coral-xyz/anchor";
 import { type Soar } from "../idl/soar";
 
+/** Class representing a deserialized on-chain `LeaderTopScores` account. */
 export class TopEntriesAccount {
   constructor(
     public readonly address: PublicKey,
@@ -10,6 +11,7 @@ export class TopEntriesAccount {
     public readonly topScores: LeaderboardScore[]
   ) {}
 
+  /** Create a new instance from an anchor-deserialized account. */
   public static fromIdlAccount(
     account: IdlAccounts<Soar>["leaderTopEntries"],
     address: PublicKey
@@ -21,6 +23,7 @@ export class TopEntriesAccount {
     );
   }
 
+  /** Pretty print. */
   public pretty(): {
     address: string;
     isAscending: boolean;

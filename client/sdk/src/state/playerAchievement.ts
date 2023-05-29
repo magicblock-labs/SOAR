@@ -3,6 +3,7 @@ import type BN from "bn.js";
 import { type IdlAccounts } from "@coral-xyz/anchor";
 import { type Soar } from "../idl/soar";
 
+/** Class representing a deserialized on-chain `PlayerAchievement` account. */
 export class PlayerAchievementAccount {
   private constructor(
     public readonly address: PublicKey,
@@ -14,6 +15,7 @@ export class PlayerAchievementAccount {
     public readonly claimed: boolean
   ) {}
 
+  /** Create a new instance from an anchor-deserialized account. */
   public static fromIdlAccount(
     account: IdlAccounts<Soar>["playerAchievement"],
     address: PublicKey
@@ -29,6 +31,7 @@ export class PlayerAchievementAccount {
     );
   }
 
+  /** Pretty print. */
   public pretty(): {
     address: string;
     player: string;

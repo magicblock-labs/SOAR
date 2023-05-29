@@ -25,9 +25,6 @@ describe("soar", () => {
 
   let mergeAccount = Keypair.generate();
 
-  const PlayerConstants = {
-    MAX_USERNAME_LEN: 100
-  }
   const RewardConstants = {
     MAX_URI_LENGTH: 200,
     MAX_NAME_LENGTH: 32,
@@ -38,7 +35,6 @@ describe("soar", () => {
   const MAXIMUM_DESCRIPTION_LENGTH = Number(client.program.idl.constants[1].value);
 
   let ftRewardMint: PublicKey;
-  let ftRewardMintAuthority: Keypair;
 
   it("Can register a game account with correct parameters", async () => {
     let title = "Game1";
@@ -370,7 +366,6 @@ describe("soar", () => {
 
     let { mint, authority } = await utils.initializeTestMint(client);
     ftRewardMint = mint;
-    ftRewardMintAuthority = authority;
 
     const tokenAccountOwner = Keypair.generate();
     const tokenAccount = await utils.createTokenAccount(client, tokenAccountOwner.publicKey, mint);
@@ -397,7 +392,7 @@ describe("soar", () => {
     await client.sendAndConfirmTransaction(transaction, [user1]);
 
     let account = await client.fetchPlayerScoresListAccount(newList);
-    expect(account.playerAccount.toBase58()).to.equal(client.derivePlayerAddress(user1.publicKey)[0].toBase58());
+    expect(account.playerAccount.toBase58()).to.equal(client.utils.derivePlayerAddress(user1.publicKey)[0].toBase58());
     expect(account.leaderboard.toBase58()).to.equal(leaderBoards[0].toBase58());
     expect(account.scores.length).to.equal(0);
   });
@@ -408,19 +403,19 @@ describe("soar", () => {
       leaderBoards[0], score);
     await client.sendAndConfirmTransaction(transaction, [auths[0], user1]); 
 
-    let account = await client.fetchPlayerScoresListAccount(client.derivePlayerEntryListAddress(user1.publicKey, leaderBoards[0])[0]);
+    let account = await client.fetchPlayerScoresListAccount(client.utils.derivePlayerScoresListAddress(user1.publicKey, leaderBoards[0])[0]);
     expect(account.scores.length).to.equal(1);
     expect(account.scores[0].score.toNumber()).to.equal(score.toNumber());
     expect(account.allocCount).to.equal(10);
 
-    let topEntries = await client.fetchLeaderBoardTopEntriesAccount(client.deriveLeaderTopEntriesAddress(leaderBoards[0])[0]);
+    let topEntries = await client.fetchLeaderBoardTopEntriesAccount(client.utils.deriveLeaderTopEntriesAddress(leaderBoards[0])[0]);
     let scores = topEntries.topScores.map((score) => score.entry.score.toNumber());
     let expectedScores = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     expect(JSON.stringify(scores)).to.equal(JSON.stringify(expectedScores));
   });
 
   it("Can resize if needed when submitting a player score", async() => {
-    const entryList = client.derivePlayerEntryListAddress(user1.publicKey, leaderBoards[0])[0];
+    const entryList = client.utils.derivePlayerScoresListAddress(user1.publicKey, leaderBoards[0])[0];
     let initialLength = 8 + 32 + 32 + 2 + 4 + (10 * (8 + 8)); // initial space allocated for 10 scores.
     let info = await client.provider.connection.getAccountInfo(entryList);
     expect(info.data.length).to.equal(initialLength);
@@ -452,7 +447,7 @@ describe("soar", () => {
   });
 
   it("Can store top entries for a leaderboard", async() => {
-    let topEntries = client.deriveLeaderTopEntriesAddress(leaderBoards[0])[0];
+    let topEntries = client.utils.deriveLeaderTopEntriesAddress(leaderBoards[0])[0];
     let info = await client.fetchLeaderBoardTopEntriesAccount(topEntries);
 
     let scores = info.topScores.map((score) => score.entry.score.toNumber());
@@ -512,17 +507,17 @@ describe("soar", () => {
     // Unlock achievements[0] for player. LeaderBoards[0] is the leaderboard the user is registered to.
     let { newPlayerAchievement, transaction } = await client.unlockPlayerAchievement(user1.publicKey, auths[0].publicKey, achievements[0],
       leaderBoards[0], gameClient.address);
-    await client.sendAndConfirmTransaction(transaction, [auths[0], user1]);
+    await client.sendAndConfirmTransaction(transaction, [auths[0]]);
 
     let account = await client.fetchPlayerAchievementAccount(newPlayerAchievement);
-    expect(account.player.toBase58()).to.equal(client.derivePlayerAddress(user1.publicKey)[0].toBase58());
+    expect(account.player.toBase58()).to.equal(client.utils.derivePlayerAddress(user1.publicKey)[0].toBase58());
     expect(account.achievement.toBase58()).to.equal(achievements[0].toBase58());
     expect(account.unlocked).to.be.true;
   });
 
   it("Can initiate a merge", async() => {
     let keys = [user2.publicKey, user3.publicKey, user2.publicKey, user1.publicKey, user3.publicKey]
-      .map((key) => client.derivePlayerAddress(key)[0]);
+      .map((key) => client.utils.derivePlayerAddress(key)[0]);
     
     let { newMerge, transaction } = await client.initiateMerge(user1.publicKey, mergeAccount.publicKey, keys);
     await client.sendAndConfirmTransaction(transaction, [mergeAccount, user1]);
@@ -535,8 +530,8 @@ describe("soar", () => {
     expect(account.mergeComplete).to.be.false;
 
     let mapped = account.approvals.map((res) => res.key.toBase58());
-    expect(mapped).to.contain(client.derivePlayerAddress(user3.publicKey)[0].toBase58());
-    expect(mapped).to.contain(client.derivePlayerAddress(user2.publicKey)[0].toBase58());
+    expect(mapped).to.contain(client.utils.derivePlayerAddress(user3.publicKey)[0].toBase58());
+    expect(mapped).to.contain(client.utils.derivePlayerAddress(user2.publicKey)[0].toBase58());
   });
 
   it("Can approve a merge", async() => {
@@ -592,8 +587,8 @@ describe("soar", () => {
 
   it("Can claim nft rewards for unlocking an achievement", async() => {
     let mint = Keypair.generate();
-    let { transaction } = await client.claimNftReward(achievements[0], mint.publicKey, user1.publicKey);
-    await client.sendAndConfirmTransaction(transaction, [mint, user1]);
+    let { transaction } = await client.claimNftReward(auths[0].publicKey, achievements[0], mint.publicKey, user1.publicKey);
+    await client.sendAndConfirmTransaction(transaction, [mint, auths[0]]);
     user1ClaimedMints.push(mint.publicKey);
 
     let userWallet = client.utils.deriveAssociatedTokenAddress(mint.publicKey, user1.publicKey);
@@ -612,8 +607,8 @@ describe("soar", () => {
     
     // 2nd claim
     mint = Keypair.generate();
-    let { transaction: tx } = await client.claimNftReward(achievements[0], mint.publicKey, user1.publicKey);
-    await client.sendAndConfirmTransaction(tx, [mint, user1]);
+    let { transaction: tx } = await client.claimNftReward(auths[0].publicKey, achievements[0], mint.publicKey, user1.publicKey);
+    await client.sendAndConfirmTransaction(tx, [mint, auths[0]]);
     user1ClaimedMints.push(mint.publicKey);
 
     userWallet = client.utils.deriveAssociatedTokenAddress(mint.publicKey, user1.publicKey);
@@ -623,7 +618,7 @@ describe("soar", () => {
     reward = await client.fetchRewardAccount(rewardAddress);
     expect(reward.NonFungibleToken.minted.toNumber()).to.equal(2);
     
-    let playerAchievement = client.derivePlayerAchievementAddress(user1.publicKey, achievements[0])[0];
+    let playerAchievement = client.utils.derivePlayerAchievementAddress(user1.publicKey, achievements[0])[0];
     let account = await client.fetchPlayerAchievementAccount(playerAchievement);
     expect(account.claims.toNumber()).to.equal(2);
     expect(account.claimed).to.be.true; 
@@ -632,9 +627,9 @@ describe("soar", () => {
     // 3rd claim should fail.
     mint = Keypair.generate();
     let thrown = false;
-    let { transaction: shouldFail } = await client.claimNftReward(achievements[0], mint.publicKey, user1.publicKey);
+    let { transaction: shouldFail } = await client.claimNftReward(auths[0].publicKey, achievements[0], mint.publicKey, user1.publicKey);
     try {
-      await client.sendAndConfirmTransaction(shouldFail, [mint, user1]);
+      await client.sendAndConfirmTransaction(shouldFail, [mint, auths[0]]);
     } catch(err) {
       thrown = true;
     }
@@ -663,10 +658,10 @@ describe("soar", () => {
   });
 
   it("Can claim a ft reward for unlocking an achievement", async() => {
-    let { transaction: failTx } = await client.claimFtReward(achievements[1], user1.publicKey);
+    let { transaction: failTx } = await client.claimFtReward(auths[0].publicKey, achievements[1], user1.publicKey);
     let thrown = false;
     try {
-      await client.sendAndConfirmTransaction(failTx, [user1]);
+      await client.sendAndConfirmTransaction(failTx, [auths[0]]);
     } catch(err) {
       thrown = true;
     }
@@ -675,7 +670,7 @@ describe("soar", () => {
     // Unlock achievement for player.
     let { newPlayerAchievement, transaction: unlock } = await client.unlockPlayerAchievement(user1.publicKey, auths[1].publicKey, achievements[1],
       leaderBoards[0], gameClient.address);
-    await client.sendAndConfirmTransaction(unlock, [auths[1], user1]);
+    await client.sendAndConfirmTransaction(unlock, [auths[1]]);
 
     let wallet = client.utils.deriveAssociatedTokenAddress(ftRewardMint, user1.publicKey);
     let tokenAccount = await client.provider.connection.getAccountInfo(wallet);
@@ -684,8 +679,8 @@ describe("soar", () => {
       expect(balance.value.uiAmount).to.equal(0);
     }
 
-    let { transaction } = await client.claimFtReward(achievements[1], user1.publicKey);
-    await client.sendAndConfirmTransaction(transaction, [user1]);
+    let { transaction } = await client.claimFtReward(auths[0].publicKey, achievements[1], user1.publicKey);
+    await client.sendAndConfirmTransaction(transaction, [auths[0]]);
 
     let balance = await client.provider.connection.getTokenAccountBalance(wallet);
     expect(balance.value.uiAmount).to.equal(1);

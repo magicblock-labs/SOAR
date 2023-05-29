@@ -181,6 +181,7 @@ export const claimFtRewardInstruction = async (
   program: Program<Soar>,
   accounts: {
     user: PublicKey;
+    authority: PublicKey;
     playerAccount: PublicKey;
     game: PublicKey;
     achievement: PublicKey;
@@ -197,6 +198,7 @@ export const claimNftRewardInstruction = async (
   program: Program<Soar>,
   accounts: {
     user: PublicKey;
+    authority: PublicKey;
     playerAccount: PublicKey;
     game: PublicKey;
     achievement: PublicKey;

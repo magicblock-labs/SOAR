@@ -2,6 +2,7 @@ import { type PublicKey } from "@solana/web3.js";
 import { type IdlAccounts } from "@coral-xyz/anchor";
 import { type Soar } from "../idl/soar";
 
+/** Class representing a deserialized on-chain `Player` account. */
 export class PlayerAccount {
   private constructor(
     public readonly address: PublicKey,
@@ -10,6 +11,7 @@ export class PlayerAccount {
     public readonly nftMeta: PublicKey
   ) {}
 
+  /** Create a new instance from an anchor-deserialized account. */
   public static fromIdlAccount(
     account: IdlAccounts<Soar>["player"],
     address: PublicKey
@@ -22,6 +24,7 @@ export class PlayerAccount {
     );
   }
 
+  /** Pretty print. */
   public pretty(): {
     address: string;
     user: string;

@@ -8,9 +8,9 @@ This Typescript sdk provides a convenient interface and methods for interacting 
   - [Contents](#contents)
   - [Geting started](#getting-started)
   - [Classes](#classes)
-    - [SoarProgram](#soar-program)
-    - [GameClient](#game-client)
-    - [InstructionBuilder](#instruction-builder)
+    - [SoarProgram](#soarprogram)
+    - [GameClient](#gameclient)
+    - [InstructionBuilder](#instructionbuilder)
   - [Contributing](#contributing)
     - [Tests](#tests)
 

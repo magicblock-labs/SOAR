@@ -4,10 +4,18 @@ import { PublicKey, Keypair } from "@solana/web3.js";
 import { SoarProgram, GameClient, GameType, Genre} from "../sdk/src";
 import BN from "bn.js";
 import * as utils from "./utils";
+import fs from "fs";
 
 describe("soar", () => {
   const provider = anchor.AnchorProvider.env();
   anchor.setProvider(provider);
+
+  const filePath = process.cwd() + "/target/deploy/soar-keypair.json";
+  console.log("path: ", filePath);
+  const secretKeyString = fs.readFileSync(filePath, {encoding: 'utf8'});
+  const secretKey = Uint8Array.from(JSON.parse(secretKeyString));
+  const programId = Keypair.fromSecretKey(secretKey).publicKey;
+  console.log("programId: ", programId.toBase58());
 
   const client = SoarProgram.get(provider);
 

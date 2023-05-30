@@ -36,15 +36,18 @@ export class SoarProgram {
   readonly utils: Utils;
   private readonly builder: InstructionBuilder;
 
-  private constructor(readonly provider: AnchorProvider) {
-    this.program = new Program<Soar>(IDL, PROGRAM_ID, provider);
+  private constructor(readonly provider: AnchorProvider, programId: PublicKey) {
+    this.program = new Program<Soar>(IDL, programId, provider);
     this.utils = new Utils(this.program.programId);
     this.builder = new InstructionBuilder(provider);
   }
 
   /// Static initializer for a SoarProgram instance.
-  public static get(provider: AnchorProvider): SoarProgram {
-    const client = new SoarProgram(provider);
+  public static get(
+    provider: AnchorProvider,
+    programId?: PublicKey
+  ): SoarProgram {
+    const client = new SoarProgram(provider, programId ?? PROGRAM_ID);
     return client;
   }
 

@@ -632,7 +632,7 @@ export class InstructionBuilder {
     return transaction;
   }
 
-  /** Internally reset the instruction list in this instance.*/
+  /** Internally reset the instruction list in this instance. */
   clean(): void {
     this.instructions = [];
   }

@@ -1,7 +1,7 @@
 import { type AnchorProvider, Program } from "@coral-xyz/anchor";
 import {
   type ConfirmOptions,
-  PublicKey,
+  type PublicKey,
   type GetProgramAccountsFilter,
   type Signer,
   type TransactionInstruction,
@@ -11,7 +11,7 @@ import { IDL, type Soar } from "./idl/soar";
 import { PROGRAM_ID } from "./constants";
 import type BN from "bn.js";
 import { InstructionBuilder } from "./instructions";
-import { Seeds, Utils } from "./utils";
+import { Utils } from "./utils";
 import { type InstructionResult } from "./types";
 import {
   type GameType,
@@ -255,8 +255,12 @@ export class SoarProgram {
 
     const gameAccount = await this.fetchGameAccount(gameAddress);
     const id = gameAccount.leaderboardCount.addn(1);
-    const newLeaderBoard = this.utils.deriveLeaderBoardAddress(id, gameAddress)[0];
-    const topEntries = this.utils.deriveLeaderTopEntriesAddress(newLeaderBoard)[0];
+    const newLeaderBoard = this.utils.deriveLeaderBoardAddress(
+      id,
+      gameAddress
+    )[0];
+    const topEntries =
+      this.utils.deriveLeaderTopEntriesAddress(newLeaderBoard)[0];
 
     const transaction = await this.builder
       .andAddLeaderBoard(
@@ -331,7 +335,7 @@ export class SoarProgram {
     return { newList, transaction };
   }
 
-  /** Submit a player's score to a leaderboard they're registered to.*/
+  /** Submit a player's score to a leaderboard they're registered to. */
   public async submitScoreToLeaderBoard(
     user: PublicKey,
     authority: PublicKey,
@@ -349,7 +353,7 @@ export class SoarProgram {
         authority,
         leaderboard
       )
-      .then((builder) => builder.build())
+      .then((builder) => builder.build());
 
     return { transaction };
   }

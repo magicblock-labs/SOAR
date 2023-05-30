@@ -102,7 +102,7 @@ pub mod soar {
 
     /// Submit a score for a player and have it timestamped and added to the [PlayerEntryList].
     /// Optionally increase the player's rank if needed.
-    /// 
+    ///
     /// This instruction automatically resizes the [PlayerScoresList] account if needed.
     pub fn submit_score(ctx: Context<SubmitScore>, score: u64) -> Result<()> {
         submit_score::handler(ctx, score)
@@ -110,7 +110,7 @@ pub mod soar {
 
     /// Initialize a new merge account and await approval from the verified users of all the
     /// specified [Player] accounts.
-    /// 
+    ///
     /// A merge is complete when all the users of the [Player] account keys referenced in it
     /// have signed to set their approval to `true`.
     pub fn initiate_merge(ctx: Context<InitiateMerge>, keys: Vec<Pubkey>) -> Result<()> {

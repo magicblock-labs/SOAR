@@ -1,8 +1,8 @@
-use anchor_lang::prelude::*;
 use crate::{
     state::{FieldsCheck, Player},
     InitializePlayer,
 };
+use anchor_lang::prelude::*;
 
 pub fn handler(ctx: Context<InitializePlayer>, username: String, nft_meta: Pubkey) -> Result<()> {
     let user = &ctx.accounts.user.key();

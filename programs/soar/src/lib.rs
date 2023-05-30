@@ -5,7 +5,7 @@ use anchor_lang::prelude::*;
 use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token::{Mint, Token, TokenAccount};
 
-declare_id!("3UEaKjkjK2Lz6D4DqSEUHwtBsezL5RaNCeBSWStxyNU9");
+declare_id!("SoarmxsvnGcQzLGaiue8mVTko7uuEfTY5zwdKKCnQDU");
 
 mod error;
 mod instructions;

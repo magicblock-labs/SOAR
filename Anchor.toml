@@ -1,8 +1,12 @@
 [features]
 seeds = false
 skip-lint = false
+
 [programs.localnet]
-soar = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+soar = "SoarmxsvnGcQzLGaiue8mVTko7uuEfTY5zwdKKCnQDU"
+
+[programs.devnet]
+soar = "SoarmxsvnGcQzLGaiue8mVTko7uuEfTY5zwdKKCnQDU"
 
 [registry]
 url = "https://api.apr.dev"

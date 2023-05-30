@@ -1,0 +1,30 @@
+name: Solana Action name
+on:
+  push:
+    branches: [main]
+
+env:
+  SOLANA_VERSION: v1.14.18
+  ANCHOR_VERSION: 0.27.0
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20.2.0
+          cache: "npm"
+      - run: npm install
+      - run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+        shell: bash
+      - run: echo "/home/runner/.cargo/bin" >> $GITHUB_PATH
+        shell: bash
+      - run: curl -sSfL https://release.solana.com/$SOLANA_VERSION/install | sh
+        shell: bash
+      - run: echo "/home/runner/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+        shell: bash
+      - run: npm i -g @coral-xyz/anchor-cli@$ANCHOR_VERSION ts-mocha typescript
+      - run: anchor test

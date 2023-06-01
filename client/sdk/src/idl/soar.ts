@@ -400,11 +400,6 @@ export type Soar = {
       ],
       "accounts": [
         {
-          "name": "user",
-          "isMut": false,
-          "isSigner": true
-        },
-        {
           "name": "payer",
           "isMut": true,
           "isSigner": true
@@ -430,15 +425,15 @@ export type Soar = {
           "isSigner": false
         },
         {
+          "name": "playerScores",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "topEntries",
           "isMut": true,
           "isSigner": false,
           "isOptional": true
-        },
-        {
-          "name": "playerScores",
-          "isMut": true,
-          "isSigner": false
         },
         {
           "name": "systemProgram",
@@ -525,11 +520,14 @@ export type Soar = {
     {
       "name": "unlockPlayerAchievement",
       "docs": [
-        "Indicate that a player has completed some [Achievement] and creates a [PlayerAchievement]",
-        "as proof.",
+        "Unlock a [PlayerAchievement] account without minting a reward.",
         "",
-        "The existence of this player-achievement account and its `unlocked` flag being set",
-        "to true can serve as a gated verification-method for custom-instruction rewards."
+        "Used `ONLY` for custom rewards mechanism to setup a [PlayerAchievement] account that",
+        "can serve as a gated verification-method for claims.",
+        "",
+        "Since claim instructions like [claim_ft_reward] and [claim_nft_reward] for reward types",
+        "defined by this program try to initialize this account and will fail if it already exists,",
+        "calling this means opting out of using these functions."
       ],
       "accounts": [
         {
@@ -543,22 +541,7 @@ export type Soar = {
           "isSigner": true
         },
         {
-          "name": "user",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
           "name": "playerAccount",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "playerScores",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "leaderboard",
           "isMut": false,
           "isSigner": false
         },
@@ -730,6 +713,8 @@ export type Soar = {
       "docs": [
         "Mint an NFT reward for unlocking a [PlayerAchievement] account.",
         "",
+        "This will attempt to create a [PlayerAchievement] account and fail if it already exists.",
+        "",
         "Relevant `ONLY` if an FT reward is specified for that achievement."
       ],
       "accounts": [
@@ -741,6 +726,11 @@ export type Soar = {
         {
           "name": "authority",
           "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "payer",
+          "isMut": true,
           "isSigner": true
         },
         {
@@ -782,6 +772,11 @@ export type Soar = {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
         }
       ],
       "args": []
@@ -790,6 +785,8 @@ export type Soar = {
       "name": "claimNftReward",
       "docs": [
         "Mint an NFT reward for unlocking a [PlayerAchievement] account.",
+        "",
+        "This will attempt to create a [PlayerAchievement] account and fail if it already exists.",
         "",
         "Relevant `ONLY` if an NFT reward is specified for that achievement."
       ],
@@ -1226,16 +1223,9 @@ export type Soar = {
             "type": "bool"
           },
           {
-            "name": "claims",
-            "docs": [
-              "Number of claims a user has for this achievement's reward."
-            ],
-            "type": "u64"
-          },
-          {
             "name": "claimed",
             "docs": [
-              "Whether or not this player has completely claimed their reward."
+              "Whether or not this player has claimed their reward."
             ],
             "type": "bool"
           }
@@ -1263,7 +1253,7 @@ export type Soar = {
           {
             "name": "leaderboard",
             "docs": [
-              "The leaderboard these scores are for."
+              "The id of the specific leaderboard."
             ],
             "type": "publicKey"
           },
@@ -1345,16 +1335,9 @@ export type Soar = {
             "type": "publicKey"
           },
           {
-            "name": "available",
+            "name": "availableSpots",
             "docs": [
               "Number of available reward spots."
-            ],
-            "type": "u64"
-          },
-          {
-            "name": "amountPerUser",
-            "docs": [
-              "Reward amount per user."
             ],
             "type": "u64"
           },
@@ -1509,9 +1492,9 @@ export type Soar = {
         "kind": "struct",
         "fields": [
           {
-            "name": "user",
+            "name": "player",
             "docs": [
-              "The user."
+              "The player"
             ],
             "type": "publicKey"
           },
@@ -1602,16 +1585,9 @@ export type Soar = {
         "kind": "struct",
         "fields": [
           {
-            "name": "amountPerUser",
+            "name": "availableSpots",
             "docs": [
-              "Rewards given per user."
-            ],
-            "type": "u64"
-          },
-          {
-            "name": "availableRewards",
-            "docs": [
-              "Number of reward spots."
+              "Number of rewards to be given out."
             ],
             "type": "u64"
           },
@@ -1700,6 +1676,13 @@ export type Soar = {
                   "The token account to withdraw from."
                 ],
                 "type": "publicKey"
+              },
+              {
+                "name": "amount",
+                "docs": [
+                  "Reward amount per user."
+                ],
+                "type": "u64"
               }
             ]
           },
@@ -1765,6 +1748,13 @@ export type Soar = {
                 "docs": [
                   "Amount to be delegated to this program's PDA",
                   "so it can spend for reward claims."
+                ],
+                "type": "u64"
+              },
+              {
+                "name": "amount",
+                "docs": [
+                  "Amount given to a single user."
                 ],
                 "type": "u64"
               }
@@ -1838,28 +1828,13 @@ export type Soar = {
     },
     {
       "code": 6007,
-      "name": "MissingRequiredAccountsForFtReward",
-      "msg": "An account required for setting up this reward kind is missing"
+      "name": "InvalidRewardKind",
+      "msg": "Invalid reward kind for this instruction"
     },
     {
       "code": 6008,
-      "name": "MissingRequiredAccountsForNftReward",
-      "msg": "An account required for setting up this reward kind is missing"
-    },
-    {
-      "code": 6009,
       "name": "NoAvailableRewards",
       "msg": "No more rewards are being given out for this game"
-    },
-    {
-      "code": 6010,
-      "name": "FullyClaimedReward",
-      "msg": "This user has fully claimed their reward"
-    },
-    {
-      "code": 6011,
-      "name": "PlayerAchievementLocked",
-      "msg": "This player has not yet unlocked this achievement"
     }
   ]
 };
@@ -2266,11 +2241,6 @@ export const IDL: Soar = {
       ],
       "accounts": [
         {
-          "name": "user",
-          "isMut": false,
-          "isSigner": true
-        },
-        {
           "name": "payer",
           "isMut": true,
           "isSigner": true
@@ -2296,15 +2266,15 @@ export const IDL: Soar = {
           "isSigner": false
         },
         {
+          "name": "playerScores",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "topEntries",
           "isMut": true,
           "isSigner": false,
           "isOptional": true
-        },
-        {
-          "name": "playerScores",
-          "isMut": true,
-          "isSigner": false
         },
         {
           "name": "systemProgram",
@@ -2391,11 +2361,14 @@ export const IDL: Soar = {
     {
       "name": "unlockPlayerAchievement",
       "docs": [
-        "Indicate that a player has completed some [Achievement] and creates a [PlayerAchievement]",
-        "as proof.",
+        "Unlock a [PlayerAchievement] account without minting a reward.",
         "",
-        "The existence of this player-achievement account and its `unlocked` flag being set",
-        "to true can serve as a gated verification-method for custom-instruction rewards."
+        "Used `ONLY` for custom rewards mechanism to setup a [PlayerAchievement] account that",
+        "can serve as a gated verification-method for claims.",
+        "",
+        "Since claim instructions like [claim_ft_reward] and [claim_nft_reward] for reward types",
+        "defined by this program try to initialize this account and will fail if it already exists,",
+        "calling this means opting out of using these functions."
       ],
       "accounts": [
         {
@@ -2409,22 +2382,7 @@ export const IDL: Soar = {
           "isSigner": true
         },
         {
-          "name": "user",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
           "name": "playerAccount",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "playerScores",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "leaderboard",
           "isMut": false,
           "isSigner": false
         },
@@ -2596,6 +2554,8 @@ export const IDL: Soar = {
       "docs": [
         "Mint an NFT reward for unlocking a [PlayerAchievement] account.",
         "",
+        "This will attempt to create a [PlayerAchievement] account and fail if it already exists.",
+        "",
         "Relevant `ONLY` if an FT reward is specified for that achievement."
       ],
       "accounts": [
@@ -2607,6 +2567,11 @@ export const IDL: Soar = {
         {
           "name": "authority",
           "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "payer",
+          "isMut": true,
           "isSigner": true
         },
         {
@@ -2648,6 +2613,11 @@ export const IDL: Soar = {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
         }
       ],
       "args": []
@@ -2656,6 +2626,8 @@ export const IDL: Soar = {
       "name": "claimNftReward",
       "docs": [
         "Mint an NFT reward for unlocking a [PlayerAchievement] account.",
+        "",
+        "This will attempt to create a [PlayerAchievement] account and fail if it already exists.",
         "",
         "Relevant `ONLY` if an NFT reward is specified for that achievement."
       ],
@@ -3092,16 +3064,9 @@ export const IDL: Soar = {
             "type": "bool"
           },
           {
-            "name": "claims",
-            "docs": [
-              "Number of claims a user has for this achievement's reward."
-            ],
-            "type": "u64"
-          },
-          {
             "name": "claimed",
             "docs": [
-              "Whether or not this player has completely claimed their reward."
+              "Whether or not this player has claimed their reward."
             ],
             "type": "bool"
           }
@@ -3129,7 +3094,7 @@ export const IDL: Soar = {
           {
             "name": "leaderboard",
             "docs": [
-              "The leaderboard these scores are for."
+              "The id of the specific leaderboard."
             ],
             "type": "publicKey"
           },
@@ -3211,16 +3176,9 @@ export const IDL: Soar = {
             "type": "publicKey"
           },
           {
-            "name": "available",
+            "name": "availableSpots",
             "docs": [
               "Number of available reward spots."
-            ],
-            "type": "u64"
-          },
-          {
-            "name": "amountPerUser",
-            "docs": [
-              "Reward amount per user."
             ],
             "type": "u64"
           },
@@ -3375,9 +3333,9 @@ export const IDL: Soar = {
         "kind": "struct",
         "fields": [
           {
-            "name": "user",
+            "name": "player",
             "docs": [
-              "The user."
+              "The player"
             ],
             "type": "publicKey"
           },
@@ -3468,16 +3426,9 @@ export const IDL: Soar = {
         "kind": "struct",
         "fields": [
           {
-            "name": "amountPerUser",
+            "name": "availableSpots",
             "docs": [
-              "Rewards given per user."
-            ],
-            "type": "u64"
-          },
-          {
-            "name": "availableRewards",
-            "docs": [
-              "Number of reward spots."
+              "Number of rewards to be given out."
             ],
             "type": "u64"
           },
@@ -3566,6 +3517,13 @@ export const IDL: Soar = {
                   "The token account to withdraw from."
                 ],
                 "type": "publicKey"
+              },
+              {
+                "name": "amount",
+                "docs": [
+                  "Reward amount per user."
+                ],
+                "type": "u64"
               }
             ]
           },
@@ -3631,6 +3589,13 @@ export const IDL: Soar = {
                 "docs": [
                   "Amount to be delegated to this program's PDA",
                   "so it can spend for reward claims."
+                ],
+                "type": "u64"
+              },
+              {
+                "name": "amount",
+                "docs": [
+                  "Amount given to a single user."
                 ],
                 "type": "u64"
               }
@@ -3704,28 +3669,13 @@ export const IDL: Soar = {
     },
     {
       "code": 6007,
-      "name": "MissingRequiredAccountsForFtReward",
-      "msg": "An account required for setting up this reward kind is missing"
+      "name": "InvalidRewardKind",
+      "msg": "Invalid reward kind for this instruction"
     },
     {
       "code": 6008,
-      "name": "MissingRequiredAccountsForNftReward",
-      "msg": "An account required for setting up this reward kind is missing"
-    },
-    {
-      "code": 6009,
       "name": "NoAvailableRewards",
       "msg": "No more rewards are being given out for this game"
-    },
-    {
-      "code": 6010,
-      "name": "FullyClaimedReward",
-      "msg": "This user has fully claimed their reward"
-    },
-    {
-      "code": 6011,
-      "name": "PlayerAchievementLocked",
-      "msg": "This player has not yet unlocked this achievement"
     }
   ]
 };

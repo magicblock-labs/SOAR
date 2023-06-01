@@ -8,12 +8,12 @@ export class RewardAccount {
   private constructor(
     public readonly address: PublicKey,
     public readonly achievement: PublicKey,
-    public readonly amountPerUser: BN,
-    public readonly available: BN,
+    public readonly availableSpots: BN,
     public readonly FungibleToken:
       | {
           mint: PublicKey;
           account: PublicKey;
+          amount: BN;
         }
       | undefined,
     public readonly NonFungibleToken:
@@ -35,8 +35,7 @@ export class RewardAccount {
     return new RewardAccount(
       address,
       account.achievement,
-      account.amountPerUser,
-      account.available,
+      account.availableSpots,
       account.reward.fungibleToken,
       account.reward.nonFungibleToken
     );
@@ -46,12 +45,12 @@ export class RewardAccount {
   public pretty(): {
     address: string;
     achievement: string;
-    available: string;
-    amountPerUser: string;
+    availableSpots: string;
     FungibleToken:
       | {
           mint: string;
           account: string;
+          amount: string;
         }
       | undefined;
     NonFungibleToken:
@@ -67,13 +66,13 @@ export class RewardAccount {
     return {
       address: this.address.toBase58(),
       achievement: this.achievement.toBase58(),
-      available: this.available.toString(),
-      amountPerUser: this.amountPerUser.toString(),
+      availableSpots: this.availableSpots.toString(),
       FungibleToken:
         this.FungibleToken !== undefined
           ? {
               mint: this.FungibleToken.mint.toBase58(),
               account: this.FungibleToken.account.toBase58(),
+              amount: this.FungibleToken.amount.toString(),
             }
           : undefined,
       NonFungibleToken:

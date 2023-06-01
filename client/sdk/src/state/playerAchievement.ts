@@ -11,7 +11,6 @@ export class PlayerAchievementAccount {
     public readonly achievement: PublicKey,
     public readonly timestamp: BN,
     public readonly unlocked: boolean,
-    public readonly claims: BN,
     public readonly claimed: boolean
   ) {}
 
@@ -26,7 +25,6 @@ export class PlayerAchievementAccount {
       account.achievement,
       account.timestamp,
       account.unlocked,
-      account.claims,
       account.claimed
     );
   }
@@ -38,7 +36,6 @@ export class PlayerAchievementAccount {
     achievement: string;
     timestamp: string;
     unlocked: boolean;
-    claims: string;
     claimed: boolean;
   } {
     return {
@@ -47,7 +44,6 @@ export class PlayerAchievementAccount {
       achievement: this.achievement.toBase58(),
       timestamp: this.timestamp.toString(),
       unlocked: this.unlocked,
-      claims: this.claims.toString(),
       claimed: this.claimed,
     };
   }

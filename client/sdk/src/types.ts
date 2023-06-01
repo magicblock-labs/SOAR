@@ -24,7 +24,7 @@ export module InstructionResult {
   }
   export interface AddLeaderBoard {
     newLeaderBoard: PublicKey;
-    topEntries: PublicKey;
+    topEntries: PublicKey | null;
     transaction: Transaction;
   }
   export interface RegisterPlayerEntry {
@@ -93,7 +93,6 @@ export interface AddLeaderBoardArgs {
   scoresOrder: boolean;
 }
 export interface AddNftRewardArgs {
-  amountPerUser: BN;
   availableRewards: BN;
   kind: {
     uri: string;
@@ -102,10 +101,10 @@ export interface AddNftRewardArgs {
   };
 }
 export interface AddFtRewardArgs {
-  amountPerUser: BN;
   availableRewards: BN;
   kind: {
     deposit: BN;
+    amount: BN;
   };
 }
 export interface InitializePlayerArgs {

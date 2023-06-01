@@ -123,8 +123,7 @@ export const addFtRewardInstruction = async (
 ): Promise<TransactionInstruction> =>
   program.methods
     .addFtReward({
-      amountPerUser: args.amountPerUser,
-      availableRewards: args.availableRewards,
+      availableSpots: args.availableRewards,
       kind: {
         ft: args.kind,
       },
@@ -152,8 +151,7 @@ export const addNftRewardInstruction = async (
 ): Promise<TransactionInstruction> =>
   program.methods
     .addNftReward({
-      amountPerUser: args.amountPerUser,
-      availableRewards: args.availableRewards,
+      availableSpots: args.availableRewards,
       kind: {
         nft: args.kind,
       },
@@ -247,7 +245,6 @@ export const submitScoreInstruction = async (
   program: Program<Soar>,
   args: SubmitScoreArgs,
   accounts: {
-    user: PublicKey;
     payer: PublicKey;
     playerAccount: PublicKey;
     authority: PublicKey;
@@ -284,12 +281,10 @@ export const updateAchievementInstruction = async (
 export const unlockPlayerAchievementInstruction = async (
   program: Program<Soar>,
   accounts: {
-    user: PublicKey;
     payer: PublicKey;
     playerAccount: PublicKey;
     playerScores: PublicKey;
     game: PublicKey;
-    leaderboard: PublicKey;
     achievement: PublicKey;
     authority: PublicKey;
     playerAchievement: PublicKey;

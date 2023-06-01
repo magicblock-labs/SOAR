@@ -28,7 +28,7 @@ export class TopEntriesAccount {
     address: string;
     isAscending: boolean;
     topScores: Array<{
-      user: string;
+      player: string;
       entry: {
         score: string;
         timestamp: string;
@@ -44,7 +44,7 @@ export class TopEntriesAccount {
 }
 
 interface LeaderboardScore {
-  user: PublicKey;
+  player: PublicKey;
   entry: {
     score: BN;
     timestamp: BN;
@@ -54,14 +54,14 @@ interface LeaderboardScore {
 const printLeaderboardScore = (
   raw: LeaderboardScore
 ): {
-  user: string;
+  player: string;
   entry: {
     score: string;
     timestamp: string;
   };
 } => {
   return {
-    user: raw.user.toBase58(),
+    player: raw.player.toBase58(),
     entry: {
       score: raw.entry.score.toString(),
       timestamp: raw.entry.score.toString(),

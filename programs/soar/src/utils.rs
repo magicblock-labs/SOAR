@@ -8,33 +8,6 @@ use anchor_spl::token;
 use mpl_token_metadata::instruction::{create_master_edition_v3, create_metadata_accounts_v3};
 use mpl_token_metadata::state::{DataV2, Metadata, TokenMetadataAccount};
 
-pub fn create_account<'a>(
-    size: usize,
-    to_create: &AccountInfo<'a>,
-    payer: &AccountInfo<'a>,
-    system_program: &AccountInfo<'a>,
-    signer_seeds: Option<&[&[&[u8]]]>,
-) -> Result<()> {
-    let lamports = Rent::default().minimum_balance(size);
-    let create_ix = system_instruction::create_account(
-        payer.key,
-        to_create.key,
-        lamports,
-        size as u64,
-        &crate::ID,
-    );
-
-    let accounts = [to_create.clone(), payer.clone(), system_program.clone()];
-
-    if let Some(signature) = signer_seeds {
-        invoke_signed(&create_ix, &accounts, signature)?;
-    } else {
-        invoke(&create_ix, &accounts)?;
-    }
-
-    Ok(())
-}
-
 // https://solanacookbook.com/references/programs.html#how-to-change-account-size
 pub fn resize_account<'a>(
     target_account: &AccountInfo<'a>,

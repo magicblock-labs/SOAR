@@ -11,7 +11,7 @@ pub struct PlayerScoresList {
     /// The player[super::Player] account this entry is derived from
     pub player_account: Pubkey,
 
-    /// The leaderboard these scores are for.
+    /// The id of the specific leaderboard.
     pub leaderboard: Pubkey,
 
     /// Max number of [scores][ScoreEntry] the current space allocation supports.

@@ -13,13 +13,12 @@ pub mod ft {
     pub fn handler(ctx: Context<AddFtReward>, input: AddNewRewardInput) -> Result<()> {
         let new_reward = &mut ctx.accounts.new_reward;
         new_reward.achievement = ctx.accounts.achievement.key();
-        new_reward.available = input.available_rewards;
-        new_reward.amount_per_user = input.amount_per_user;
+        new_reward.available_spots = input.available_spots;
 
         let achievement = &ctx.accounts.achievement;
 
         match input.kind {
-            RewardKindInput::Ft { deposit } => {
+            RewardKindInput::Ft { deposit, amount } => {
                 let mint = &ctx.accounts.reward_token_mint;
                 let token_account = &ctx.accounts.delegate_from_token_account;
                 let token_account_owner = &ctx.accounts.token_account_owner;
@@ -28,6 +27,7 @@ pub mod ft {
                 let reward = RewardKind::FungibleToken {
                     mint: mint.key(),
                     account: token_account.key(),
+                    amount,
                 };
                 new_reward.reward = reward;
                 new_reward.check()?;
@@ -52,7 +52,7 @@ pub mod ft {
                 uri: _,
                 name: _,
                 symbol: _,
-            } => Err(SoarError::MissingRequiredAccountsForNftReward.into()),
+            } => Err(SoarError::InvalidRewardKind.into()),
         }
     }
 }
@@ -64,8 +64,7 @@ pub mod nft {
     pub fn handler(ctx: Context<AddNftReward>, input: AddNewRewardInput) -> Result<()> {
         let new_reward = &mut ctx.accounts.new_reward;
         new_reward.achievement = ctx.accounts.achievement.key();
-        new_reward.available = input.available_rewards;
-        new_reward.amount_per_user = input.amount_per_user;
+        new_reward.available_spots = input.available_spots;
 
         let achievement = &ctx.accounts.achievement;
 
@@ -126,9 +125,10 @@ pub mod nft {
 
                 Ok(())
             }
-            RewardKindInput::Ft { deposit: _ } => {
-                Err(SoarError::MissingRequiredAccountsForFtReward.into())
-            }
+            RewardKindInput::Ft {
+                deposit: _,
+                amount: _,
+            } => Err(SoarError::InvalidRewardKind.into()),
         }
     }
 }

@@ -1,4 +1,8 @@
-use crate::{error::SoarError, state::RewardKind, utils};
+use crate::{
+    error::SoarError,
+    state::{PlayerAchievement, RewardKind},
+    utils,
+};
 use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Transfer};
 
@@ -26,7 +30,11 @@ pub mod ft {
 
         let reward = &mut reward_account.reward;
         match reward {
-            RewardKind::FungibleToken { mint: _, account } => {
+            RewardKind::FungibleToken {
+                mint: _,
+                account,
+                amount,
+            } => {
                 let user_token_account = &ctx.accounts.user_token_account;
                 let source_token_account = &ctx.accounts.source_token_account;
                 require_keys_eq!(source_token_account.key(), *account);
@@ -41,10 +49,17 @@ pub mod ft {
                     signer,
                 );
 
-                token::transfer(cpi_ctx, reward_account.amount_per_user)?;
+                token::transfer(cpi_ctx, *amount)?;
+
+                player_achievement.set_inner(PlayerAchievement::new(
+                    ctx.accounts.player_account.key(),
+                    ctx.accounts.achievement.key(),
+                    Clock::get().unwrap().unix_timestamp,
+                ));
                 player_achievement.claimed = true;
-                player_achievement.claims = reward_account.amount_per_user;
-                reward_account.available = reward_account.available.checked_sub(1).unwrap();
+
+                reward_account.available_spots =
+                    reward_account.available_spots.checked_sub(1).unwrap();
                 Ok(())
             }
             RewardKind::NonFungibleToken {
@@ -53,7 +68,7 @@ pub mod ft {
                 symbol: _,
                 minted: _,
                 collection: _,
-            } => Err(SoarError::MissingRequiredAccountsForNftReward.into()),
+            } => Err(SoarError::InvalidRewardKind.into()),
         }
     }
 }
@@ -165,18 +180,23 @@ pub mod nft {
                 )?;
 
                 *minted = minted.checked_add(1).unwrap();
-                player_achievement.claims = player_achievement.claims.checked_add(1).unwrap();
-                if player_achievement.claims == reward_account.amount_per_user {
-                    player_achievement.claimed = true;
-                }
 
-                reward_account.available = reward_account.available.checked_sub(1).unwrap();
+                player_achievement.set_inner(PlayerAchievement::new(
+                    ctx.accounts.player_account.key(),
+                    ctx.accounts.achievement.key(),
+                    Clock::get().unwrap().unix_timestamp,
+                ));
+                player_achievement.claimed = true;
+
+                reward_account.available_spots =
+                    reward_account.available_spots.checked_sub(1).unwrap();
                 Ok(())
             }
             RewardKind::FungibleToken {
                 mint: _,
                 account: _,
-            } => Err(SoarError::MissingRequiredAccountsForFtReward.into()),
+                amount: _,
+            } => Err(SoarError::InvalidRewardKind.into()),
         }
     }
 }

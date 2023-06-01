@@ -49,11 +49,11 @@ pub fn handler(ctx: Context<SubmitScore>, score: u64) -> Result<()> {
     }
 
     player_scores.scores.push(entry);
-    let user_key = ctx.accounts.user.key();
+    let player_key = ctx.accounts.player_account.key();
 
     if let Some(top_entries) = &mut ctx.accounts.top_entries {
         require_keys_eq!(leaderboard.top_entries.unwrap(), top_entries.key());
-        let top_scores_entry = LeaderBoardScore::new(user_key, entry);
+        let top_scores_entry = LeaderBoardScore::new(player_key, entry);
         let is_ascending = top_entries.is_ascending;
         let last_index = top_entries.top_scores.len() - 1;
 

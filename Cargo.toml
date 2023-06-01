@@ -1,6 +1,7 @@
 [workspace]
 members = [
-    "programs/*"
+    "programs/*",
+    "soar-cpi"
 ]
 
 [profile.release]

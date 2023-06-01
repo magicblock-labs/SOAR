@@ -17,8 +17,8 @@ pub struct LeaderTopEntries {
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Default, Debug)]
 /// An single entry to a [LeaderTopEntries].
 pub struct LeaderBoardScore {
-    /// The user.
-    pub user: Pubkey,
+    /// The player
+    pub player: Pubkey,
 
     /// The user's [score][super::ScoreEntry].
     pub entry: ScoreEntry,
@@ -35,11 +35,11 @@ impl LeaderTopEntries {
 
 impl LeaderBoardScore {
     /// Size of a borsh-serialized [LeaderBoardScore] account.
-    pub const SIZE: usize = 32 + // user
+    pub const SIZE: usize = 32 + // player key
         ScoreEntry::SIZE; // entry
 
     /// Create a new instance of Self.
-    pub fn new(user: Pubkey, entry: ScoreEntry) -> Self {
-        LeaderBoardScore { user, entry }
+    pub fn new(player: Pubkey, entry: ScoreEntry) -> Self {
+        LeaderBoardScore { player, entry }
     }
 }

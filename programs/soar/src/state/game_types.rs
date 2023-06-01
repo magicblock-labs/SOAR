@@ -5,20 +5,6 @@ pub enum GameType {
     Unspecified,
 }
 
-impl GameType {
-    /// Custom to enforce that `unspecified` is always stored as 255,
-    /// leaving space to make additions without breaking existing logic.
-    pub fn to_u8(&self) -> u8 {
-        use GameType::*;
-        match self {
-            Mobile => 0,
-            Desktop => 1,
-            Web => 2,
-            Unspecified => 255,
-        }
-    }
-}
-
 impl From<u8> for GameType {
     fn from(val: u8) -> Self {
         match val {
@@ -39,23 +25,6 @@ pub enum Genre {
     Puzzle,
     Casual,
     Unspecified,
-}
-
-impl Genre {
-    /// Custom to enforce that `unspecified` is always stored as 255,
-    /// leaving space to make additions without breaking existing logic.
-    pub fn to_u8(&self) -> u8 {
-        use Genre::*;
-        match self {
-            Rpg => 0,
-            Mmo => 1,
-            Action => 2,
-            Adventure => 3,
-            Puzzle => 4,
-            Casual => 5,
-            Unspecified => 255,
-        }
-    }
 }
 
 impl From<u8> for Genre {

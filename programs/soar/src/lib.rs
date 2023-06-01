@@ -1,5 +1,4 @@
 #![allow(clippy::result_large_err)]
-#![allow(dead_code)]
 
 use anchor_lang::prelude::*;
 use anchor_spl::associated_token::AssociatedToken;
@@ -122,11 +121,14 @@ pub mod soar {
         approve_merge::handler(ctx)
     }
 
-    /// Indicate that a player has completed some [Achievement] and creates a [PlayerAchievement]
-    /// as proof.
+    /// Unlock a [PlayerAchievement] account without minting a reward.
     ///
-    /// The existence of this player-achievement account and its `unlocked` flag being set
-    /// to true can serve as a gated verification-method for custom-instruction rewards.
+    /// Used `ONLY` for custom rewards mechanism to setup a [PlayerAchievement] account that
+    /// can serve as a gated verification-method for claims.
+    ///
+    /// Since claim instructions like [claim_ft_reward] and [claim_nft_reward] for reward types
+    /// defined by this program try to initialize this account and will fail if it already exists,
+    /// calling this means opting out of using these functions.
     pub fn unlock_player_achievement(ctx: Context<UnlockPlayerAchievement>) -> Result<()> {
         unlock_player_achievement::handler(ctx)
     }
@@ -147,12 +149,16 @@ pub mod soar {
 
     /// Mint an NFT reward for unlocking a [PlayerAchievement] account.
     ///
+    /// This will attempt to create a [PlayerAchievement] account and fail if it already exists.
+    ///
     /// Relevant `ONLY` if an FT reward is specified for that achievement.    
     pub fn claim_ft_reward(ctx: Context<ClaimFtReward>) -> Result<()> {
         claim_reward::ft::handler(ctx)
     }
 
     /// Mint an NFT reward for unlocking a [PlayerAchievement] account.
+    ///
+    /// This will attempt to create a [PlayerAchievement] account and fail if it already exists.
     ///
     /// Relevant `ONLY` if an NFT reward is specified for that achievement.
     pub fn claim_nft_reward(ctx: Context<ClaimNftReward>) -> Result<()> {
@@ -329,7 +335,7 @@ pub struct RegisterPlayer<'info> {
         bump
     )]
     pub new_list: Account<'info, PlayerScoresList>,
-    system_program: Program<'info, System>,
+    pub system_program: Program<'info, System>,
 }
 
 #[derive(Accounts)]
@@ -341,7 +347,6 @@ pub struct UpdatePlayer<'info> {
 
 #[derive(Accounts)]
 pub struct SubmitScore<'info> {
-    pub user: Signer<'info>,
     #[account(mut)]
     pub payer: Signer<'info>,
     #[account(
@@ -349,23 +354,22 @@ pub struct SubmitScore<'info> {
         @SoarError::InvalidAuthority
     )]
     pub authority: Signer<'info>,
-    #[account(has_one = user)]
     pub player_account: Account<'info, Player>,
     pub game: Account<'info, Game>,
     #[account(has_one = game)]
     pub leaderboard: Account<'info, LeaderBoard>,
     #[account(
         mut,
-        constraint =
-            check_top_entries(&leaderboard, top_entries)
-    )]
-    pub top_entries: Option<Account<'info, LeaderTopEntries>>,
-    #[account(
-        mut,
         has_one = player_account,
         has_one = leaderboard
     )]
     pub player_scores: Account<'info, PlayerScoresList>,
+    #[account(
+        mut,
+        constraint =
+            check_top_entries(&leaderboard, top_entries)
+    )]
+    pub top_entries: Option<Account<'info, LeaderTopEntries>>,
     pub system_program: Program<'info, System>,
 }
 
@@ -433,19 +437,7 @@ pub struct UnlockPlayerAchievement<'info> {
     pub authority: Signer<'info>,
     #[account(mut)]
     pub payer: Signer<'info>,
-    /// CHECK: Checked with `player_account`
-    pub user: UncheckedAccount<'info>,
-    #[account(has_one = user)]
     pub player_account: Account<'info, Player>,
-    // The presence of the next two accounts is to ensure that the player has
-    // some entry for the game.
-    #[account(
-        has_one = player_account,
-        has_one = leaderboard
-    )]
-    pub player_scores: Account<'info, PlayerScoresList>,
-    #[account(has_one = game)]
-    pub leaderboard: Account<'info, LeaderBoard>,
     pub game: Account<'info, Game>,
     #[account(has_one = game)]
     pub achievement: Account<'info, Achievement>,
@@ -532,6 +524,8 @@ pub struct ClaimFtReward<'info> {
     /// CHECK: Checked with `player_account`
     pub user: UncheckedAccount<'info>,
     pub authority: Signer<'info>,
+    #[account(mut)]
+    pub payer: Signer<'info>,
     #[account(constraint = game.check_signer(&authority.key()))]
     pub game: Account<'info, Game>,
     #[account(
@@ -549,17 +543,22 @@ pub struct ClaimFtReward<'info> {
     #[account(
         mut,
         has_one = achievement,
-        constraint = reward.available != 0 @SoarError::NoAvailableRewards
+        constraint = reward.available_spots != 0
+        @SoarError::NoAvailableRewards
     )]
     pub reward: Box<Account<'info, Reward>>,
     #[account(has_one = user)]
     pub player_account: Box<Account<'info, Player>>,
     #[account(
-        mut,
-        has_one = player_account,
-        has_one = achievement,
-        constraint = player_achievement.unlocked @SoarError::PlayerAchievementLocked,
-        constraint = !player_achievement.claimed @SoarError::FullyClaimedReward
+        init,
+        payer = payer,
+        space = PlayerAchievement::SIZE,
+        seeds = [
+            seeds::PLAYER_ACHIEVEMENT,
+            player_account.key().as_ref(),
+            achievement.key().as_ref()
+        ],
+        bump
     )]
     pub player_achievement: Box<Account<'info, PlayerAchievement>>,
     #[account(mut)]
@@ -570,6 +569,7 @@ pub struct ClaimFtReward<'info> {
     )]
     pub user_token_account: Account<'info, TokenAccount>,
     pub token_program: Program<'info, Token>,
+    pub system_program: Program<'info, System>,
 }
 
 #[derive(Accounts)]
@@ -596,19 +596,24 @@ pub struct ClaimNftReward<'info> {
     #[account(
         mut,
         has_one = achievement,
-        constraint = reward.available != 0 @SoarError::NoAvailableRewards
+        constraint = reward.available_spots != 0
+        @SoarError::NoAvailableRewards
     )]
     pub reward: Box<Account<'info, Reward>>,
     #[account(has_one = user)]
     pub player_account: Box<Account<'info, Player>>,
     #[account(
-        mut,
-        has_one = player_account,
-        has_one = achievement,
-        constraint = player_achievement.unlocked @SoarError::PlayerAchievementLocked,
-        constraint = !player_achievement.claimed @SoarError::FullyClaimedReward
+        init,
+        payer = payer,
+        space = PlayerAchievement::SIZE,
+        seeds = [
+            seeds::PLAYER_ACHIEVEMENT,
+            player_account.key().as_ref(),
+            achievement.key().as_ref()
+        ],
+        bump
     )]
-    pub player_achievement: Box<Account<'info, PlayerAchievement>>,
+    pub player_achievement: Account<'info, PlayerAchievement>,
     #[account(
         init,
         payer = payer,

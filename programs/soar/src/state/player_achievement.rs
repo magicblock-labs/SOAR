@@ -18,10 +18,7 @@ pub struct PlayerAchievement {
     /// A player's unlock status for this achievement.
     pub unlocked: bool,
 
-    /// Number of claims a user has for this achievement's reward.
-    pub claims: u64,
-
-    /// Whether or not this player has completely claimed their reward.
+    /// Whether or not this player has claimed their reward.
     pub claimed: bool,
 }
 
@@ -32,6 +29,15 @@ impl PlayerAchievement {
         32 + // achievement
         8 +  // timestamp
         1 +  // unlocked
-        8 +  // claims
         1; // claimed
+
+    pub fn new(player_account: Pubkey, achievement: Pubkey, timestamp: i64) -> Self {
+        Self {
+            player_account,
+            achievement,
+            timestamp,
+            unlocked: true,
+            claimed: false,
+        }
+    }
 }

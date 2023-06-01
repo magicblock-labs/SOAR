@@ -26,18 +26,9 @@ pub enum SoarError {
     #[msg("An optional but expected account is missing")]
     MissingExpectedAccount,
 
-    #[msg("An account required for setting up this reward kind is missing")]
-    MissingRequiredAccountsForFtReward,
-
-    #[msg("An account required for setting up this reward kind is missing")]
-    MissingRequiredAccountsForNftReward,
+    #[msg("Invalid reward kind for this instruction")]
+    InvalidRewardKind,
 
     #[msg("No more rewards are being given out for this game")]
     NoAvailableRewards,
-
-    #[msg("This user has fully claimed their reward")]
-    FullyClaimedReward,
-
-    #[msg("This player has not yet unlocked this achievement")]
-    PlayerAchievementLocked,
 }

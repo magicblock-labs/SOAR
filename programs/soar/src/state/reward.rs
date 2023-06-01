@@ -16,10 +16,7 @@ pub struct Reward {
     pub achievement: Pubkey,
 
     /// Number of available reward spots.
-    pub available: u64,
-
-    /// Reward amount per user.
-    pub amount_per_user: u64,
+    pub available_spots: u64,
 
     /// The reward kind. Current supports Nft and Ft rewards only.
     pub reward: RewardKind,
@@ -35,6 +32,9 @@ pub enum RewardKind {
 
         /// The token account to withdraw from.
         account: Pubkey,
+
+        /// Reward amount per user.
+        amount: u64,
     },
     /// NFT rewards.
     NonFungibleToken {
@@ -65,7 +65,6 @@ impl Reward {
     pub const SIZE: usize = 8 + // discriminator
         32 + // achievement
         8 +  // available
-        8 +  // amount_per_user
         RewardKind::MAX_SIZE; // reward_kind
 }
 

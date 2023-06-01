@@ -52,10 +52,8 @@ pub struct RegisterLeaderBoardInput {
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
 /// Input to add a new reward for an achievement.
 pub struct AddNewRewardInput {
-    /// Rewards given per user.
-    pub amount_per_user: u64,
-    /// Number of reward spots.
-    pub available_rewards: u64,
+    /// Number of rewards to be given out.
+    pub available_spots: u64,
     /// Specific reward kind.
     pub kind: RewardKindInput,
 }
@@ -67,6 +65,9 @@ pub enum RewardKindInput {
         /// Amount to be delegated to this program's PDA
         /// so it can spend for reward claims.
         deposit: u64,
+
+        /// Amount given to a single user.
+        amount: u64,
     },
     Nft {
         /// Uri of the minted nft.

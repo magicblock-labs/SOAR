@@ -1,0 +1,20 @@
+[package]
+name = "soar-test-cpi"
+version = "0.1.0"
+edition = "2021"
+include = ["src/**/*", "idl.json"]
+description = "CPI helpers for the SOAR program"
+license-file = "LICENSE"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[features]
+default = ["cpi"]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+
+[dependencies]
+clockwork-anchor-gen = "0.3.2"
+anchor-lang = "0.26.0"

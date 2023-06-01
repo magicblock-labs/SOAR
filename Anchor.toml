@@ -4,9 +4,11 @@ skip-lint = false
 
 [programs.localnet]
 soar = "SoarmxsvnGcQzLGaiue8mVTko7uuEfTY5zwdKKCnQDU"
+tens = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
 
 [programs.devnet]
 soar = "SoarmxsvnGcQzLGaiue8mVTko7uuEfTY5zwdKKCnQDU"
+tens = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
 
 [registry]
 url = "https://api.apr.dev"
@@ -21,8 +23,8 @@ test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 client/tests/soar.ts"
 [workspace]
 types = "client/sdk/src/idl"
 
-#[test]
-#startup_wait = 60000
+[test]
+startup_wait = 60000
 
 [[test.genesis]]
 address = "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"

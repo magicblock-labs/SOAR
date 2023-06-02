@@ -1,9 +1,9 @@
 #![allow(clippy::result_large_err)]
 
 use anchor_lang::prelude::*;
-use soar::{PlayerScoresList, LeaderTopEntries};
 use soar::cpi::accounts::{ClaimFtReward, SubmitScore};
 use soar::cpi::{self};
+use soar::{LeaderTopEntries, PlayerScoresList};
 
 declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
 
@@ -70,10 +70,11 @@ mod tens {
         // We claim a reward if the user's score is present in the top-entries account.
         let player = &ctx.accounts.player_account;
         let top_entries = &ctx.accounts.soar_top_entries;
-        if top_entries.top_scores
+        if top_entries
+            .top_scores
             .iter()
             .any(|score| score.player == player.key())
-            .eq(&true) 
+            .eq(&true)
         {
             msg!("Player has a top score!..Claiming reward: ");
             let accounts = ClaimFtReward {
@@ -196,7 +197,6 @@ pub struct Claim<'info> {
     pub soar_program: UncheckedAccount<'info>,
 }
 
-
 #[account]
 /// A simple game.
 pub struct Tens {
@@ -208,7 +208,7 @@ pub struct Tens {
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone)]
 pub struct SoarKeysStorage {
-    /// The soar state for this game. 
+    /// The soar state for this game.
     state: Pubkey,
     /// The soar leaderboard for this game.
     leaderboard: Pubkey,

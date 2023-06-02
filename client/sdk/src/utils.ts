@@ -9,7 +9,7 @@ export const enum Seeds {
   ACHIEVEMENT = "achievement",
   PLAYER = "player",
   PLAYER_SCORES = "player-scores-list",
-  PLAYER_ACHIEVEMENT = "player_achievement",
+  PLAYER_ACHIEVEMENT = "player-achievement",
   LEADER_TOP_ENTRIES = "top-scores",
   NFT_CLAIM = "nft-claim",
 }

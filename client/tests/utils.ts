@@ -26,14 +26,7 @@ export const initializeTestMint = async (client: SoarProgram): Promise<{
 }> => {
   let mint = Keypair.generate();
   let mintAuthority = Keypair.generate();
-  const transaction = new Transaction().add(
-    SystemProgram.transfer({
-      fromPubkey: client.provider.publicKey,
-      toPubkey: mintAuthority.publicKey,
-      lamports: 1_000_000_000,
-    }),
-  );
-  await client.sendAndConfirmTransaction(transaction);
+  await airdropTo(client, mintAuthority.publicKey, 1);
   const mintAddress = await createMint(
     client.provider.connection,
     mintAuthority,
@@ -46,6 +39,18 @@ export const initializeTestMint = async (client: SoarProgram): Promise<{
     mint: mintAddress,
     authority: mintAuthority
   };
+}
+
+export const airdropTo = async(client: SoarProgram, account: PublicKey, amount: number): Promise<string> => {
+  const transaction = new Transaction().add(
+    SystemProgram.transfer({
+      fromPubkey: client.provider.publicKey,
+      toPubkey: account,
+      lamports: amount * 1_000_000_000,
+    }),
+  );
+  return await client.sendAndConfirmTransaction(transaction);
+
 }
 
 export const mintToAccount = async(

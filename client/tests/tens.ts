@@ -3,6 +3,8 @@ import { Program } from "@coral-xyz/anchor";
 import { IDL } from "../../target/types/tens";
 import { PublicKey, Keypair, SystemProgram } from "@solana/web3.js";
 import { SoarProgram, GameType, Genre, AccountsBuilder } from "../sdk/src";
+import BN from "bn.js";
+import * as utils from "./utils";
 
 describe("tens", () => {
   const provider = anchor.AnchorProvider.env();
@@ -49,15 +51,15 @@ describe("tens", () => {
     let leaderboardMeta = Keypair.generate().publicKey;
 
     // Initialize a leaderboard for it.
-    let { newLeaderBoard, transaction } = await soar.addNewGameLeaderBoard(
-      soarGame, offChainAuthority.publicKey, leaderboardDescription, leaderboardMeta, 0, false);
+    let { newLeaderBoard, topEntries, transaction } = await soar.addNewGameLeaderBoard(
+      soarGame, offChainAuthority.publicKey, leaderboardDescription, leaderboardMeta, 5, false);
     await soar.sendAndConfirmTransaction(transaction, [offChainAuthority]);
 
     // Derive the tensStatePDA of the `tens` program.
     let tensPDA = PublicKey.findProgramAddressSync([Buffer.from("tens")], tensProgram.programId)[0];
     // Initialize the internal state and register its `SOAR` game and leaderboard in our tens program
     // so it can validate that the correct accounts are passed in for subsequent instructions.
-    await tensProgram.methods.register(soarGame, newLeaderBoard)
+    await tensProgram.methods.register(soarGame, newLeaderBoard, topEntries)
       .accounts({
         signer: provider.publicKey,
         tensState: tensPDA,
@@ -79,10 +81,10 @@ describe("tens", () => {
     await soar.sendAndConfirmTransaction(initPlayer, [user]);
 
     // Register the player to the leaderboard.
-    let { newList, transaction: regPlayer } = await soar.registerPlayerEntryForLeaderBoard(user.publicKey, 
+    let { newList: playerScoresList, transaction: regPlayer } = await soar.registerPlayerEntryForLeaderBoard(user.publicKey, 
       newLeaderBoard);
     await soar.sendAndConfirmTransaction(regPlayer, [user]);
-    console.log(`Registered to leaderboard ${newLeaderBoard.toBase58()}!`)
+    console.log(`Registered to leaderboard ${newLeaderBoard.toBase58()}!\n`);
 
     // Repetitively make moves in the tens game. Scores will be submitted automatically by CPI.
     for (let i = 0; i < 20; ++i) {
@@ -116,12 +118,73 @@ describe("tens", () => {
       let counter = tens.counter.toNumber();
 
       if (counter % 10 !== 0) {
-        console.log(`...Moved ${counter}. Keep going!`);
+        console.log(`..Moved ${counter}. Keep going!`);
       } else {
-        console.log(`Brilliant!. You moved ${counter} and won this round!`);
+        console.log(`> Brilliant!. You moved ${counter} and won this round!`);
         let playerScores = await soar.fetchPlayerScoresListAccount(accounts.playerScores);
-        console.log(`Added ${counter} to your scores: ${JSON.stringify(playerScores.pretty().scores)}\n`);
+        console.log(`> Added ${counter} to your scores: ${JSON.stringify(playerScores.pretty().scores)}\n`);
       }
     }
+
+    //---------------------------------------------------------------------------------------------//
+    //                       Setup mint and token accounts for testing.                            //
+    //---------------------------------------------------------------------------------------------//
+    let { mint, authority } = await utils.initializeTestMint(soar);
+
+    const tokenAccountOwner = offChainAuthority;
+    const tokenAccount = await utils.createTokenAccount(soar, tokenAccountOwner.publicKey, mint);
+    await utils.mintToAccount(soar, mint, authority, tokenAccount, 5);
+
+    const userATA = await utils.createTokenAccount(soar, user.publicKey, mint);
+    //---------------------------------------------------------------------------------------------//
+    //---------------------------------------------------------------------------------------------//
+
+    // Now we add an achievement for this game and a ft reward for that achievement.
+    const { newAchievement, transaction: addAchievement } = await soar.addNewGameAchievement(soarGame,
+      offChainAuthority.publicKey, "title", "desc", PublicKey.default);
+    await soar.sendAndConfirmTransaction(addAchievement, [offChainAuthority]);
+
+    const reward = Keypair.generate();
+    const {newReward, transaction: addReward } = await soar.addFungibleReward(offChainAuthority.publicKey,
+        reward.publicKey, newAchievement, new BN(4), new BN(5), new BN(100), mint, tokenAccount, tokenAccountOwner.publicKey);
+    await soar.sendAndConfirmTransaction(addReward, [reward, tokenAccountOwner]);
+
+    // Now the user can try to claim a reward by sending a transaction to the `tens` smart-contract.
+    //
+    // The `tens` smart-contract decides what invariant it wants to establish for a reward to be 
+    // claimed for a user. In this particular case, our on-chain program chooses to only claim rewards
+    // for users that have a score in the `top-entries` list for our leaderboard. Since this is handled
+    // on-chain, our on-chain authority(the tens PDA) is used.
+    ///
+    const accounts = await new AccountsBuilder(provider, soar.program.programId)
+      .claimFtRewardAccounts(tensPDA, newAchievement, user.publicKey, newReward, soarGame);
+    await utils.airdropTo(soar, user.publicKey, 1);
+
+    let balance = await soar.provider.connection.getTokenAccountBalance(userATA);
+    console.log(`> Balance before claim: ${balance.value.uiAmount}`);
+    
+    console.log("..claiming...");
+    await tensProgram.methods.claimReward()
+      .accounts({
+        user: user.publicKey,
+        tensState: tensPDA,
+        playerAccount: accounts.playerAccount,
+        soarPlayerScores: playerScoresList,
+        soarTopEntries: topEntries,
+        soarState: accounts.game,
+        soarAchievement: accounts.achievement,
+        soarReward: accounts.reward,
+        soarPlayerAchievement: accounts.playerAchievement,
+        sourceTokenAccount: accounts.sourceTokenAccount,
+        userTokenAccount: accounts.userTokenAccount,
+        tokenProgram: accounts.tokenProgram,
+        systemProgram: SystemProgram.programId,
+        soarProgram: soar.program.programId,
+      })
+      .signers([user])
+      .rpc();
+
+    balance = await soar.provider.connection.getTokenAccountBalance(userATA);
+    console.log(`> Claim successful. New balance: ${balance.value.uiAmount}`);
   });
 })

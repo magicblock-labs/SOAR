@@ -14,7 +14,7 @@ mod utils;
 
 use error::SoarError;
 use instructions::*;
-use state::*;
+pub use state::*;
 
 #[program]
 pub mod soar {

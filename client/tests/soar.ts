@@ -644,7 +644,7 @@ describe("soar", () => {
     expect(metadata.mint.toBase58()).to.equal(mint.toBase58());
     expect(metadata.collection.verified).to.equal(true);
 
-    // Should fail if it's not a valid mint.
+    // Should fail because it's not a valid mint.
     mint = Keypair.generate().publicKey;
     let thrown = false;
     try {

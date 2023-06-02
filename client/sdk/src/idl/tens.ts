@@ -29,6 +29,10 @@ export type Tens = {
         {
           "name": "soarLeaderboard",
           "type": "publicKey"
+        },
+        {
+          "name": "soarLeaderboardTopEntries",
+          "type": "publicKey"
         }
       ]
     },
@@ -83,6 +87,82 @@ export type Tens = {
         }
       ],
       "args": []
+    },
+    {
+      "name": "claimReward",
+      "accounts": [
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "tensState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "playerAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "soarPlayerScores",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "soarTopEntries",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "soarState",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "soarAchievement",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "soarReward",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "soarPlayerAchievement",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "sourceTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "soarProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -95,25 +175,51 @@ export type Tens = {
         "kind": "struct",
         "fields": [
           {
-            "name": "soarState",
-            "docs": [
-              "The soar state."
-            ],
-            "type": "publicKey"
-          },
-          {
-            "name": "soarLeaderboard",
-            "docs": [
-              "The currently active soar leaderboard."
-            ],
-            "type": "publicKey"
-          },
-          {
             "name": "counter",
             "docs": [
               "The game counter."
             ],
             "type": "u64"
+          },
+          {
+            "name": "soar",
+            "docs": [
+              "The SOAR keys for this program."
+            ],
+            "type": {
+              "defined": "SoarKeysStorage"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "SoarKeysStorage",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "state",
+            "docs": [
+              "The soar state for this game."
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "leaderboard",
+            "docs": [
+              "The soar leaderboard for this game."
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "topEntries",
+            "docs": [
+              "The soar top-entries account for this game."
+            ],
+            "type": "publicKey"
           }
         ]
       }
@@ -152,6 +258,10 @@ export const IDL: Tens = {
         {
           "name": "soarLeaderboard",
           "type": "publicKey"
+        },
+        {
+          "name": "soarLeaderboardTopEntries",
+          "type": "publicKey"
         }
       ]
     },
@@ -206,6 +316,82 @@ export const IDL: Tens = {
         }
       ],
       "args": []
+    },
+    {
+      "name": "claimReward",
+      "accounts": [
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "tensState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "playerAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "soarPlayerScores",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "soarTopEntries",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "soarState",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "soarAchievement",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "soarReward",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "soarPlayerAchievement",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "sourceTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "soarProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -218,25 +404,51 @@ export const IDL: Tens = {
         "kind": "struct",
         "fields": [
           {
-            "name": "soarState",
-            "docs": [
-              "The soar state."
-            ],
-            "type": "publicKey"
-          },
-          {
-            "name": "soarLeaderboard",
-            "docs": [
-              "The currently active soar leaderboard."
-            ],
-            "type": "publicKey"
-          },
-          {
             "name": "counter",
             "docs": [
               "The game counter."
             ],
             "type": "u64"
+          },
+          {
+            "name": "soar",
+            "docs": [
+              "The SOAR keys for this program."
+            ],
+            "type": {
+              "defined": "SoarKeysStorage"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "SoarKeysStorage",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "state",
+            "docs": [
+              "The soar state for this game."
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "leaderboard",
+            "docs": [
+              "The soar leaderboard for this game."
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "topEntries",
+            "docs": [
+              "The soar top-entries account for this game."
+            ],
+            "type": "publicKey"
           }
         ]
       }

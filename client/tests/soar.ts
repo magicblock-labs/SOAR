@@ -1,7 +1,7 @@
 import * as anchor from "@coral-xyz/anchor";
 import { expect } from "chai";
 import { PublicKey, Keypair } from "@solana/web3.js";
-import { SoarProgram, GameClient, GameType, Genre, InstructionBuilder} from "../sdk/src";
+import { SoarProgram, GameClient, GameType, Genre } from "../sdk/src";
 import BN from "bn.js";
 import * as utils from "./utils";
 

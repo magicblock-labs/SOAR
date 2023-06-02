@@ -251,7 +251,7 @@ export const submitScoreInstruction = async (
     game: PublicKey;
     leaderboard: PublicKey;
     playerScores: PublicKey;
-    topEntries: PublicKey;
+    topEntries: PublicKey | null;
     systemProgram: PublicKey;
   },
   pre?: TransactionInstruction[]

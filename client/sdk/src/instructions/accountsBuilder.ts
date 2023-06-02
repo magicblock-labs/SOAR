@@ -198,10 +198,12 @@ export class AccountsBuilder {
 
     let collectionMetadata: PublicKey | null = null;
     let metadataProgram: PublicKey | null = null;
+
     if (collectionMint !== undefined) {
       if (collectionUpdateAuthority === undefined) {
         throw new Error("Collection update authority should be defined");
       }
+      
       collectionMetadata = this.utils.deriveMetadataAddress(collectionMint)[0];
       metadataProgram = TOKEN_METADATA_PROGRAM_ID;
     }
@@ -431,17 +433,17 @@ export class AccountsBuilder {
     game: PublicKey;
     leaderboard: PublicKey;
     playerScores: PublicKey;
-    topEntries: PublicKey;
+    topEntries: PublicKey | null;
     systemProgram: PublicKey;
   }> => {
-    const gameAddress =
-      game ?? (await this.program.account.leaderBoard.fetch(leaderboard)).game;
+    const leaderboardAccount = await this.program.account.leaderBoard.fetch(leaderboard);
+    const gameAddress = game ?? leaderboardAccount.game;
     const playerAccount = this.utils.derivePlayerAddress(user)[0];
     const playerScores = this.utils.derivePlayerScoresListAddress(
       user,
       leaderboard
     )[0];
-    const topEntries = this.utils.deriveLeaderTopEntriesAddress(leaderboard)[0];
+    const topEntries = leaderboardAccount.topEntries;
 
     return {
       payer: this.provider.publicKey,

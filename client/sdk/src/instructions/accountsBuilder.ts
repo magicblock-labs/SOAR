@@ -203,7 +203,7 @@ export class AccountsBuilder {
       if (collectionUpdateAuthority === undefined) {
         throw new Error("Collection update authority should be defined");
       }
-      
+
       collectionMetadata = this.utils.deriveMetadataAddress(collectionMint)[0];
       metadataProgram = TOKEN_METADATA_PROGRAM_ID;
     }
@@ -436,7 +436,9 @@ export class AccountsBuilder {
     topEntries: PublicKey | null;
     systemProgram: PublicKey;
   }> => {
-    const leaderboardAccount = await this.program.account.leaderBoard.fetch(leaderboard);
+    const leaderboardAccount = await this.program.account.leaderBoard.fetch(
+      leaderboard
+    );
     const gameAddress = game ?? leaderboardAccount.game;
     const playerAccount = this.utils.derivePlayerAddress(user)[0];
     const playerScores = this.utils.derivePlayerScoresListAddress(

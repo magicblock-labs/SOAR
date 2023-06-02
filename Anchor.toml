@@ -18,10 +18,14 @@ cluster = "Localnet"
 wallet = "client/tests/fixtures/provider.json"
 
 [scripts]
-test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 client/tests/soar.ts"
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 client/tests/*"
 
 [workspace]
 types = "client/sdk/src/idl"
+members = [
+    "programs/soar",
+    "examples/tens"
+]
 
 [test]
 startup_wait = 60000

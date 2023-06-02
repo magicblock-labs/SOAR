@@ -7,40 +7,39 @@ use soar::cpi::submit_score;
 declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
 
 #[program]
-mod tiny_adventure {
+mod tens {
     use super::*;
 
-    pub fn init_soar(
+    pub fn register(
         ctx: Context<Initialize>,
-        soar_game: Pubkey,
+        soar_state: Pubkey,
         soar_leaderboard: Pubkey,
     ) -> Result<()> {
-        let state = &mut ctx.accounts.internal_state;
+        let state = &mut ctx.accounts.tens_state;
 
         // Prelude: We initialize the soar_game and soar_leaderboard off-chain and set
         // this program's `internal_state` as an authority so it can sign for CPIs to
         // the SOAR program.
 
-        state.soar_game = soar_game;
+        state.soar_state = soar_state;
         state.soar_leaderboard = soar_leaderboard;
-        state.admin = ctx.accounts.signer.key();
         state.counter = 0;
 
         Ok(())
     }
 
     pub fn make_move(ctx: Context<MakeMove>) -> Result<()> {
-        let internal = &mut ctx.accounts.internal_state;
-        internal.counter = internal.counter.checked_add(1).unwrap();
+        let tens = &mut ctx.accounts.tens_state;
+        tens.counter = tens.counter.checked_add(1).unwrap();
 
-        if internal.counter % 10 == 0 {
+        if tens.counter % 10 == 0 {
             msg!(" You won this round! ");
 
             let accounts = SubmitScore {
                 payer: ctx.accounts.user.to_account_info(),
-                authority: internal.to_account_info(),
+                authority: tens.to_account_info(),
                 player_account: ctx.accounts.soar_player_account.to_account_info(),
-                game: ctx.accounts.soar_game.to_account_info(),
+                game: ctx.accounts.soar_state.to_account_info(),
                 leaderboard: ctx.accounts.soar_leaderboard.to_account_info(),
                 player_scores: ctx.accounts.soar_player_scores.to_account_info(),
                 top_entries: ctx
@@ -51,14 +50,14 @@ mod tiny_adventure {
                 system_program: ctx.accounts.system_program.to_account_info(),
             };
 
-            let state_bump = *ctx.bumps.get("internal_state").unwrap();
-            let seeds = &[b"global".as_ref(), &[state_bump]];
+            let state_bump = *ctx.bumps.get("tens_state").unwrap();
+            let seeds = &[b"tens".as_ref(), &[state_bump]];
             let signer = &[&seeds[..]];
 
             let cpi_ctx = CpiContext::new(ctx.accounts.soar_program.to_account_info(), accounts)
                 .with_signer(signer);
-            msg!("Submitting score {} for user.", internal.counter);
-            submit_score(cpi_ctx, internal.counter)?;
+            msg!("Submitting score {} for user.", tens.counter);
+            submit_score(cpi_ctx, tens.counter)?;
         }
 
         Ok(())
@@ -71,33 +70,36 @@ pub struct Initialize<'info> {
     pub signer: Signer<'info>,
     #[account(
         init,
-        seeds = [b"global"],
+        seeds = [b"tens"],
         bump,
-        space = 112,
+        space = 80,
         payer = signer,
     )]
-    pub internal_state: Account<'info, InternalState>,
+    pub tens_state: Account<'info, Tens>,
     pub system_program: Program<'info, System>,
 }
 
 #[derive(Accounts)]
 pub struct MakeMove<'info> {
+    #[account(mut)]
     pub user: Signer<'info>,
     #[account(
         mut,
-        seeds = [b"global"], bump,
-        has_one = soar_game,
+        seeds = [b"tens"], bump,
+        has_one = soar_state,
         has_one = soar_leaderboard
     )]
-    pub internal_state: Account<'info, InternalState>,
+    pub tens_state: Account<'info, Tens>,
     /// CHECK: The SOAR game account for this program.
-    pub soar_game: UncheckedAccount<'info>,
+    pub soar_state: UncheckedAccount<'info>,
     /// CHECK: The SOAR leaderboard for this program.
     pub soar_leaderboard: UncheckedAccount<'info>,
     /// CHECK: The SOAR player account for this user.
     pub soar_player_account: UncheckedAccount<'info>,
+    #[account(mut)]
     /// CHECK: The SOAR player scores account for this user.
     pub soar_player_scores: UncheckedAccount<'info>,
+    #[account(mut)]
     /// CHECK: The SOAR top entries account for this leaderboard.
     pub soar_top_entries: Option<UncheckedAccount<'info>>,
     /// CHECK: The SOAR program ID.
@@ -108,11 +110,11 @@ pub struct MakeMove<'info> {
 
 #[account]
 /// A simple game.
-pub struct InternalState {
+pub struct Tens {
     /// The soar state.
-    pub soar_game: Pubkey,
+    pub soar_state: Pubkey,
     /// The currently active soar leaderboard.
     pub soar_leaderboard: Pubkey,
-    pub admin: Pubkey,
+    /// The game counter.
     pub counter: u64,
 }

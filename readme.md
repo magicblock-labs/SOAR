@@ -1,4 +1,18 @@
-# 👑 SOAR - Solana On-chain Achievements & Rankings 👑
+<div align="center">
+
+  <a href="https://docs.magicblock.gg"><img height="170x" src="https://i.imgur.com/BRqrBKG.png" /></a>
+
+  <h1>SOAR</h1>
+
+  <p>
+    <strong>👑 Solana On-chain Achievements & Rankings 👑</strong>
+  </p>
+
+  <p>
+    <a href="https://discord.com/invite/MBkdC3gxcv"><img alt="Discord Chat" src="https://img.shields.io/discord/943797222162726962?color=blueviolet" /></a>
+    <a href="https://opensource.org/licenses/MIT"><img alt="License" src="https://img.shields.io/github/license/magicblock-labs/Solana.Unity-SDK?color=blueviolet" /></a>
+  </p>
+</div>
 
 SOAR is a Solana program repository that provides a seamless solution for creating leaderboards and achievements on the Solana blockchain. With support for invocation from a TypeScript client and the upcoming integration with the Solana.Unity-SDK, SOAR aims to simplify the process of managing and tracking achievements in decentralized applications.
 

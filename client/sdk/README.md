@@ -6,7 +6,7 @@ This Typescript sdk provides a convenient interface and methods for interacting 
 
 - [SOAR SDK](#soar-sdk)
   - [Contents](#contents)
-  - [Geting started](#getting-started)
+  - [Getting started](#getting-started)
   - [Classes](#classes)
     - [SoarProgram](#soarprogram)
     - [GameClient](#gameclient)

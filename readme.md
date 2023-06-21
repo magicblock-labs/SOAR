@@ -17,11 +17,12 @@
 SOAR is a program that provides a seamless solution for managing leaderboards, achievements, players' profiles and automatic rewards distribution on the Solana blockchain. Currently supporting invocation from a TypeScript client, the integration in Solana.Unity-SDK will be coming soon. 
 
 ## ⚙ Features
-Leaderboard Creation: Easily create leaderboards to track and display user rankings based on specific criteria or metrics.
-Achievement Management: Define and manage achievements that can be unlocked by users based on their on-chain activities.
-Typescript Client Support: Invoke SOAR functionalities using a TypeScript client, allowing for seamless integration with your Solana application.
-CPI Invocation: Interact with SOAR through CPI (Cross-Program Invocation) calls, enabling secure and efficient communication between programs.
-Solana.Unity-SDK Integration (Coming Soon): Integration with the Solana.Unity-SDK is currently underway, providing an additional layer of functionality for Unity-based applications.
+
+- Leaderboard Creation: Easily create leaderboards to track and display user rankings based on specific criteria or metrics.
+- Achievement Management: Define and manage achievements that can be unlocked by users based on their on-chain activities.
+- Typescript Client Support: Invoke SOAR functionalities using a TypeScript client, allowing for seamless integration with your Solana application.
+- CPI Invocation: Interact with SOAR through CPI (Cross-Program Invocation) calls, enabling secure and efficient communication between programs.
+- Solana.Unity-SDK Integration (Coming Soon): Integration with the Solana.Unity-SDK is currently underway, providing an additional layer of functionality for Unity-based applications.
 
 ## 📁 Repository Structure
 The SOAR repository is structured as follows:

@@ -1,6 +1,6 @@
 <div align="center">
 
-  <a href="https://docs.magicblock.gg"><img height="170x" src="https://imgur.com/a/fprQOi6.png" /></a>
+  <a href="https://docs.magicblock.gg"><img height="170x" src="https://i.imgur.com/OBoWQnJ.png" /></a>
 
   <h1>SOAR</h1>
 

@@ -14,7 +14,7 @@
   </p>
 </div>
 
-SOAR is a program that provides a seamless solution for managing leaderboards, achievements, players' profiles and automatic rewards distribution on the Solana blockchain. Currenlty supporting invocation from a TypeScript client, integration in Solana.Unity-SDK coming soon. 
+SOAR is a program that provides a seamless solution for managing leaderboards, achievements, players' profiles and automatic rewards distribution on the Solana blockchain. Currently supporting invocation from a TypeScript client, the integration in Solana.Unity-SDK will be coming soon. 
 
 ## ⚙ Features
 Leaderboard Creation: Easily create leaderboards to track and display user rankings based on specific criteria or metrics.

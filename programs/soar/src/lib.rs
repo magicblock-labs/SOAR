@@ -4,6 +4,9 @@ use anchor_lang::prelude::*;
 use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token::{Mint, Token, TokenAccount};
 
+#[cfg(not(feature = "no-entrypoint"))]
+use {solana_security_txt::security_txt};
+
 declare_id!("SoarmxsvnGcQzLGaiue8mVTko7uuEfTY5zwdKKCnQDU");
 
 mod error;
@@ -15,6 +18,16 @@ mod utils;
 use error::SoarError;
 use instructions::*;
 pub use state::*;
+
+#[cfg(not(feature = "no-entrypoint"))]
+security_txt! {
+    name: "SOAR",
+    project_url: "https://magicblock.gg",
+    contacts: "email:dev@magicblock.gg,twitter:@magicblock",
+    policy: "",
+    preferred_languages: "en",
+    source_code: "https://github.com/magicblock-labs/SOAR"
+}
 
 #[program]
 pub mod soar {

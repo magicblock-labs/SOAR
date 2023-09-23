@@ -1,5 +1,5 @@
 [package]
-name = "soar-test-cpi"
+name = "soar-cpi"
 version = "0.1.0"
 edition = "2021"
 include = ["src/**/*", "idl.json"]

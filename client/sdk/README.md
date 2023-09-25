@@ -17,7 +17,7 @@ This Typescript sdk provides a convenient interface and methods for interacting 
 ## Getting started
 
 ```typescript
-import { SoarProgram, GameType, Genre } from "@soar/sdk";
+import { SoarProgram, GameType, Genre } from "@magicblock-labs/soar-sdk";
 
 const provider = anchor.AnchorProvider.env();
 anchor.setProvider(provider);

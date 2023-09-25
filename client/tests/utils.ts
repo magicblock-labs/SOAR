@@ -1,15 +1,15 @@
-import { 
-  Connection, 
-  Keypair, 
-  PublicKey, 
-  SystemProgram, 
+import {
+  Connection,
+  Keypair,
+  PublicKey,
+  SystemProgram,
   Transaction,
 } from "@solana/web3.js";
-import { 
+import {
   createMint,
-  createAssociatedTokenAccountIdempotentInstruction, 
+  createAssociatedTokenAccountIdempotentInstruction,
   getAssociatedTokenAddressSync,
-  mintToChecked
+  mintToChecked,
 } from "@solana/spl-token";
 import { Metaplex, keypairIdentity } from "@metaplex-foundation/js";
 import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
@@ -17,12 +17,16 @@ import fs from "fs";
 import { SoarProgram } from "../sdk/src";
 
 const KEYPAIR_PATH = process.cwd() + "/client/tests/fixtures/provider.json";
-export const COLLECTION_URI = "https://raw.githubusercontent.com/magicblock-labs/SOAR/client/tests/fixtures/metadata/collection.json";
-export const TEST1_URI = "https://raw.githubusercontent.com/magicblock-labs/SOAR/client/tests/fixtures/metadata/image_test1";
+export const COLLECTION_URI =
+  "https://raw.githubusercontent.com/magicblock-labs/SOAR/client/tests/fixtures/metadata/collection.json";
+export const TEST1_URI =
+  "https://raw.githubusercontent.com/magicblock-labs/SOAR/client/tests/fixtures/metadata/image_test1";
 
-export const initializeTestMint = async (client: SoarProgram): Promise<{
-  mint: PublicKey,
-  authority: Keypair,
+export const initializeTestMint = async (
+  client: SoarProgram
+): Promise<{
+  mint: PublicKey;
+  authority: Keypair;
 }> => {
   let mint = Keypair.generate();
   let mintAuthority = Keypair.generate();
@@ -32,32 +36,35 @@ export const initializeTestMint = async (client: SoarProgram): Promise<{
     mintAuthority,
     mintAuthority.publicKey,
     mintAuthority.publicKey,
-    0 ,
+    0,
     mint
   );
   return {
     mint: mintAddress,
-    authority: mintAuthority
+    authority: mintAuthority,
   };
-}
+};
 
-export const airdropTo = async(client: SoarProgram, account: PublicKey, amount: number): Promise<string> => {
+export const airdropTo = async (
+  client: SoarProgram,
+  account: PublicKey,
+  amount: number
+): Promise<string> => {
   const transaction = new Transaction().add(
     SystemProgram.transfer({
       fromPubkey: client.provider.publicKey,
       toPubkey: account,
       lamports: amount * 1_000_000_000,
-    }),
+    })
   );
   return await client.sendAndConfirmTransaction(transaction);
+};
 
-}
-
-export const mintToAccount = async(
-  client: SoarProgram, 
-  mint: PublicKey, 
-  authority: Keypair, 
-  to: PublicKey, 
+export const mintToAccount = async (
+  client: SoarProgram,
+  mint: PublicKey,
+  authority: Keypair,
+  to: PublicKey,
   amount: number
 ) => {
   await mintToChecked(
@@ -66,14 +73,14 @@ export const mintToAccount = async(
     mint,
     to,
     authority,
-    amount * 1e0,
+    amount * 1,
     0
   );
-}
+};
 
 export const createTokenAccount = async (
-  client: SoarProgram, 
-  owner: PublicKey, 
+  client: SoarProgram,
+  owner: PublicKey,
   mint: PublicKey
 ): Promise<PublicKey> => {
   const tokenAccount = getAssociatedTokenAddressSync(mint, owner);
@@ -82,13 +89,13 @@ export const createTokenAccount = async (
       client.provider.publicKey,
       tokenAccount,
       owner,
-      mint,
-    ),
+      mint
+    )
   );
   await client.sendAndConfirmTransaction(tx);
 
   return tokenAccount;
-}
+};
 
 export const initMetaplex = (connection: Connection): Metaplex => {
   const walletString = fs.readFileSync(KEYPAIR_PATH, { encoding: "utf8" });
@@ -101,7 +108,7 @@ export const initMetaplex = (connection: Connection): Metaplex => {
 export const initTestCollectionNft = async (
   metaplex: Metaplex,
   uri: string,
-  name: string,
+  name: string
 ): Promise<Keypair> => {
   const mint = Keypair.generate();
 
@@ -116,9 +123,12 @@ export const initTestCollectionNft = async (
   return mint;
 };
 
-export const fetchMetadataAccount = async (soar: SoarProgram, mint: PublicKey): Promise<Metadata> => {
+export const fetchMetadataAccount = async (
+  soar: SoarProgram,
+  mint: PublicKey
+): Promise<Metadata> => {
   const metadataPDA = soar.utils.deriveMetadataAddress(mint)[0];
   const account = await soar.provider.connection.getAccountInfo(metadataPDA);
 
   return Metadata.fromAccountInfo(account)[0];
-}
+};

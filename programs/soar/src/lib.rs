@@ -5,7 +5,7 @@ use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token::{Mint, Token, TokenAccount};
 
 #[cfg(not(feature = "no-entrypoint"))]
-use {solana_security_txt::security_txt};
+use solana_security_txt::security_txt;
 
 declare_id!("SoarmxsvnGcQzLGaiue8mVTko7uuEfTY5zwdKKCnQDU");
 

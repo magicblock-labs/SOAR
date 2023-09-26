@@ -134,6 +134,7 @@ jobs:
           anchor test
 
       - run: npm ci
+      - run: npm set //registry.npmjs.org/:_authToken ${{ secrets.NPM_TOKEN }}
       - run: npm run build -w client/sdk/ && yarn lint --fix && npm publish -w client/sdk/
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

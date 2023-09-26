@@ -1,7 +1,12 @@
 {
   "name": "@magicblock-labs/soar-sdk",
-  "version": "0.1.9",
+  "version": "0.1.15",
   "description": "Sdk bindings for the SOAR smart contract.",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:magicblock-labs/SOAR.git",
+    "directory": "client/sdk"
+  },
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",

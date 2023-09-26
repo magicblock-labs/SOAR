@@ -131,6 +131,6 @@ jobs:
           npm i -g @coral-xyz/anchor-cli@${{ env.anchor_version }} ts-mocha typescript
           anchor test
 
-      - run: npm run lint:fix && npm publish -w client/sdk/
+      - run: npm run build -w client/sdk/ && yarn lint --fix && npm publish -w client/sdk/
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

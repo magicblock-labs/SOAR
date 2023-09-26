@@ -2,6 +2,8 @@ name: Publish Client SDK
 on:
   release:
     types: [published]
+  workflow_dispatch:
+
 env:
   solana_version: v1.14.18
   anchor_version: 0.27.0
@@ -131,6 +133,7 @@ jobs:
           npm i -g @coral-xyz/anchor-cli@${{ env.anchor_version }} ts-mocha typescript
           anchor test
 
+      - run: npm ci
       - run: npm run build -w client/sdk/ && yarn lint --fix && npm publish -w client/sdk/
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

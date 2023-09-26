@@ -13,7 +13,11 @@
     }
   },
   "scripts": {
-    "build": "rimraf dist; tsup src",
+    "clean": "rimraf dist",
+    "build": "npm run clean && tsc",
+    "build:docs": "typedoc",
+    "dev": "tsc --watch",
+    "start": "tsc",
     "lint": "eslint -c ../../.eslintrc.yml --ext .ts,.tsx src"
   },
   "files": [

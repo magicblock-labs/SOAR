@@ -17,7 +17,7 @@ soar = "SoarmxsvnGcQzLGaiue8mVTko7uuEfTY5zwdKKCnQDU"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "devnet"
+cluster = "localnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]

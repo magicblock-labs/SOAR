@@ -1,0 +1,842 @@
+<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>SoarProgram | @magicblock-labs/soar-sdk</title><meta name="description" content="Documentation for @magicblock-labs/soar-sdk"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container">
+<div class="table-cell" id="tsd-search" data-base="..">
+<div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><use href="#icon-search"></use></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div>
+<div class="field">
+<div id="tsd-toolbar-links"></div></div>
+<ul class="results">
+<li class="state loading">Preparing search index...</li>
+<li class="state failure">The search index is not available</li></ul><a href="../index.html" class="title">@magicblock-labs/soar-sdk</a></div>
+<div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget tsd-toolbar-icon menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><use href="#icon-menu"></use></svg></a></div></div></header>
+<div class="container container-main">
+<div class="col-content">
+<div class="tsd-page-title">
+<ul class="tsd-breadcrumb">
+<li><a href="../modules.html">@magicblock-labs/soar-sdk</a></li>
+<li><a href="SoarProgram.html">SoarProgram</a></li></ul>
+<h1>Class SoarProgram</h1></div>
+<section class="tsd-panel tsd-hierarchy">
+<h4>Hierarchy</h4>
+<ul class="tsd-hierarchy">
+<li><span class="target">SoarProgram</span></li></ul></section><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L34">soar.program.ts:34</a></li></ul></aside>
+<section class="tsd-panel-group tsd-index-group">
+<section class="tsd-panel tsd-index-panel">
+<details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
+<h5 class="tsd-index-heading uppercase" role="button" aria-expanded="false" tabIndex=0><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><use href="#icon-chevronSmall"></use></svg> Index</h5></summary>
+<div class="tsd-accordion-details">
+<section class="tsd-index-section">
+<h3 class="tsd-index-heading">Properties</h3>
+<div class="tsd-index-list"><a href="SoarProgram.html#program" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>program</span></a>
+<a href="SoarProgram.html#provider" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>provider</span></a>
+<a href="SoarProgram.html#utils" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>utils</span></a>
+</div></section>
+<section class="tsd-index-section">
+<h3 class="tsd-index-heading">Methods</h3>
+<div class="tsd-index-list"><a href="SoarProgram.html#addFungibleReward" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>add<wbr/>Fungible<wbr/>Reward</span></a>
+<a href="SoarProgram.html#addNewGameAchievement" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>add<wbr/>New<wbr/>Game<wbr/>Achievement</span></a>
+<a href="SoarProgram.html#addNewGameLeaderBoard" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>add<wbr/>New<wbr/>Game<wbr/>Leader<wbr/>Board</span></a>
+<a href="SoarProgram.html#addNonFungibleReward" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>add<wbr/>Non<wbr/>Fungible<wbr/>Reward</span></a>
+<a href="SoarProgram.html#claimFtReward" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>claim<wbr/>Ft<wbr/>Reward</span></a>
+<a href="SoarProgram.html#claimNftReward" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>claim<wbr/>Nft<wbr/>Reward</span></a>
+<a href="SoarProgram.html#fetchAchievementAccount" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fetch<wbr/>Achievement<wbr/>Account</span></a>
+<a href="SoarProgram.html#fetchAllAchievementAccounts" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fetch<wbr/>All<wbr/>Achievement<wbr/>Accounts</span></a>
+<a href="SoarProgram.html#fetchAllGameAccounts" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fetch<wbr/>All<wbr/>Game<wbr/>Accounts</span></a>
+<a href="SoarProgram.html#fetchAllLeaderboardAccounts" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fetch<wbr/>All<wbr/>Leaderboard<wbr/>Accounts</span></a>
+<a href="SoarProgram.html#fetchAllPlayerAccounts" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fetch<wbr/>All<wbr/>Player<wbr/>Accounts</span></a>
+<a href="SoarProgram.html#fetchGameAccount" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fetch<wbr/>Game<wbr/>Account</span></a>
+<a href="SoarProgram.html#fetchGameAccountsInfoByGenre" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fetch<wbr/>Game<wbr/>Accounts<wbr/>Info<wbr/>By<wbr/>Genre</span></a>
+<a href="SoarProgram.html#fetchLeaderBoardAccount" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fetch<wbr/>Leader<wbr/>Board<wbr/>Account</span></a>
+<a href="SoarProgram.html#fetchLeaderBoardTopEntriesAccount" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fetch<wbr/>Leader<wbr/>Board<wbr/>Top<wbr/>Entries<wbr/>Account</span></a>
+<a href="SoarProgram.html#fetchMergedAccount" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fetch<wbr/>Merged<wbr/>Account</span></a>
+<a href="SoarProgram.html#fetchPlayerAccount" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fetch<wbr/>Player<wbr/>Account</span></a>
+<a href="SoarProgram.html#fetchPlayerAchievementAccount" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fetch<wbr/>Player<wbr/>Achievement<wbr/>Account</span></a>
+<a href="SoarProgram.html#fetchPlayerAchievementInfo" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fetch<wbr/>Player<wbr/>Achievement<wbr/>Info</span></a>
+<a href="SoarProgram.html#fetchPlayerScoresListAccount" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fetch<wbr/>Player<wbr/>Scores<wbr/>List<wbr/>Account</span></a>
+<a href="SoarProgram.html#fetchRewardAccount" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fetch<wbr/>Reward<wbr/>Account</span></a>
+<a href="SoarProgram.html#initializeNewGame" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>initialize<wbr/>New<wbr/>Game</span></a>
+<a href="SoarProgram.html#initializePlayerAccount" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>initialize<wbr/>Player<wbr/>Account</span></a>
+<a href="SoarProgram.html#initiateMerge" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>initiate<wbr/>Merge</span></a>
+<a href="SoarProgram.html#newGameClient" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>new<wbr/>Game<wbr/>Client</span></a>
+<a href="SoarProgram.html#registerMergeApproval" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>register<wbr/>Merge<wbr/>Approval</span></a>
+<a href="SoarProgram.html#registerPlayerEntryForLeaderBoard" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>register<wbr/>Player<wbr/>Entry<wbr/>For<wbr/>Leader<wbr/>Board</span></a>
+<a href="SoarProgram.html#sendAndConfirmTransaction" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>send<wbr/>And<wbr/>Confirm<wbr/>Transaction</span></a>
+<a href="SoarProgram.html#sendAndConfirmTransactions" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>send<wbr/>And<wbr/>Confirm<wbr/>Transactions</span></a>
+<a href="SoarProgram.html#submitScoreToLeaderBoard" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>submit<wbr/>Score<wbr/>To<wbr/>Leader<wbr/>Board</span></a>
+<a href="SoarProgram.html#unlockPlayerAchievement" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>unlock<wbr/>Player<wbr/>Achievement</span></a>
+<a href="SoarProgram.html#updateGameAccount" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>update<wbr/>Game<wbr/>Account</span></a>
+<a href="SoarProgram.html#updateGameAchievement" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>update<wbr/>Game<wbr/>Achievement</span></a>
+<a href="SoarProgram.html#updateGameLeaderboard" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>update<wbr/>Game<wbr/>Leaderboard</span></a>
+<a href="SoarProgram.html#updatePlayerAccount" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>update<wbr/>Player<wbr/>Account</span></a>
+<a href="SoarProgram.html#verifyPlayerNftReward" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>verify<wbr/>Player<wbr/>Nft<wbr/>Reward</span></a>
+<a href="SoarProgram.html#get" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>get</span></a>
+</div></section></div></details></section></section>
+<section class="tsd-panel-group tsd-member-group">
+<h2>Properties</h2>
+<section class="tsd-panel tsd-member"><a id="program" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagReadonly">Readonly</code> <span>program</span><a href="#program" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">program</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">Program</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/Soar.html" class="tsd-signature-type tsd-kind-type-alias">Soar</a><span class="tsd-signature-symbol">&gt;</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L35">soar.program.ts:35</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="provider" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagReadonly">Readonly</code> <span>provider</span><a href="#provider" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">provider</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">AnchorProvider</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L39">soar.program.ts:39</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member"><a id="utils" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagReadonly">Readonly</code> <span>utils</span><a href="#utils" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">utils</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">Utils</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L36">soar.program.ts:36</a></li></ul></aside></section></section>
+<section class="tsd-panel-group tsd-member-group">
+<h2>Methods</h2>
+<section class="tsd-panel tsd-member"><a id="addFungibleReward" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>add<wbr/>Fungible<wbr/>Reward</span><a href="#addFungibleReward" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="addFungibleReward.addFungibleReward-1"><span class="tsd-kind-call-signature">add<wbr/>Fungible<wbr/>Reward</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">authority</span>, <span class="tsd-kind-parameter">newReward</span>, <span class="tsd-kind-parameter">achievement</span>, <span class="tsd-kind-parameter">amountPerUser</span>, <span class="tsd-kind-parameter">availableRewards</span>, <span class="tsd-kind-parameter">initialDelegation</span>, <span class="tsd-kind-parameter">mint</span>, <span class="tsd-kind-parameter">sourceTokenAccount</span>, <span class="tsd-kind-parameter">tokenAccountOwner</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">AddReward</span><span class="tsd-signature-symbol">&gt;</span><a href="#addFungibleReward.addFungibleReward-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Add a fungible token reward for unlocking an achievement.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">authority</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">newReward</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">achievement</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">amountPerUser</span>: <span class="tsd-signature-type ">BN</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">availableRewards</span>: <span class="tsd-signature-type ">BN</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">initialDelegation</span>: <span class="tsd-signature-type ">BN</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">mint</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">sourceTokenAccount</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">tokenAccountOwner</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">AddReward</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L379">soar.program.ts:379</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="addNewGameAchievement" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>add<wbr/>New<wbr/>Game<wbr/>Achievement</span><a href="#addNewGameAchievement" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="addNewGameAchievement.addNewGameAchievement-1"><span class="tsd-kind-call-signature">add<wbr/>New<wbr/>Game<wbr/>Achievement</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">gameAddress</span>, <span class="tsd-kind-parameter">authority</span>, <span class="tsd-kind-parameter">title</span>, <span class="tsd-kind-parameter">description</span>, <span class="tsd-kind-parameter">nftMeta</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">AddGameAchievement</span><span class="tsd-signature-symbol">&gt;</span><a href="#addNewGameAchievement.addNewGameAchievement-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Add a new achievement for a Game.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">gameAddress</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">authority</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">title</span>: <span class="tsd-signature-type">string</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">description</span>: <span class="tsd-signature-type">string</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">nftMeta</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">AddGameAchievement</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L205">soar.program.ts:205</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="addNewGameLeaderBoard" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>add<wbr/>New<wbr/>Game<wbr/>Leader<wbr/>Board</span><a href="#addNewGameLeaderBoard" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="addNewGameLeaderBoard.addNewGameLeaderBoard-1"><span class="tsd-kind-call-signature">add<wbr/>New<wbr/>Game<wbr/>Leader<wbr/>Board</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">gameAddress</span>, <span class="tsd-kind-parameter">authority</span>, <span class="tsd-kind-parameter">description</span>, <span class="tsd-kind-parameter">nftMeta</span>, <span class="tsd-kind-parameter">scoresToRetain</span>, <span class="tsd-kind-parameter">scoresOrder</span>, <span class="tsd-kind-parameter">decimals</span><span class="tsd-signature-symbol">?</span>, <span class="tsd-kind-parameter">minScore</span><span class="tsd-signature-symbol">?</span>, <span class="tsd-kind-parameter">maxScore</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">AddLeaderBoard</span><span class="tsd-signature-symbol">&gt;</span><a href="#addNewGameLeaderBoard.addNewGameLeaderBoard-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Add a new leaderboard for a Game.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">gameAddress</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">authority</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">description</span>: <span class="tsd-signature-type">string</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">nftMeta</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">scoresToRetain</span>: <span class="tsd-signature-type">number</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">scoresOrder</span>: <span class="tsd-signature-type">boolean</span></h5></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">decimals</span>: <span class="tsd-signature-type">number</span></h5></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">minScore</span>: <span class="tsd-signature-type ">BN</span></h5></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">maxScore</span>: <span class="tsd-signature-type ">BN</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">AddLeaderBoard</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L231">soar.program.ts:231</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="addNonFungibleReward" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>add<wbr/>Non<wbr/>Fungible<wbr/>Reward</span><a href="#addNonFungibleReward" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="addNonFungibleReward.addNonFungibleReward-1"><span class="tsd-kind-call-signature">add<wbr/>Non<wbr/>Fungible<wbr/>Reward</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">authority</span>, <span class="tsd-kind-parameter">newReward</span>, <span class="tsd-kind-parameter">achievement</span>, <span class="tsd-kind-parameter">availableRewards</span>, <span class="tsd-kind-parameter">uri</span>, <span class="tsd-kind-parameter">name</span>, <span class="tsd-kind-parameter">symbol</span>, <span class="tsd-kind-parameter">collectionMint</span><span class="tsd-signature-symbol">?</span>, <span class="tsd-kind-parameter">collectionUpdateAuthority</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">AddReward</span><span class="tsd-signature-symbol">&gt;</span><a href="#addNonFungibleReward.addNonFungibleReward-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Add a non-fungible token reward for unlocking an achievement.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">authority</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">newReward</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">achievement</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">availableRewards</span>: <span class="tsd-signature-type ">BN</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">uri</span>: <span class="tsd-signature-type">string</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">name</span>: <span class="tsd-signature-type">string</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">symbol</span>: <span class="tsd-signature-type">string</span></h5></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">collectionMint</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">collectionUpdateAuthority</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">AddReward</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L419">soar.program.ts:419</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="claimFtReward" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>claim<wbr/>Ft<wbr/>Reward</span><a href="#claimFtReward" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="claimFtReward.claimFtReward-1"><span class="tsd-kind-call-signature">claim<wbr/>Ft<wbr/>Reward</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">authority</span>, <span class="tsd-kind-parameter">achievement</span>, <span class="tsd-kind-parameter">user</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">ClaimFtReward</span><span class="tsd-signature-symbol">&gt;</span><a href="#claimFtReward.claimFtReward-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Claim a fungible-token reward as a result for unlocking an achievement.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">authority</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">achievement</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">user</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">ClaimFtReward</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L483">soar.program.ts:483</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="claimNftReward" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>claim<wbr/>Nft<wbr/>Reward</span><a href="#claimNftReward" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="claimNftReward.claimNftReward-1"><span class="tsd-kind-call-signature">claim<wbr/>Nft<wbr/>Reward</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">authority</span>, <span class="tsd-kind-parameter">achievement</span>, <span class="tsd-kind-parameter">mint</span>, <span class="tsd-kind-parameter">user</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">ClaimNftReward</span><span class="tsd-signature-symbol">&gt;</span><a href="#claimNftReward.claimNftReward-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Claim an non-fungible token reward as a result of unlocking an achievement.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">authority</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">achievement</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">mint</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">user</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">ClaimNftReward</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L461">soar.program.ts:461</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="fetchAchievementAccount" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>fetch<wbr/>Achievement<wbr/>Account</span><a href="#fetchAchievementAccount" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="fetchAchievementAccount.fetchAchievementAccount-1"><span class="tsd-kind-call-signature">fetch<wbr/>Achievement<wbr/>Account</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">address</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">AchievementAccount</span><span class="tsd-signature-symbol">&gt;</span><a href="#fetchAchievementAccount.fetchAchievementAccount-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">address</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">AchievementAccount</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L583">soar.program.ts:583</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="fetchAllAchievementAccounts" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>fetch<wbr/>All<wbr/>Achievement<wbr/>Accounts</span><a href="#fetchAllAchievementAccounts" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="fetchAllAchievementAccounts.fetchAllAchievementAccounts-1"><span class="tsd-kind-call-signature">fetch<wbr/>All<wbr/>Achievement<wbr/>Accounts</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">memcmp</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">AchievementAccount</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><a href="#fetchAllAchievementAccounts.fetchAllAchievementAccounts-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">memcmp</span>: <span class="tsd-signature-type ">Buffer</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type ">GetProgramAccountsFilter</span><span class="tsd-signature-symbol">[]</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">AchievementAccount</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L648">soar.program.ts:648</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="fetchAllGameAccounts" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>fetch<wbr/>All<wbr/>Game<wbr/>Accounts</span><a href="#fetchAllGameAccounts" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="fetchAllGameAccounts.fetchAllGameAccounts-1"><span class="tsd-kind-call-signature">fetch<wbr/>All<wbr/>Game<wbr/>Accounts</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">memcmp</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">GameAccount</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><a href="#fetchAllGameAccounts.fetchAllGameAccounts-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">memcmp</span>: <span class="tsd-signature-type ">Buffer</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type ">GetProgramAccountsFilter</span><span class="tsd-signature-symbol">[]</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">GameAccount</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L638">soar.program.ts:638</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="fetchAllLeaderboardAccounts" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>fetch<wbr/>All<wbr/>Leaderboard<wbr/>Accounts</span><a href="#fetchAllLeaderboardAccounts" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="fetchAllLeaderboardAccounts.fetchAllLeaderboardAccounts-1"><span class="tsd-kind-call-signature">fetch<wbr/>All<wbr/>Leaderboard<wbr/>Accounts</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">memcmp</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">LeaderBoardAccount</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><a href="#fetchAllLeaderboardAccounts.fetchAllLeaderboardAccounts-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">memcmp</span>: <span class="tsd-signature-type ">Buffer</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type ">GetProgramAccountsFilter</span><span class="tsd-signature-symbol">[]</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">LeaderBoardAccount</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L661">soar.program.ts:661</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="fetchAllPlayerAccounts" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>fetch<wbr/>All<wbr/>Player<wbr/>Accounts</span><a href="#fetchAllPlayerAccounts" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="fetchAllPlayerAccounts.fetchAllPlayerAccounts-1"><span class="tsd-kind-call-signature">fetch<wbr/>All<wbr/>Player<wbr/>Accounts</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">memcmp</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">PlayerAccount</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><a href="#fetchAllPlayerAccounts.fetchAllPlayerAccounts-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">memcmp</span>: <span class="tsd-signature-type ">Buffer</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type ">GetProgramAccountsFilter</span><span class="tsd-signature-symbol">[]</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">PlayerAccount</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L674">soar.program.ts:674</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="fetchGameAccount" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>fetch<wbr/>Game<wbr/>Account</span><a href="#fetchGameAccount" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="fetchGameAccount.fetchGameAccount-1"><span class="tsd-kind-call-signature">fetch<wbr/>Game<wbr/>Account</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">address</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">GameAccount</span><span class="tsd-signature-symbol">&gt;</span><a href="#fetchGameAccount.fetchGameAccount-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">address</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">GameAccount</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L590">soar.program.ts:590</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="fetchGameAccountsInfoByGenre" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>fetch<wbr/>Game<wbr/>Accounts<wbr/>Info<wbr/>By<wbr/>Genre</span><a href="#fetchGameAccountsInfoByGenre" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="fetchGameAccountsInfoByGenre.fetchGameAccountsInfoByGenre-1"><span class="tsd-kind-call-signature">fetch<wbr/>Game<wbr/>Accounts<wbr/>Info<wbr/>By<wbr/>Genre</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">genre</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">GameAccount</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><a href="#fetchGameAccountsInfoByGenre.fetchGameAccountsInfoByGenre-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">genre</span>: <span class="tsd-signature-type">string</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">GameAccount</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L684">soar.program.ts:684</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="fetchLeaderBoardAccount" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>fetch<wbr/>Leader<wbr/>Board<wbr/>Account</span><a href="#fetchLeaderBoardAccount" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="fetchLeaderBoardAccount.fetchLeaderBoardAccount-1"><span class="tsd-kind-call-signature">fetch<wbr/>Leader<wbr/>Board<wbr/>Account</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">address</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">LeaderBoardAccount</span><span class="tsd-signature-symbol">&gt;</span><a href="#fetchLeaderBoardAccount.fetchLeaderBoardAccount-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">address</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">LeaderBoardAccount</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L595">soar.program.ts:595</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="fetchLeaderBoardTopEntriesAccount" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>fetch<wbr/>Leader<wbr/>Board<wbr/>Top<wbr/>Entries<wbr/>Account</span><a href="#fetchLeaderBoardTopEntriesAccount" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="fetchLeaderBoardTopEntriesAccount.fetchLeaderBoardTopEntriesAccount-1"><span class="tsd-kind-call-signature">fetch<wbr/>Leader<wbr/>Board<wbr/>Top<wbr/>Entries<wbr/>Account</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">address</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">TopEntriesAccount</span><span class="tsd-signature-symbol">&gt;</span><a href="#fetchLeaderBoardTopEntriesAccount.fetchLeaderBoardTopEntriesAccount-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">address</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">TopEntriesAccount</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L602">soar.program.ts:602</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="fetchMergedAccount" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>fetch<wbr/>Merged<wbr/>Account</span><a href="#fetchMergedAccount" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="fetchMergedAccount.fetchMergedAccount-1"><span class="tsd-kind-call-signature">fetch<wbr/>Merged<wbr/>Account</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">address</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">MergedAccount</span><span class="tsd-signature-symbol">&gt;</span><a href="#fetchMergedAccount.fetchMergedAccount-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">address</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">MergedAccount</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L609">soar.program.ts:609</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="fetchPlayerAccount" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>fetch<wbr/>Player<wbr/>Account</span><a href="#fetchPlayerAccount" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="fetchPlayerAccount.fetchPlayerAccount-1"><span class="tsd-kind-call-signature">fetch<wbr/>Player<wbr/>Account</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">address</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">PlayerAccount</span><span class="tsd-signature-symbol">&gt;</span><a href="#fetchPlayerAccount.fetchPlayerAccount-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">address</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">PlayerAccount</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L628">soar.program.ts:628</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="fetchPlayerAchievementAccount" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>fetch<wbr/>Player<wbr/>Achievement<wbr/>Account</span><a href="#fetchPlayerAchievementAccount" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="fetchPlayerAchievementAccount.fetchPlayerAchievementAccount-1"><span class="tsd-kind-call-signature">fetch<wbr/>Player<wbr/>Achievement<wbr/>Account</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">address</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">PlayerAchievementAccount</span><span class="tsd-signature-symbol">&gt;</span><a href="#fetchPlayerAchievementAccount.fetchPlayerAchievementAccount-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">address</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">PlayerAchievementAccount</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L614">soar.program.ts:614</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="fetchPlayerAchievementInfo" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>fetch<wbr/>Player<wbr/>Achievement<wbr/>Info</span><a href="#fetchPlayerAchievementInfo" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="fetchPlayerAchievementInfo.fetchPlayerAchievementInfo-1"><span class="tsd-kind-call-signature">fetch<wbr/>Player<wbr/>Achievement<wbr/>Info</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">user</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">PlayerAchievementAccount</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><a href="#fetchPlayerAchievementInfo.fetchPlayerAchievementInfo-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">user</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">PlayerAchievementAccount</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L700">soar.program.ts:700</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="fetchPlayerScoresListAccount" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>fetch<wbr/>Player<wbr/>Scores<wbr/>List<wbr/>Account</span><a href="#fetchPlayerScoresListAccount" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="fetchPlayerScoresListAccount.fetchPlayerScoresListAccount-1"><span class="tsd-kind-call-signature">fetch<wbr/>Player<wbr/>Scores<wbr/>List<wbr/>Account</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">address</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">PlayerScoresListAccount</span><span class="tsd-signature-symbol">&gt;</span><a href="#fetchPlayerScoresListAccount.fetchPlayerScoresListAccount-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">address</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">PlayerScoresListAccount</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L621">soar.program.ts:621</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="fetchRewardAccount" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>fetch<wbr/>Reward<wbr/>Account</span><a href="#fetchRewardAccount" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="fetchRewardAccount.fetchRewardAccount-1"><span class="tsd-kind-call-signature">fetch<wbr/>Reward<wbr/>Account</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">address</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">RewardAccount</span><span class="tsd-signature-symbol">&gt;</span><a href="#fetchRewardAccount.fetchRewardAccount-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">address</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">RewardAccount</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L633">soar.program.ts:633</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="initializeNewGame" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>initialize<wbr/>New<wbr/>Game</span><a href="#initializeNewGame" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="initializeNewGame.initializeNewGame-1"><span class="tsd-kind-call-signature">initialize<wbr/>New<wbr/>Game</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">newGame</span>, <span class="tsd-kind-parameter">title</span>, <span class="tsd-kind-parameter">description</span>, <span class="tsd-kind-parameter">genre</span>, <span class="tsd-kind-parameter">gameType</span>, <span class="tsd-kind-parameter">nftMeta</span>, <span class="tsd-kind-parameter">authorities</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">InitializeGame</span><span class="tsd-signature-symbol">&gt;</span><a href="#initializeNewGame.initializeNewGame-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Initialize a new Game account with the set parameters.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">newGame</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">title</span>: <span class="tsd-signature-type">string</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">description</span>: <span class="tsd-signature-type">string</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">genre</span>: <a href="../enums/Genre.html" class="tsd-signature-type tsd-kind-enum">Genre</a></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">gameType</span>: <a href="../enums/GameType.html" class="tsd-signature-type tsd-kind-enum">GameType</a></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">nftMeta</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">authorities</span>: <span class="tsd-signature-type ">PublicKey</span><span class="tsd-signature-symbol">[]</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">InitializeGame</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L57">soar.program.ts:57</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="initializePlayerAccount" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>initialize<wbr/>Player<wbr/>Account</span><a href="#initializePlayerAccount" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="initializePlayerAccount.initializePlayerAccount-1"><span class="tsd-kind-call-signature">initialize<wbr/>Player<wbr/>Account</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">user</span>, <span class="tsd-kind-parameter">username</span>, <span class="tsd-kind-parameter">nftMeta</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">InitializePlayer</span><span class="tsd-signature-symbol">&gt;</span><a href="#initializePlayerAccount.initializePlayerAccount-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Initialize a player account required to perform game-related actions.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">user</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">username</span>: <span class="tsd-signature-type">string</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">nftMeta</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">InitializePlayer</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L90">soar.program.ts:90</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="initiateMerge" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>initiate<wbr/>Merge</span><a href="#initiateMerge" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="initiateMerge.initiateMerge-1"><span class="tsd-kind-call-signature">initiate<wbr/>Merge</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">user</span>, <span class="tsd-kind-parameter">newMergeAccount</span>, <span class="tsd-kind-parameter">playerAccountKeys</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">InitiateMerge</span><span class="tsd-signature-symbol">&gt;</span><a href="#initiateMerge.initiateMerge-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Initiate an action to merge multiple player-accounts as belonging to a
+single user.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">user</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">newMergeAccount</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">playerAccountKeys</span>: <span class="tsd-signature-type ">PublicKey</span><span class="tsd-signature-symbol">[]</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">InitiateMerge</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L168">soar.program.ts:168</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="newGameClient" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>new<wbr/>Game<wbr/>Client</span><a href="#newGameClient" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="newGameClient.newGameClient-1"><span class="tsd-kind-call-signature">new<wbr/>Game<wbr/>Client</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">gameAddress</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="GameClient.html" class="tsd-signature-type tsd-kind-class">GameClient</a><span class="tsd-signature-symbol">&gt;</span><a href="#newGameClient.newGameClient-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">gameAddress</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="GameClient.html" class="tsd-signature-type tsd-kind-class">GameClient</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L579">soar.program.ts:579</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="registerMergeApproval" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>register<wbr/>Merge<wbr/>Approval</span><a href="#registerMergeApproval" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="registerMergeApproval.registerMergeApproval-1"><span class="tsd-kind-call-signature">register<wbr/>Merge<wbr/>Approval</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">user</span>, <span class="tsd-kind-parameter">mergeAccount</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">RegisterMergeApproval</span><span class="tsd-signature-symbol">&gt;</span><a href="#registerMergeApproval.registerMergeApproval-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Mark approval for a merge action.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">user</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">mergeAccount</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">RegisterMergeApproval</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L190">soar.program.ts:190</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="registerPlayerEntryForLeaderBoard" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>register<wbr/>Player<wbr/>Entry<wbr/>For<wbr/>Leader<wbr/>Board</span><a href="#registerPlayerEntryForLeaderBoard" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="registerPlayerEntryForLeaderBoard.registerPlayerEntryForLeaderBoard-1"><span class="tsd-kind-call-signature">register<wbr/>Player<wbr/>Entry<wbr/>For<wbr/>Leader<wbr/>Board</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">user</span>, <span class="tsd-kind-parameter">leaderboard</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">RegisterPlayerEntry</span><span class="tsd-signature-symbol">&gt;</span><a href="#registerPlayerEntryForLeaderBoard.registerPlayerEntryForLeaderBoard-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Register a player to a particular leaderboard.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">user</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">leaderboard</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">RegisterPlayerEntry</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L292">soar.program.ts:292</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="sendAndConfirmTransaction" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>send<wbr/>And<wbr/>Confirm<wbr/>Transaction</span><a href="#sendAndConfirmTransaction" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="sendAndConfirmTransaction.sendAndConfirmTransaction-1"><span class="tsd-kind-call-signature">send<wbr/>And<wbr/>Confirm<wbr/>Transaction</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">transaction</span>, <span class="tsd-kind-parameter">signers</span><span class="tsd-signature-symbol">?</span>, <span class="tsd-kind-parameter">opts</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><a href="#sendAndConfirmTransaction.sendAndConfirmTransaction-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">transaction</span>: <span class="tsd-signature-type ">Transaction</span></h5></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">signers</span>: <span class="tsd-signature-type ">Signer</span><span class="tsd-signature-symbol">[]</span></h5></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">opts</span>: <span class="tsd-signature-type ">ConfirmOptions</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L551">soar.program.ts:551</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="sendAndConfirmTransactions" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>send<wbr/>And<wbr/>Confirm<wbr/>Transactions</span><a href="#sendAndConfirmTransactions" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="sendAndConfirmTransactions.sendAndConfirmTransactions-1"><span class="tsd-kind-call-signature">send<wbr/>And<wbr/>Confirm<wbr/>Transactions</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">transactions</span>, <span class="tsd-kind-parameter">signers</span><span class="tsd-signature-symbol">?</span>, <span class="tsd-kind-parameter">opts</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><a href="#sendAndConfirmTransactions.sendAndConfirmTransactions-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">transactions</span>: <span class="tsd-signature-type ">Transaction</span><span class="tsd-signature-symbol">[]</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">signers</span>: <span class="tsd-signature-type ">Signer</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></h5></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">opts</span>: <span class="tsd-signature-type ">ConfirmOptions</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L563">soar.program.ts:563</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="submitScoreToLeaderBoard" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>submit<wbr/>Score<wbr/>To<wbr/>Leader<wbr/>Board</span><a href="#submitScoreToLeaderBoard" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="submitScoreToLeaderBoard.submitScoreToLeaderBoard-1"><span class="tsd-kind-call-signature">submit<wbr/>Score<wbr/>To<wbr/>Leader<wbr/>Board</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">user</span>, <span class="tsd-kind-parameter">authority</span>, <span class="tsd-kind-parameter">leaderboard</span>, <span class="tsd-kind-parameter">score</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">SubmitScore</span><span class="tsd-signature-symbol">&gt;</span><a href="#submitScoreToLeaderBoard.submitScoreToLeaderBoard-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Submit a player&#39;s score to a leaderboard they&#39;re registered to.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">user</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">authority</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">leaderboard</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">score</span>: <span class="tsd-signature-type ">BN</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">SubmitScore</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L304">soar.program.ts:304</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="unlockPlayerAchievement" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>unlock<wbr/>Player<wbr/>Achievement</span><a href="#unlockPlayerAchievement" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="unlockPlayerAchievement.unlockPlayerAchievement-1"><span class="tsd-kind-call-signature">unlock<wbr/>Player<wbr/>Achievement</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">user</span>, <span class="tsd-kind-parameter">authority</span>, <span class="tsd-kind-parameter">achievement</span>, <span class="tsd-kind-parameter">leaderboard</span>, <span class="tsd-kind-parameter">game</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">UnlockPlayerAchievement</span><span class="tsd-signature-symbol">&gt;</span><a href="#unlockPlayerAchievement.unlockPlayerAchievement-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Unlock an achievement for a player.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">user</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">authority</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">achievement</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">leaderboard</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">game</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">UnlockPlayerAchievement</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L356">soar.program.ts:356</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="updateGameAccount" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>update<wbr/>Game<wbr/>Account</span><a href="#updateGameAccount" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="updateGameAccount.updateGameAccount-1"><span class="tsd-kind-call-signature">update<wbr/>Game<wbr/>Account</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">game</span>, <span class="tsd-kind-parameter">authority</span>, <span class="tsd-kind-parameter">newMeta</span><span class="tsd-signature-symbol">?</span>, <span class="tsd-kind-parameter">newAuths</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">UpdateGame</span><span class="tsd-signature-symbol">&gt;</span><a href="#updateGameAccount.updateGameAccount-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Update a game&#39;s attributes.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">game</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">authority</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">newMeta</span>: <span class="tsd-signature-type ">GameAttributes</span></h5></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">newAuths</span>: <span class="tsd-signature-type ">PublicKey</span><span class="tsd-signature-symbol">[]</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">UpdateGame</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L113">soar.program.ts:113</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="updateGameAchievement" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>update<wbr/>Game<wbr/>Achievement</span><a href="#updateGameAchievement" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="updateGameAchievement.updateGameAchievement-1"><span class="tsd-kind-call-signature">update<wbr/>Game<wbr/>Achievement</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">authority</span>, <span class="tsd-kind-parameter">achievement</span>, <span class="tsd-kind-parameter">newTitle</span><span class="tsd-signature-symbol">?</span>, <span class="tsd-kind-parameter">newDescription</span><span class="tsd-signature-symbol">?</span>, <span class="tsd-kind-parameter">newNftMeta</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">UpdateAchievement</span><span class="tsd-signature-symbol">&gt;</span><a href="#updateGameAchievement.updateGameAchievement-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Update an achievement&#39;s details.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">authority</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">achievement</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">newTitle</span>: <span class="tsd-signature-type">string</span></h5></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">newDescription</span>: <span class="tsd-signature-type">string</span></h5></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">newNftMeta</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">UpdateAchievement</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L325">soar.program.ts:325</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="updateGameLeaderboard" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>update<wbr/>Game<wbr/>Leaderboard</span><a href="#updateGameLeaderboard" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="updateGameLeaderboard.updateGameLeaderboard-1"><span class="tsd-kind-call-signature">update<wbr/>Game<wbr/>Leaderboard</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">authority</span>, <span class="tsd-kind-parameter">leaderboard</span>, <span class="tsd-kind-parameter">newDescription</span><span class="tsd-signature-symbol">?</span>, <span class="tsd-kind-parameter">newNftMeta</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">UpdateLeaderboard</span><span class="tsd-signature-symbol">&gt;</span><a href="#updateGameLeaderboard.updateGameLeaderboard-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Update a leaderboard.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">authority</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">leaderboard</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">newDescription</span>: <span class="tsd-signature-type">string</span></h5></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">newNftMeta</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">UpdateLeaderboard</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L266">soar.program.ts:266</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="updatePlayerAccount" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>update<wbr/>Player<wbr/>Account</span><a href="#updatePlayerAccount" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="updatePlayerAccount.updatePlayerAccount-1"><span class="tsd-kind-call-signature">update<wbr/>Player<wbr/>Account</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">user</span>, <span class="tsd-kind-parameter">newUsername</span><span class="tsd-signature-symbol">?</span>, <span class="tsd-kind-parameter">newNftMeta</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">UpdatePlayer</span><span class="tsd-signature-symbol">&gt;</span><a href="#updatePlayerAccount.updatePlayerAccount-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Update a player account&#39;s attributes.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">user</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">newUsername</span>: <span class="tsd-signature-type">string</span></h5></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">newNftMeta</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">UpdatePlayer</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L141">soar.program.ts:141</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="verifyPlayerNftReward" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>verify<wbr/>Player<wbr/>Nft<wbr/>Reward</span><a href="#verifyPlayerNftReward" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="verifyPlayerNftReward.verifyPlayerNftReward-1"><span class="tsd-kind-call-signature">verify<wbr/>Player<wbr/>Nft<wbr/>Reward</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">user</span>, <span class="tsd-kind-parameter">achievement</span>, <span class="tsd-kind-parameter">mint</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">VerifyReward</span><span class="tsd-signature-symbol">&gt;</span><a href="#verifyPlayerNftReward.verifyPlayerNftReward-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Verify a minted NFT reward as part of the set collection.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">user</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">achievement</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">mint</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">VerifyReward</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L522">soar.program.ts:522</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="get" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>get</span><a href="#get" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="get.get-1"><span class="tsd-kind-call-signature">get</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">provider</span>, <span class="tsd-kind-parameter">programId</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="SoarProgram.html" class="tsd-signature-type tsd-kind-class">SoarProgram</a><a href="#get.get-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">provider</span>: <span class="tsd-signature-type ">AnchorProvider</span></h5></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">programId</span>: <span class="tsd-signature-type ">PublicKey</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <a href="SoarProgram.html" class="tsd-signature-type tsd-kind-class">SoarProgram</a></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/magicblock-labs/SOAR/blob/3e87675/client/sdk/src/soar.program.ts#L46">soar.program.ts:46</a></li></ul></aside></li></ul></section></section></div>
+<div class="col-sidebar">
+<div class="page-menu">
+<div class="tsd-navigation settings">
+<details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
+<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="#icon-chevronDown"></use></svg>Settings</h3></summary>
+<div class="tsd-accordion-details">
+<div class="tsd-filter-visibility">
+<h4 class="uppercase">Member Visibility</h4><form>
+<ul id="tsd-filter-options">
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><use href="#icon-checkbox"></use></svg><span>Protected</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><use href="#icon-checkbox"></use></svg><span>Inherited</span></label></li></ul></form></div>
+<div class="tsd-theme-toggle">
+<h4 class="uppercase">Theme</h4><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div>
+<details open class="tsd-index-accordion tsd-page-navigation"><summary class="tsd-accordion-summary">
+<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="#icon-chevronDown"></use></svg>On This Page</h3></summary>
+<div class="tsd-accordion-details">
+<ul>
+<li><a href="#program" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>program</span></a></li>
+<li><a href="#provider" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>provider</span></a></li>
+<li><a href="#utils" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>utils</span></a></li>
+<li><a href="#addFungibleReward" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>add<wbr/>Fungible<wbr/>Reward</span></a></li>
+<li><a href="#addNewGameAchievement" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>add<wbr/>New<wbr/>Game<wbr/>Achievement</span></a></li>
+<li><a href="#addNewGameLeaderBoard" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>add<wbr/>New<wbr/>Game<wbr/>Leader<wbr/>Board</span></a></li>
+<li><a href="#addNonFungibleReward" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>add<wbr/>Non<wbr/>Fungible<wbr/>Reward</span></a></li>
+<li><a href="#claimFtReward" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>claim<wbr/>Ft<wbr/>Reward</span></a></li>
+<li><a href="#claimNftReward" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>claim<wbr/>Nft<wbr/>Reward</span></a></li>
+<li><a href="#fetchAchievementAccount" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fetch<wbr/>Achievement<wbr/>Account</span></a></li>
+<li><a href="#fetchAllAchievementAccounts" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fetch<wbr/>All<wbr/>Achievement<wbr/>Accounts</span></a></li>
+<li><a href="#fetchAllGameAccounts" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fetch<wbr/>All<wbr/>Game<wbr/>Accounts</span></a></li>
+<li><a href="#fetchAllLeaderboardAccounts" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fetch<wbr/>All<wbr/>Leaderboard<wbr/>Accounts</span></a></li>
+<li><a href="#fetchAllPlayerAccounts" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fetch<wbr/>All<wbr/>Player<wbr/>Accounts</span></a></li>
+<li><a href="#fetchGameAccount" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fetch<wbr/>Game<wbr/>Account</span></a></li>
+<li><a href="#fetchGameAccountsInfoByGenre" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fetch<wbr/>Game<wbr/>Accounts<wbr/>Info<wbr/>By<wbr/>Genre</span></a></li>
+<li><a href="#fetchLeaderBoardAccount" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fetch<wbr/>Leader<wbr/>Board<wbr/>Account</span></a></li>
+<li><a href="#fetchLeaderBoardTopEntriesAccount" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fetch<wbr/>Leader<wbr/>Board<wbr/>Top<wbr/>Entries<wbr/>Account</span></a></li>
+<li><a href="#fetchMergedAccount" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fetch<wbr/>Merged<wbr/>Account</span></a></li>
+<li><a href="#fetchPlayerAccount" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fetch<wbr/>Player<wbr/>Account</span></a></li>
+<li><a href="#fetchPlayerAchievementAccount" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fetch<wbr/>Player<wbr/>Achievement<wbr/>Account</span></a></li>
+<li><a href="#fetchPlayerAchievementInfo" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fetch<wbr/>Player<wbr/>Achievement<wbr/>Info</span></a></li>
+<li><a href="#fetchPlayerScoresListAccount" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fetch<wbr/>Player<wbr/>Scores<wbr/>List<wbr/>Account</span></a></li>
+<li><a href="#fetchRewardAccount" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>fetch<wbr/>Reward<wbr/>Account</span></a></li>
+<li><a href="#initializeNewGame" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>initialize<wbr/>New<wbr/>Game</span></a></li>
+<li><a href="#initializePlayerAccount" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>initialize<wbr/>Player<wbr/>Account</span></a></li>
+<li><a href="#initiateMerge" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>initiate<wbr/>Merge</span></a></li>
+<li><a href="#newGameClient" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>new<wbr/>Game<wbr/>Client</span></a></li>
+<li><a href="#registerMergeApproval" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>register<wbr/>Merge<wbr/>Approval</span></a></li>
+<li><a href="#registerPlayerEntryForLeaderBoard" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>register<wbr/>Player<wbr/>Entry<wbr/>For<wbr/>Leader<wbr/>Board</span></a></li>
+<li><a href="#sendAndConfirmTransaction" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>send<wbr/>And<wbr/>Confirm<wbr/>Transaction</span></a></li>
+<li><a href="#sendAndConfirmTransactions" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>send<wbr/>And<wbr/>Confirm<wbr/>Transactions</span></a></li>
+<li><a href="#submitScoreToLeaderBoard" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>submit<wbr/>Score<wbr/>To<wbr/>Leader<wbr/>Board</span></a></li>
+<li><a href="#unlockPlayerAchievement" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>unlock<wbr/>Player<wbr/>Achievement</span></a></li>
+<li><a href="#updateGameAccount" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>update<wbr/>Game<wbr/>Account</span></a></li>
+<li><a href="#updateGameAchievement" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>update<wbr/>Game<wbr/>Achievement</span></a></li>
+<li><a href="#updateGameLeaderboard" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>update<wbr/>Game<wbr/>Leaderboard</span></a></li>
+<li><a href="#updatePlayerAccount" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>update<wbr/>Player<wbr/>Account</span></a></li>
+<li><a href="#verifyPlayerNftReward" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>verify<wbr/>Player<wbr/>Nft<wbr/>Reward</span></a></li>
+<li><a href="#get" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>get</span></a></li></ul></div></details></div>
+<div class="site-menu">
+<nav class="tsd-navigation"><a href="../modules.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1"></use></svg><span>@magicblock-labs/soar-sdk</span></a>
+<ul class="tsd-small-nested-navigation" id="tsd-nav-container" data-base="..">
+<li><a href="../enums/GameType.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-8"></use></svg>GameType</a></li>
+<li><a href="../enums/Genre.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-8"></use></svg>Genre</a></li>
+<li><a href="AccountsBuilder.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg>AccountsBuilder</a></li>
+<li><a href="GameClient.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg>GameClient</a></li>
+<li><a href="InstructionBuilder.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg>InstructionBuilder</a></li>
+<li><a href="SoarProgram.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg>SoarProgram</a></li>
+<li><a href="../types/Soar.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg>Soar</a></li>
+<li><a href="../variables/IDL.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-32"></use></svg>IDL</a></li></ul></nav></div></div></div>
+<div class="tsd-generator">
+<p>Generated using <a href="https://typedoc.org/" rel="noopener" target="_blank">TypeDoc</a></p></div>
+<div class="overlay"></div><svg style="display: none"><g id="icon-1"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-namespace)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M9.33 16V7.24H10.77L13.446 14.74C13.43 14.54 13.41 14.296 13.386 14.008C13.37 13.712 13.354 13.404 13.338 13.084C13.33 12.756 13.326 12.448 13.326 12.16V7.24H14.37V16H12.93L10.266 8.5C10.282 8.692 10.298 8.936 10.314 9.232C10.33 9.52 10.342 9.828 10.35 10.156C10.366 10.476 10.374 10.784 10.374 11.08V16H9.33Z" fill="var(--color-text)"></path></g><g id="icon-2"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-namespace)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M9.33 16V7.24H10.77L13.446 14.74C13.43 14.54 13.41 14.296 13.386 14.008C13.37 13.712 13.354 13.404 13.338 13.084C13.33 12.756 13.326 12.448 13.326 12.16V7.24H14.37V16H12.93L10.266 8.5C10.282 8.692 10.298 8.936 10.314 9.232C10.33 9.52 10.342 9.828 10.35 10.156C10.366 10.476 10.374 10.784 10.374 11.08V16H9.33Z" fill="var(--color-text)"></path></g><g id="icon-4"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-namespace)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M9.33 16V7.24H10.77L13.446 14.74C13.43 14.54 13.41 14.296 13.386 14.008C13.37 13.712 13.354 13.404 13.338 13.084C13.33 12.756 13.326 12.448 13.326 12.16V7.24H14.37V16H12.93L10.266 8.5C10.282 8.692 10.298 8.936 10.314 9.232C10.33 9.52 10.342 9.828 10.35 10.156C10.366 10.476 10.374 10.784 10.374 11.08V16H9.33Z" fill="var(--color-text)"></path></g><g id="icon-8"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-enum)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M9.45 16V7.24H14.49V8.224H10.518V10.936H14.07V11.908H10.518V15.016H14.49V16H9.45Z" fill="var(--color-text)"></path></g><g id="icon-16"><rect fill="var(--color-icon-background)" stroke="#FF984D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12"></rect><path d="M9.354 16V7.24H12.174C12.99 7.24 13.638 7.476 14.118 7.948C14.606 8.412 14.85 9.036 14.85 9.82C14.85 10.604 14.606 11.232 14.118 11.704C13.638 12.168 12.99 12.4 12.174 12.4H10.434V16H9.354ZM10.434 11.428H12.174C12.646 11.428 13.022 11.284 13.302 10.996C13.59 10.7 13.734 10.308 13.734 9.82C13.734 9.324 13.59 8.932 13.302 8.644C13.022 8.356 12.646 8.212 12.174 8.212H10.434V11.428Z" fill="var(--color-text)"></path></g><g id="icon-32"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-variable)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M11.106 16L8.85 7.24H9.966L11.454 13.192C11.558 13.608 11.646 13.996 11.718 14.356C11.79 14.708 11.842 14.976 11.874 15.16C11.906 14.976 11.954 14.708 12.018 14.356C12.09 13.996 12.178 13.608 12.282 13.192L13.758 7.24H14.85L12.582 16H11.106Z" fill="var(--color-text)"></path></g><g id="icon-64"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-function)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M9.39 16V7.24H14.55V8.224H10.446V11.128H14.238V12.112H10.47V16H9.39Z" fill="var(--color-text)"></path></g><g id="icon-128"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-class)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M11.898 16.1201C11.098 16.1201 10.466 15.8961 10.002 15.4481C9.53803 15.0001 9.30603 14.3841 9.30603 13.6001V9.64012C9.30603 8.85612 9.53803 8.24012 10.002 7.79212C10.466 7.34412 11.098 7.12012 11.898 7.12012C12.682 7.12012 13.306 7.34812 13.77 7.80412C14.234 8.25212 14.466 8.86412 14.466 9.64012H13.386C13.386 9.14412 13.254 8.76412 12.99 8.50012C12.734 8.22812 12.37 8.09212 11.898 8.09212C11.426 8.09212 11.054 8.22412 10.782 8.48812C10.518 8.75212 10.386 9.13212 10.386 9.62812V13.6001C10.386 14.0961 10.518 14.4801 10.782 14.7521C11.054 15.0161 11.426 15.1481 11.898 15.1481C12.37 15.1481 12.734 15.0161 12.99 14.7521C13.254 14.4801 13.386 14.0961 13.386 13.6001H14.466C14.466 14.3761 14.234 14.9921 13.77 15.4481C13.306 15.8961 12.682 16.1201 11.898 16.1201Z" fill="var(--color-text)"></path></g><g id="icon-256"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-interface)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M9.51 16V15.016H11.298V8.224H9.51V7.24H14.19V8.224H12.402V15.016H14.19V16H9.51Z" fill="var(--color-text)"></path></g><g id="icon-512"><rect fill="var(--color-icon-background)" stroke="#4D7FFF" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12"></rect><path d="M11.898 16.1201C11.098 16.1201 10.466 15.8961 10.002 15.4481C9.53803 15.0001 9.30603 14.3841 9.30603 13.6001V9.64012C9.30603 8.85612 9.53803 8.24012 10.002 7.79212C10.466 7.34412 11.098 7.12012 11.898 7.12012C12.682 7.12012 13.306 7.34812 13.77 7.80412C14.234 8.25212 14.466 8.86412 14.466 9.64012H13.386C13.386 9.14412 13.254 8.76412 12.99 8.50012C12.734 8.22812 12.37 8.09212 11.898 8.09212C11.426 8.09212 11.054 8.22412 10.782 8.48812C10.518 8.75212 10.386 9.13212 10.386 9.62812V13.6001C10.386 14.0961 10.518 14.4801 10.782 14.7521C11.054 15.0161 11.426 15.1481 11.898 15.1481C12.37 15.1481 12.734 15.0161 12.99 14.7521C13.254 14.4801 13.386 14.0961 13.386 13.6001H14.466C14.466 14.3761 14.234 14.9921 13.77 15.4481C13.306 15.8961 12.682 16.1201 11.898 16.1201Z" fill="var(--color-text)"></path></g><g id="icon-1024"><rect fill="var(--color-icon-background)" stroke="#FF984D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12"></rect><path d="M9.354 16V7.24H12.174C12.99 7.24 13.638 7.476 14.118 7.948C14.606 8.412 14.85 9.036 14.85 9.82C14.85 10.604 14.606 11.232 14.118 11.704C13.638 12.168 12.99 12.4 12.174 12.4H10.434V16H9.354ZM10.434 11.428H12.174C12.646 11.428 13.022 11.284 13.302 10.996C13.59 10.7 13.734 10.308 13.734 9.82C13.734 9.324 13.59 8.932 13.302 8.644C13.022 8.356 12.646 8.212 12.174 8.212H10.434V11.428Z" fill="var(--color-text)"></path></g><g id="icon-2048"><rect fill="var(--color-icon-background)" stroke="#FF4DB8" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12"></rect><path d="M9.162 16V7.24H10.578L11.514 10.072C11.602 10.328 11.674 10.584 11.73 10.84C11.794 11.088 11.842 11.28 11.874 11.416C11.906 11.28 11.954 11.088 12.018 10.84C12.082 10.584 12.154 10.324 12.234 10.06L13.122 7.24H14.538V16H13.482V12.82C13.482 12.468 13.49 12.068 13.506 11.62C13.53 11.172 13.558 10.716 13.59 10.252C13.622 9.78 13.654 9.332 13.686 8.908C13.726 8.476 13.762 8.1 13.794 7.78L12.366 12.16H11.334L9.894 7.78C9.934 8.092 9.97 8.456 10.002 8.872C10.042 9.28 10.078 9.716 10.11 10.18C10.142 10.636 10.166 11.092 10.182 11.548C10.206 12.004 10.218 12.428 10.218 12.82V16H9.162Z" fill="var(--color-text)"></path></g><g id="icon-4096"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-function)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M9.39 16V7.24H14.55V8.224H10.446V11.128H14.238V12.112H10.47V16H9.39Z" fill="var(--color-text)"></path></g><g id="icon-8192"><rect fill="var(--color-icon-background)" stroke="#FF984D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12"></rect><path d="M9.354 16V7.24H12.174C12.99 7.24 13.638 7.476 14.118 7.948C14.606 8.412 14.85 9.036 14.85 9.82C14.85 10.604 14.606 11.232 14.118 11.704C13.638 12.168 12.99 12.4 12.174 12.4H10.434V16H9.354ZM10.434 11.428H12.174C12.646 11.428 13.022 11.284 13.302 10.996C13.59 10.7 13.734 10.308 13.734 9.82C13.734 9.324 13.59 8.932 13.302 8.644C13.022 8.356 12.646 8.212 12.174 8.212H10.434V11.428Z" fill="var(--color-text)"></path></g><g id="icon-16384"><rect fill="var(--color-icon-background)" stroke="#4D7FFF" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12"></rect><path d="M11.898 16.1201C11.098 16.1201 10.466 15.8961 10.002 15.4481C9.53803 15.0001 9.30603 14.3841 9.30603 13.6001V9.64012C9.30603 8.85612 9.53803 8.24012 10.002 7.79212C10.466 7.34412 11.098 7.12012 11.898 7.12012C12.682 7.12012 13.306 7.34812 13.77 7.80412C14.234 8.25212 14.466 8.86412 14.466 9.64012H13.386C13.386 9.14412 13.254 8.76412 12.99 8.50012C12.734 8.22812 12.37 8.09212 11.898 8.09212C11.426 8.09212 11.054 8.22412 10.782 8.48812C10.518 8.75212 10.386 9.13212 10.386 9.62812V13.6001C10.386 14.0961 10.518 14.4801 10.782 14.7521C11.054 15.0161 11.426 15.1481 11.898 15.1481C12.37 15.1481 12.734 15.0161 12.99 14.7521C13.254 14.4801 13.386 14.0961 13.386 13.6001H14.466C14.466 14.3761 14.234 14.9921 13.77 15.4481C13.306 15.8961 12.682 16.1201 11.898 16.1201Z" fill="var(--color-text)"></path></g><g id="icon-32768"><rect fill="var(--color-icon-background)" stroke="#FF984D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12"></rect><path d="M9.354 16V7.24H12.174C12.99 7.24 13.638 7.476 14.118 7.948C14.606 8.412 14.85 9.036 14.85 9.82C14.85 10.604 14.606 11.232 14.118 11.704C13.638 12.168 12.99 12.4 12.174 12.4H10.434V16H9.354ZM10.434 11.428H12.174C12.646 11.428 13.022 11.284 13.302 10.996C13.59 10.7 13.734 10.308 13.734 9.82C13.734 9.324 13.59 8.932 13.302 8.644C13.022 8.356 12.646 8.212 12.174 8.212H10.434V11.428Z" fill="var(--color-text)"></path></g><g id="icon-65536"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-type-alias)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M11.31 16V8.224H8.91V7.24H14.79V8.224H12.39V16H11.31Z" fill="var(--color-text)"></path></g><g id="icon-131072"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-type-alias)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M11.31 16V8.224H8.91V7.24H14.79V8.224H12.39V16H11.31Z" fill="var(--color-text)"></path></g><g id="icon-262144"><rect fill="var(--color-icon-background)" stroke="#FF4D4D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12"></rect><path d="M8.85 16L11.13 7.24H12.582L14.85 16H13.758L13.182 13.672H10.53L9.954 16H8.85ZM10.746 12.76H12.954L12.282 10.06C12.154 9.548 12.054 9.12 11.982 8.776C11.91 8.432 11.866 8.208 11.85 8.104C11.834 8.208 11.79 8.432 11.718 8.776C11.646 9.12 11.546 9.544 11.418 10.048L10.746 12.76Z" fill="var(--color-text)"></path></g><g id="icon-524288"><rect fill="var(--color-icon-background)" stroke="#FF4D4D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12"></rect><path d="M8.85 16L11.13 7.24H12.582L14.85 16H13.758L13.182 13.672H10.53L9.954 16H8.85ZM10.746 12.76H12.954L12.282 10.06C12.154 9.548 12.054 9.12 11.982 8.776C11.91 8.432 11.866 8.208 11.85 8.104C11.834 8.208 11.79 8.432 11.718 8.776C11.646 9.12 11.546 9.544 11.418 10.048L10.746 12.76Z" fill="var(--color-text)"></path></g><g id="icon-1048576"><rect fill="var(--color-icon-background)" stroke="#FF4D4D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12"></rect><path d="M8.85 16L11.13 7.24H12.582L14.85 16H13.758L13.182 13.672H10.53L9.954 16H8.85ZM10.746 12.76H12.954L12.282 10.06C12.154 9.548 12.054 9.12 11.982 8.776C11.91 8.432 11.866 8.208 11.85 8.104C11.834 8.208 11.79 8.432 11.718 8.776C11.646 9.12 11.546 9.544 11.418 10.048L10.746 12.76Z" fill="var(--color-text)"></path></g><g id="icon-2097152"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-type-alias)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M11.31 16V8.224H8.91V7.24H14.79V8.224H12.39V16H11.31Z" fill="var(--color-text)"></path></g><g id="icon-4194304"><rect fill="var(--color-icon-background)" stroke="#FF4D82" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12"></rect><path d="M10.354 17V8.24H13.066C13.586 8.24 14.042 8.348 14.434 8.564C14.826 8.772 15.13 9.064 15.346 9.44C15.562 9.816 15.67 10.256 15.67 10.76C15.67 11.352 15.514 11.86 15.202 12.284C14.898 12.708 14.482 13 13.954 13.16L15.79 17H14.518L12.838 13.28H11.434V17H10.354ZM11.434 12.308H13.066C13.514 12.308 13.874 12.168 14.146 11.888C14.418 11.6 14.554 11.224 14.554 10.76C14.554 10.288 14.418 9.912 14.146 9.632C13.874 9.352 13.514 9.212 13.066 9.212H11.434V12.308Z" fill="var(--color-text)"></path></g><g id="icon-chevronDown"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></g><g id="icon-chevronSmall"><path d="M1.5 5.50969L8 11.6609L14.5 5.50969L12.5466 3.66086L8 7.96494L3.45341 3.66086L1.5 5.50969Z" fill="var(--color-text)"></path></g><g id="icon-checkbox"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></g><g id="icon-menu"><rect x="1" y="3" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="7" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="11" width="14" height="2" fill="var(--color-text)"></rect></g><g id="icon-search"><path d="M15.7824 13.833L12.6666 10.7177C12.5259 10.5771 12.3353 10.499 12.1353 10.499H11.6259C12.4884 9.39596 13.001 8.00859 13.001 6.49937C13.001 2.90909 10.0914 0 6.50048 0C2.90959 0 0 2.90909 0 6.49937C0 10.0896 2.90959 12.9987 6.50048 12.9987C8.00996 12.9987 9.39756 12.4863 10.5008 11.6239V12.1332C10.5008 12.3332 10.5789 12.5238 10.7195 12.6644L13.8354 15.7797C14.1292 16.0734 14.6042 16.0734 14.8948 15.7797L15.7793 14.8954C16.0731 14.6017 16.0731 14.1267 15.7824 13.833ZM6.50048 10.499C4.29094 10.499 2.50018 8.71165 2.50018 6.49937C2.50018 4.29021 4.28781 2.49976 6.50048 2.49976C8.71001 2.49976 10.5008 4.28708 10.5008 6.49937C10.5008 8.70852 8.71314 10.499 6.50048 10.499Z" fill="var(--color-text)"></path></g><g id="icon-anchor"><g stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></g></g></svg></body></html>

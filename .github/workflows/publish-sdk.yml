@@ -5,8 +5,8 @@ on:
   workflow_dispatch:
 
 env:
-  solana_version: v1.14.18
-  anchor_version: 0.27.0
+  solana_version: v1.16.14
+  anchor_version: 0.28.0
 
 jobs:
   install:
@@ -134,6 +134,7 @@ jobs:
           anchor test
 
       - run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
           npm set //registry.npmjs.org/:_authToken ${{ secrets.NPM_TOKEN }}
           npm run build -w client/sdk/
           yarn lint --fix

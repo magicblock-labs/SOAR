@@ -1,60 +1,53 @@
 {
   "name": "@magicblock-labs/soar-sdk",
-  "version": "0.1.16",
+  "version": "0.1.18",
   "description": "Sdk bindings for the SOAR smart contract.",
   "repository": {
     "type": "git",
     "url": "git@github.com:magicblock-labs/SOAR.git",
     "directory": "client/sdk"
   },
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
-  "type": "commonjs",
-  "exports": {
-    ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
-    }
-  },
+  "main": "lib/index.js",
   "scripts": {
-    "clean": "rimraf dist",
-    "build": "npm run clean && tsc",
-    "build:docs": "typedoc",
+    "clean": "rimraf lib",
+    "build": "npm run clean && tsc && npm run lint:fix",
+    "build:docs": "typedoc && typedoc --plugin typedoc-plugin-markdown --out docs-mk",
     "dev": "tsc --watch",
     "start": "tsc",
-    "lint": "eslint -c ../../.eslintrc.yml --ext .ts,.tsx src"
+    "lint": "eslint -c ../../.eslintrc.yml --ext .ts,.tsx src",
+    "lint:fix": "eslint -c ../../.eslintrc.yml --ext .ts,.tsx src --fix"
   },
   "files": [
-    "dist"
+    "lib"
   ],
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
-    "@coral-xyz/anchor": "^0.26.0",
+    "@coral-xyz/anchor": "^0.27.0",
     "@metaplex-foundation/beet-solana": "^0.4.0",
-    "@metaplex-foundation/js": "^0.19.3",
-    "@metaplex-foundation/mpl-token-metadata": "^2.11.1",
-    "@solana/spl-token": "^0.3.7",
+    "@metaplex-foundation/js": "^0.19.5",
+    "@metaplex-foundation/mpl-token-metadata": "^2.13.0",
+    "@solana/spl-token": "^0.3.8",
     "@solana/web3.js": "^1.73.2",
-    "@types/bn.js": "^5.1.0",
+    "bn.js": "^5.2.1",
+    "bs58": "^5.0.0",
+    "tsx": "^3.12.3",
+    "typescript": "*"
+  },
+  "devDependencies": {
+    "@types/bn.js": "^5.1.2",
     "@types/chai": "^4.3.0",
     "@typescript-eslint/eslint-plugin": "^5.50.0",
     "@typescript-eslint/parser": "^5.50.0",
-    "bn.js": "^5.2.1",
-    "bs58": "^5.0.0",
     "chai": "^4.3.4",
     "eslint": "^8.33.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-react": "^7.32.2",
     "prettier": "^2.6.2",
-    "tsx": "^3.12.3",
-    "typescript": "*"
-  },
-  "devDependencies": {
-    "tsup": "^7.2.0"
+    "typedoc": "^0.25.1",
+    "typedoc-plugin-markdown": "^3.16.0"
   }
 }

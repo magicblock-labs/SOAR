@@ -39,7 +39,7 @@ export class AchievementAccount {
     title: string;
     description: string;
     nftMeta: string;
-    reward: string | null;
+    reward: string | PublicKey | null;
   } {
     return {
       address: this.address.toBase58(),

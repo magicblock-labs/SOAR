@@ -1,6 +1,6 @@
 [package]
 name = "soar-cpi"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 include = ["src/**/*", "idl.json"]
 description = "CPI helpers for the SOAR program"
@@ -17,4 +17,4 @@ cpi = ["no-entrypoint"]
 
 [dependencies]
 clockwork-anchor-gen = "0.3.2"
-anchor-lang = "0.26.0"
+anchor-lang = "0.28.0"

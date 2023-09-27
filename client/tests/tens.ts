@@ -2,7 +2,7 @@ import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
 import { IDL } from "../../target/types/tens";
 import { PublicKey, Keypair, SystemProgram } from "@solana/web3.js";
-import { SoarProgram, GameType, Genre, AccountsBuilder } from "../sdk/src";
+import { SoarProgram, GameType, Genre, AccountsBuilder } from "../sdk/lib";
 import BN from "bn.js";
 import * as utils from "./utils";
 

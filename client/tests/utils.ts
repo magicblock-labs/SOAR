@@ -14,7 +14,7 @@ import {
 import { Metaplex, keypairIdentity } from "@metaplex-foundation/js";
 import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
 import fs from "fs";
-import { SoarProgram } from "../sdk/src";
+import { SoarProgram } from "../sdk/lib";
 
 const KEYPAIR_PATH = process.cwd() + "/client/tests/fixtures/provider.json";
 export const COLLECTION_URI =

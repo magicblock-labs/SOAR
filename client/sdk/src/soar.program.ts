@@ -493,7 +493,7 @@ export class SoarProgram {
       user
     );
 
-    const preInstructions = [];
+    const preInstructions: TransactionInstruction[] = [];
     const userAta = this.utils.deriveAssociatedTokenAddress(
       accounts.mint,
       user

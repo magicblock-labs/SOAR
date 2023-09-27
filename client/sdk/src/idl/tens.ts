@@ -1,4 +1,4 @@
-export interface Tens {
+export type Tens = {
   version: "0.1.0";
   name: "tens";
   instructions: [
@@ -213,7 +213,7 @@ export interface Tens {
       };
     }
   ];
-}
+};
 
 export const IDL: Tens = {
   version: "0.1.0",

@@ -131,12 +131,12 @@ jobs:
           export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
           ls node_modules/.bin
           npm i -g @coral-xyz/anchor-cli@${{ env.anchor_version }} ts-mocha typescript
+          npm run build -w client/sdk/
           anchor test
 
       - run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
           npm set //registry.npmjs.org/:_authToken ${{ secrets.NPM_TOKEN }}
-          npm run build -w client/sdk/
           yarn lint --fix
           npm publish -w client/sdk/
         env:

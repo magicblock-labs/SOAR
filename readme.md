@@ -47,7 +47,7 @@ README.md: The document you are currently reading, providing an overview of the 
 
 ## 🚀 Getting Started
 
-- For the Typescript SDK see the detailed [documentation](https://github.com/magicblock-labs/SOAR/tree/main/client/sdk).
+- For the Typescript SDK see the detailed [documentation](https://magicblock-labs.github.io/SOAR/).
 - For using SOAR from your solana program trough CPI, see the [tens](https://github.com/magicblock-labs/SOAR/tree/main/examples/tens) example.
 - Solana.Unity-SDK integration (Coming Soon)
 

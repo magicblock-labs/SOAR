@@ -1,10 +1,12 @@
 [package]
 name = "soar-cpi"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 include = ["src/**/*", "idl.json"]
 description = "CPI helpers for the SOAR program"
-license-file = "LICENSE"
+authors = ["Magicblock <dev@magicblock.gg>"]
+repository = "https://github.com/magicblock-labs/SOAR/tree/main/crates/soar-cpi"
+license = "MIT"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

@@ -53,7 +53,7 @@ mod tens {
                 system_program: ctx.accounts.system_program.to_account_info(),
             };
 
-            let state_bump = *ctx.bumps.get("tens_state").unwrap();
+            let state_bump = ctx.bumps.tens_state;
             let seeds = &[b"tens".as_ref(), &[state_bump]];
             let signer = &[&seeds[..]];
 
@@ -92,7 +92,7 @@ mod tens {
                 system_program: ctx.accounts.system_program.to_account_info(),
             };
 
-            let state_bump = *ctx.bumps.get("tens_state").unwrap();
+            let state_bump = ctx.bumps.tens_state;
             let seeds = &[b"tens".as_ref(), &[state_bump]];
             let signer = &[&seeds[..]];
 

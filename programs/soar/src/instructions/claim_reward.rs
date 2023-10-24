@@ -18,7 +18,7 @@ pub mod ft {
         let achievement_account = &ctx.accounts.achievement;
 
         let game_key = &ctx.accounts.game.key();
-        let achievement_bump = *ctx.bumps.get("achievement").unwrap();
+        let achievement_bump = ctx.bumps.achievement;
         let id = ctx.accounts.achievement.id;
         let achievement_seeds = &[
             crate::seeds::ACHIEVEMENT,
@@ -86,7 +86,7 @@ pub mod nft {
         let achievement_account = &ctx.accounts.achievement;
 
         let game_key = &ctx.accounts.game.key();
-        let achievement_bump = *ctx.bumps.get("achievement").unwrap();
+        let achievement_bump = ctx.bumps.achievement;
         let id = ctx.accounts.achievement.id;
         let achievement_seeds = &[
             crate::seeds::ACHIEVEMENT,

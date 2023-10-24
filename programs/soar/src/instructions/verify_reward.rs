@@ -10,7 +10,7 @@ pub fn handler(ctx: Context<VerifyNftReward>) -> Result<()> {
     require_keys_eq!(decoded.mint, mint.key());
 
     let game_key = &ctx.accounts.game.key();
-    let achievement_bump = *ctx.bumps.get("achievement").unwrap();
+    let achievement_bump = ctx.bumps.achievement;
     let id = ctx.accounts.achievement.id;
     let achievement_seeds = &[
         seeds::ACHIEVEMENT,

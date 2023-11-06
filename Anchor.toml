@@ -3,15 +3,15 @@ seeds = false
 skip-lint = false
 
 [programs.localnet]
-soar = "SoarmxsvnGcQzLGaiue8mVTko7uuEfTY5zwdKKCnQDU"
-tens = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+soar = "SoarNNzwQHMwcfdkdLc6kvbkoMSxcHy89gTHrjhJYkk"
+tens = "Tensgwm3DY3UJ8nhF7xnD2Wo65VcnLTXjjoyEvs6Zyk"
 
 [programs.devnet]
-soar = "SoarmxsvnGcQzLGaiue8mVTko7uuEfTY5zwdKKCnQDU"
-tens = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+soar = "SoarNNzwQHMwcfdkdLc6kvbkoMSxcHy89gTHrjhJYkk"
+tens = "Tensgwm3DY3UJ8nhF7xnD2Wo65VcnLTXjjoyEvs6Zyk"
 
 [programs.mainnet]
-soar = "SoarmxsvnGcQzLGaiue8mVTko7uuEfTY5zwdKKCnQDU"
+soar = "SoarNNzwQHMwcfdkdLc6kvbkoMSxcHy89gTHrjhJYkk"
 
 [registry]
 url = "https://api.apr.dev"

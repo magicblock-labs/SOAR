@@ -11,7 +11,7 @@ describe("tens", () => {
   anchor.setProvider(provider);
 
   const tensProgramId = new PublicKey(
-    "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+    "Tensgwm3DY3UJ8nhF7xnD2Wo65VcnLTXjjoyEvs6Zyk"
   );
   const tensProgram = new Program(IDL, tensProgramId, provider);
 

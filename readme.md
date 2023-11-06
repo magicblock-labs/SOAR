@@ -56,7 +56,7 @@ For detailed usage instructions, API reference, and examples, refer to the SOAR 
 
 ## :floppy_disk: Program
 
-The program is available at [SoarmxsvnGcQzLGaiue8mVTko7uuEfTY5zwdKKCnQDU](https://solscan.io/account/SoarmxsvnGcQzLGaiue8mVTko7uuEfTY5zwdKKCnQDU#anchorProgramIDL)
+The program is available at [SoarNNzwQHMwcfdkdLc6kvbkoMSxcHy89gTHrjhJYkk](https://solscan.io/account/SoarNNzwQHMwcfdkdLc6kvbkoMSxcHy89gTHrjhJYkk#anchorProgramIDL)
 
 ## 🤝 Contributing
 Contributions to SOAR are welcome! To contribute, please follow the guidelines outlined in [CONTRIBUTING.md](https://github.com/magicblock-labs/Solana.Unity-SDK/blob/main/CONTRIBUTING.md).

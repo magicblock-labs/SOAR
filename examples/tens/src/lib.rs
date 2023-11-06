@@ -5,7 +5,7 @@ use soar::cpi::accounts::{ClaimFtReward, SubmitScore};
 use soar::cpi::{self};
 use soar::{LeaderTopEntries, PlayerScoresList};
 
-declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
+declare_id!("Tensgwm3DY3UJ8nhF7xnD2Wo65VcnLTXjjoyEvs6Zyk");
 
 #[program]
 mod tens {

@@ -7,7 +7,7 @@ use anchor_spl::token::{Mint, Token, TokenAccount};
 #[cfg(not(feature = "no-entrypoint"))]
 use solana_security_txt::security_txt;
 
-declare_id!("SoarmxsvnGcQzLGaiue8mVTko7uuEfTY5zwdKKCnQDU");
+declare_id!("SoarNNzwQHMwcfdkdLc6kvbkoMSxcHy89gTHrjhJYkk");
 
 mod error;
 mod instructions;

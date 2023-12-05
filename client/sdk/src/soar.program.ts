@@ -661,12 +661,12 @@ export class SoarProgram {
   public async fetchAllLeaderboardAccounts(
     memcmp?: Buffer | GetProgramAccountsFilter[]
   ): Promise<LeaderBoardAccount[]> {
-    const achievements = await this.program.account.achievement.all(memcmp);
+    const leaderboards = await this.program.account.leaderBoard.all(memcmp);
 
-    return achievements.map((achievement) =>
+    return leaderboards.map((leaderboard) =>
       LeaderBoardAccount.fromIdlAccount(
-        achievement.account,
-        achievement.publicKey
+        leaderboard.account,
+        leaderboard.publicKey
       )
     );
   }

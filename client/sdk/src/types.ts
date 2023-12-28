@@ -90,7 +90,8 @@ export interface AddLeaderBoardArgs {
   minScore: BN | null;
   maxScore: BN | null;
   scoresToRetain: number;
-  scoresOrder: boolean;
+  isAscending: boolean;
+  allowMultipleScores: boolean;
 }
 export interface AddNftRewardArgs {
   availableRewards: BN;

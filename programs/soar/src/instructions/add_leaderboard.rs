@@ -10,10 +10,12 @@ pub fn handler(ctx: Context<AddLeaderBoard>, input: RegisterLeaderBoardInput) ->
     let new_count = game.next_leaderboard();
 
     let retain_count = input.scores_to_retain;
-    let order = input.scores_order;
+    let order = input.is_ascending;
+    let allow_multiple_scores = input.allow_multiple_scores;
 
     let leaderboard = input.into();
     ctx.accounts.leaderboard.set_inner(leaderboard);
+    ctx.accounts.leaderboard.allow_multiple_scores = allow_multiple_scores;
     ctx.accounts.leaderboard.id = new_count;
     ctx.accounts.leaderboard.game = game.key();
     ctx.accounts.game.leaderboard_count = new_count;

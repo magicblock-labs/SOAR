@@ -237,7 +237,8 @@ export class SoarProgram {
     scoresOrder: boolean,
     decimals?: number,
     minScore?: BN,
-    maxScore?: BN
+    maxScore?: BN,
+    allowMultipleScores?: boolean
   ): Promise<InstructionResult.AddLeaderBoard> {
     this.builder.clean();
 
@@ -246,10 +247,11 @@ export class SoarProgram {
         description,
         nftMeta,
         scoresToRetain,
-        scoresOrder,
+        isAscending: scoresOrder,
         decimals: decimals ?? null,
         minScore: minScore ?? null,
         maxScore: maxScore ?? null,
+        allowMultipleScores: allowMultipleScores ?? false,
       },
       gameAddress,
       authority

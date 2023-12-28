@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import * as anchor from "@coral-xyz/anchor";
 import { expect } from "chai";
 import { PublicKey, Keypair } from "@solana/web3.js";
@@ -12,19 +13,17 @@ describe("soar", () => {
   const client = SoarProgram.get(provider);
 
   let gameClient: GameClient;
-  let game = Keypair.generate();
+  const game = Keypair.generate();
   let auths = [Keypair.generate(), Keypair.generate()];
-  let leaderBoards: PublicKey[] = [];
-  let achievements: PublicKey[] = [];
+  const leaderBoards: PublicKey[] = [];
+  const achievements: PublicKey[] = [];
 
-  let user1 = Keypair.generate();
-  let user2 = Keypair.generate();
-  let user3 = Keypair.generate();
-
-  let user1ClaimedMints: PublicKey[] = [];
+  const user1 = Keypair.generate();
+  const user2 = Keypair.generate();
+  const user3 = Keypair.generate();
   let user3NftMint: PublicKey;
 
-  let mergeAccount = Keypair.generate();
+  const mergeAccount = Keypair.generate();
 
   const RewardConstants = {
     MAX_URI_LENGTH: 200,
@@ -40,14 +39,14 @@ describe("soar", () => {
   let ftRewardMint: PublicKey;
 
   it("Can register a game account with correct parameters", async () => {
-    let title = "Game1";
-    let description = "testDescription";
-    let genre = Genre.Action;
-    let gameType = GameType.Web;
-    let nftMeta = Keypair.generate().publicKey;
-    let _auths = auths.map((keypair) => keypair.publicKey);
+    const title = "Game1";
+    const description = "testDescription";
+    const genre = Genre.Action;
+    const gameType = GameType.Web;
+    const nftMeta = Keypair.generate().publicKey;
+    const _auths = auths.map((keypair) => keypair.publicKey);
 
-    let { newGame, transaction } = await client.initializeNewGame(
+    const { newGame, transaction } = await client.initializeNewGame(
       game.publicKey,
       title,
       description,
@@ -58,7 +57,7 @@ describe("soar", () => {
     );
     await client.sendAndConfirmTransaction(transaction, [game]);
 
-    let info = await client.fetchGameAccount(newGame);
+    const info = await client.fetchGameAccount(newGame);
 
     expect(info.meta.title).to.equal(title);
     expect(info.meta.description).to.equal(description);
@@ -75,8 +74,12 @@ describe("soar", () => {
   });
 
   it("Can update a game with the correct parameters", async () => {
-    let newAuths = [Keypair.generate(), Keypair.generate(), Keypair.generate()];
-    let { transaction } = await gameClient.update(
+    const newAuths = [
+      Keypair.generate(),
+      Keypair.generate(),
+      Keypair.generate(),
+    ];
+    const { transaction } = await gameClient.update(
       auths[0].publicKey,
       null,
       newAuths.map((auth) => auth.publicKey)
@@ -85,7 +88,7 @@ describe("soar", () => {
     auths = newAuths;
 
     await gameClient.refresh();
-    let authKeys = gameClient.account.auth;
+    const authKeys = gameClient.account.auth;
     expect(authKeys.length).to.equal(3);
     expect(authKeys[0].toBase58()).to.equal(newAuths[0].publicKey.toBase58());
     expect(authKeys[1].toBase58()).to.equal(newAuths[1].publicKey.toBase58());
@@ -93,9 +96,9 @@ describe("soar", () => {
   });
 
   it("Can't set fields with invalid lengths on a game", async () => {
-    let title = "a".repeat(MAXIMUM_TITLE_LENGTH + 1);
-    let description = "a".repeat(MAXIMUM_DESCRIPTION_LENGTH + 1);
-    let newGame = Keypair.generate();
+    const title = "a".repeat(MAXIMUM_TITLE_LENGTH + 1);
+    const description = "a".repeat(MAXIMUM_DESCRIPTION_LENGTH + 1);
+    const newGame = Keypair.generate();
 
     let thrown = false;
     try {
@@ -118,7 +121,7 @@ describe("soar", () => {
     }
     expect(thrown).to.be.true;
 
-    let newMeta = {
+    const newMeta = {
       title,
       description,
       genre: Genre.Action,
@@ -140,44 +143,44 @@ describe("soar", () => {
   });
 
   it("Can't update a game with the wrong authority", async () => {
-    let wrong = Keypair.generate();
-    let { transaction } = await gameClient.update(wrong.publicKey, null, []);
+    const wrong = Keypair.generate();
+    const { transaction } = await gameClient.update(wrong.publicKey, null, []);
 
     let thrown = false;
     try {
       await client.sendAndConfirmTransaction(transaction, [wrong]);
     } catch (_err) {
-      //"failed to send transaction: Transaction simulation failed: Error processing Instruction 0: custom program error: 0x1771"
+      // "failed to send transaction: Transaction simulation failed: Error processing Instruction 0: custom program error: 0x1771"
       thrown = true;
     }
     expect(thrown).to.be.true;
   });
 
   it("Can register a player account with the correct parameters", async () => {
-    let player1Username = "player1xx";
-    let player1Pfp = Keypair.generate().publicKey;
+    const player1Username = "player1xx";
+    const player1Pfp = Keypair.generate().publicKey;
 
-    let { newPlayer: p1, transaction: transaction1 } =
+    const { newPlayer: p1, transaction: transaction1 } =
       await client.initializePlayerAccount(
         user1.publicKey,
         player1Username,
         player1Pfp
       );
     await client.sendAndConfirmTransaction(transaction1, [user1]);
-    let { transaction: transaction2 } = await client.initializePlayerAccount(
+    const { transaction: transaction2 } = await client.initializePlayerAccount(
       user2.publicKey,
       "random",
       PublicKey.default
     );
     await client.sendAndConfirmTransaction(transaction2, [user2]);
-    let { transaction: transaction3 } = await client.initializePlayerAccount(
+    const { transaction: transaction3 } = await client.initializePlayerAccount(
       user3.publicKey,
       "xx",
       PublicKey.default
     );
     await client.sendAndConfirmTransaction(transaction3, [user3]);
 
-    let playerAccount = await client.fetchPlayerAccount(p1);
+    const playerAccount = await client.fetchPlayerAccount(p1);
 
     expect(playerAccount.user.toBase58()).to.equal(user1.publicKey.toBase58());
     expect(playerAccount.username).to.equal(player1Username);
@@ -185,14 +188,14 @@ describe("soar", () => {
   });
 
   it("Can add leaderboards to a game", async () => {
-    let expectedDescription = "LeaderBoard1";
-    let expectedNftMeta = Keypair.generate().publicKey;
-    let scoresToRetain = 10;
-    let scoresOrder = false; //descending order
-    let decimals = 0;
-    let minScore = new BN(0);
-    let maxScore = new BN(100);
-    let { newLeaderBoard, topEntries, transaction } =
+    const expectedDescription = "LeaderBoard1";
+    const expectedNftMeta = Keypair.generate().publicKey;
+    const scoresToRetain = 10;
+    const scoresOrder = false; // descending order
+    const decimals = 0;
+    const minScore = new BN(0);
+    const maxScore = new BN(100);
+    const { newLeaderBoard, topEntries, transaction } =
       await gameClient.addLeaderBoard(
         auths[1].publicKey,
         expectedDescription,
@@ -201,12 +204,15 @@ describe("soar", () => {
         scoresOrder,
         decimals,
         minScore,
-        maxScore
+        maxScore,
+          true
       );
     await client.sendAndConfirmTransaction(transaction, [auths[1]]);
     leaderBoards.push(newLeaderBoard);
 
-    let info = await gameClient.program.fetchLeaderBoardAccount(newLeaderBoard);
+    const info = await gameClient.program.fetchLeaderBoardAccount(
+      newLeaderBoard
+    );
 
     expect(info.id.toNumber()).to.equal(1);
     expect(info.game.toBase58()).to.equal(gameClient.address.toBase58());
@@ -215,15 +221,16 @@ describe("soar", () => {
     expect(info.decimals).to.equal(0);
     expect(info.minScore.toNumber()).to.equal(minScore.toNumber());
     expect(info.maxScore.toNumber()).to.equal(maxScore.toNumber());
+    expect(info.allowMultipleScores).to.be.true;
     expect(info.topEntries.toBase58()).to.equal(topEntries.toBase58());
 
-    let entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(
+    const entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(
       topEntries
     );
 
     expect(entries.isAscending).to.be.false;
     expect(entries.topScores.length).to.equal(scoresToRetain);
-    for (let score of entries.topScores) {
+    for (const score of entries.topScores) {
       expect(score.entry.score.toNumber()).to.equal(0);
       expect(score.entry.timestamp.toNumber()).to.equal(0);
       expect(score.player.toBase58()).to.equal(PublicKey.default.toBase58());
@@ -234,11 +241,11 @@ describe("soar", () => {
   });
 
   it("Can update a leaderboard", async () => {
-    let leaderboard = leaderBoards[0];
-    let newDescription = "newDescription";
-    let newMeta = Keypair.generate().publicKey;
+    const leaderboard = leaderBoards[0];
+    const newDescription = "newDescription";
+    const newMeta = Keypair.generate().publicKey;
 
-    let { transaction } = await client.updateGameLeaderboard(
+    const { transaction } = await client.updateGameLeaderboard(
       auths[0].publicKey,
       leaderboard,
       newDescription,
@@ -246,14 +253,14 @@ describe("soar", () => {
     );
     await client.sendAndConfirmTransaction(transaction, [auths[0]]);
 
-    let info = await client.fetchLeaderBoardAccount(leaderboard);
+    const info = await client.fetchLeaderBoardAccount(leaderboard);
     expect(info.description).to.equal(newDescription);
     expect(info.nftMeta.toBase58()).to.equal(newMeta.toBase58());
   });
 
   it("Can't add a leaderboard with the wrong authority", async () => {
-    let dummyKeypair = Keypair.generate();
-    let expectedFail = await gameClient
+    const dummyKeypair = Keypair.generate();
+    const expectedFail = await gameClient
       .addLeaderBoard(
         dummyKeypair.publicKey,
         "",
@@ -281,7 +288,7 @@ describe("soar", () => {
   });
 
   it("Triggers default values when registering a leaderboard with unspecified params", async () => {
-    let {
+    const {
       transaction: tx,
       topEntries: te,
       newLeaderBoard: nl,
@@ -306,7 +313,7 @@ describe("soar", () => {
     }
     expect(thrown).to.be.true;
 
-    let nlAccount = await gameClient.program.fetchLeaderBoardAccount(nl);
+    const nlAccount = await gameClient.program.fetchLeaderBoardAccount(nl);
     expect(nlAccount.decimals).to.equal(0);
     expect(nlAccount.minScore.toNumber()).to.equal(0);
     const maxBN = new BN(2).pow(new BN(64)).sub(new BN(1));
@@ -318,10 +325,10 @@ describe("soar", () => {
   });
 
   it("Adds an achievement to the game", async () => {
-    let title = "achievement1";
-    let description = "";
-    let nftMeta = PublicKey.default;
-    let { transaction, newAchievement } = await gameClient.addAchievement(
+    const title = "achievement1";
+    const description = "";
+    const nftMeta = PublicKey.default;
+    const { transaction, newAchievement } = await gameClient.addAchievement(
       auths[0].publicKey,
       title,
       description,
@@ -330,7 +337,7 @@ describe("soar", () => {
     await client.sendAndConfirmTransaction(transaction, [auths[0]]);
     achievements[0] = newAchievement;
 
-    let account = await gameClient.program.fetchAchievementAccount(
+    const account = await gameClient.program.fetchAchievementAccount(
       newAchievement
     );
     expect(account.title).to.equal(title);
@@ -343,8 +350,8 @@ describe("soar", () => {
     expect(gameClient.account.achievementCount.toNumber()).to.equal(1);
 
     let thrown = false;
-    let random = Keypair.generate();
-    let { transaction: tx } = await gameClient.addAchievement(
+    const random = Keypair.generate();
+    const { transaction: tx } = await gameClient.addAchievement(
       random.publicKey,
       "",
       "",
@@ -372,9 +379,9 @@ describe("soar", () => {
   });
 
   it("Updates an achievement", async () => {
-    let initialTitle = "ach2";
-    let initialDescription = "achd2";
-    let { newAchievement, transaction } = await gameClient.addAchievement(
+    const initialTitle = "ach2";
+    const initialDescription = "achd2";
+    const { newAchievement, transaction } = await gameClient.addAchievement(
       auths[1].publicKey,
       initialTitle,
       initialDescription,
@@ -386,9 +393,9 @@ describe("soar", () => {
     await gameClient.refresh();
     expect(gameClient.account.achievementCount.toNumber()).to.equal(2);
 
-    let updatedDescription = "desc2Updated";
-    let updatedNftMeta = Keypair.generate().publicKey;
-    let { transaction: tx } = await gameClient.updateAchievement(
+    const updatedDescription = "desc2Updated";
+    const updatedNftMeta = Keypair.generate().publicKey;
+    const { transaction: tx } = await gameClient.updateAchievement(
       auths[0].publicKey,
       newAchievement,
       null,
@@ -397,7 +404,7 @@ describe("soar", () => {
     );
     await client.sendAndConfirmTransaction(tx, [auths[0]]);
 
-    let account = await gameClient.program.fetchAchievementAccount(
+    const account = await gameClient.program.fetchAchievementAccount(
       newAchievement
     );
     expect(account.title).to.equal(initialTitle);
@@ -405,8 +412,8 @@ describe("soar", () => {
     expect(account.nftMeta.toBase58()).to.equal(updatedNftMeta.toBase58());
 
     let thrown = false;
-    let random = Keypair.generate();
-    let { transaction: failTx } = await gameClient.updateAchievement(
+    const random = Keypair.generate();
+    const { transaction: failTx } = await gameClient.updateAchievement(
       random.publicKey,
       newAchievement,
       "",
@@ -425,10 +432,10 @@ describe("soar", () => {
     let uri = "x".repeat(RewardConstants.MAX_URI_LENGTH + 1);
     let name = "x".repeat(RewardConstants.MAX_NAME_LENGTH + 1);
     let symbol = "x".repeat(RewardConstants.MAX_SYMBOL_LENGTH + 1);
-    let availableRewards = new BN(500);
+    const availableRewards = new BN(500);
 
-    let newReward = Keypair.generate();
-    let { transaction: failTx } = await client.addNonFungibleReward(
+    const newReward = Keypair.generate();
+    const { transaction: failTx } = await client.addNonFungibleReward(
       auths[0].publicKey,
       newReward.publicKey,
       achievements[0],
@@ -451,7 +458,7 @@ describe("soar", () => {
     name = name.substring(0, RewardConstants.MAX_NAME_LENGTH);
     symbol = symbol.substring(0, RewardConstants.MAX_SYMBOL_LENGTH);
 
-    let { transaction } = await client.addNonFungibleReward(
+    const { transaction } = await client.addNonFungibleReward(
       auths[0].publicKey,
       newReward.publicKey,
       achievements[0],
@@ -462,7 +469,7 @@ describe("soar", () => {
     );
 
     await client.sendAndConfirmTransaction(transaction, [auths[0], newReward]);
-    let account = await gameClient.program.fetchRewardAccount(
+    const account = await gameClient.program.fetchRewardAccount(
       newReward.publicKey
     );
 
@@ -482,7 +489,7 @@ describe("soar", () => {
     const amountPerUser = new BN(1);
     const availableRewards = new BN(2);
 
-    let { mint, authority } = await utils.initializeTestMint(client);
+    const { mint, authority } = await utils.initializeTestMint(client);
     ftRewardMint = mint;
 
     const tokenAccountOwner = Keypair.generate();
@@ -494,7 +501,7 @@ describe("soar", () => {
     await utils.mintToAccount(client, mint, authority, tokenAccount, 5);
 
     const newReward = Keypair.generate();
-    let { transaction } = await client.addFungibleReward(
+    const { transaction } = await client.addFungibleReward(
       auths[0].publicKey,
       newReward.publicKey,
       achievements[1],
@@ -510,7 +517,7 @@ describe("soar", () => {
       tokenAccountOwner,
       newReward,
     ]);
-    let account = await client.fetchRewardAccount(newReward.publicKey);
+    const account = await client.fetchRewardAccount(newReward.publicKey);
 
     expect(account.achievement.toBase58()).to.equal(achievements[1].toBase58());
     expect(account.availableSpots.toNumber()).to.equal(
@@ -529,14 +536,14 @@ describe("soar", () => {
   });
 
   it("Can register a player to a leaderboard", async () => {
-    let { transaction, newList } =
+    const { transaction, newList } =
       await client.registerPlayerEntryForLeaderBoard(
         user1.publicKey,
         leaderBoards[0]
       );
     await client.sendAndConfirmTransaction(transaction, [user1]);
 
-    let account = await client.fetchPlayerScoresListAccount(newList);
+    const account = await client.fetchPlayerScoresListAccount(newList);
     expect(account.playerAccount.toBase58()).to.equal(
       client.utils.derivePlayerAddress(user1.publicKey)[0].toBase58()
     );
@@ -545,8 +552,8 @@ describe("soar", () => {
   });
 
   it("Can submit a player score", async () => {
-    let score = new BN(1);
-    let { transaction } = await client.submitScoreToLeaderBoard(
+    const score = new BN(1);
+    const { transaction } = await client.submitScoreToLeaderBoard(
       user1.publicKey,
       auths[0].publicKey,
       leaderBoards[0],
@@ -554,7 +561,7 @@ describe("soar", () => {
     );
     await client.sendAndConfirmTransaction(transaction, [auths[0]]);
 
-    let account = await client.fetchPlayerScoresListAccount(
+    const account = await client.fetchPlayerScoresListAccount(
       client.utils.derivePlayerScoresListAddress(
         user1.publicKey,
         leaderBoards[0]
@@ -564,13 +571,13 @@ describe("soar", () => {
     expect(account.scores[0].score.toNumber()).to.equal(score.toNumber());
     expect(account.allocCount).to.equal(10);
 
-    let topEntries = await client.fetchLeaderBoardTopEntriesAccount(
+    const topEntries = await client.fetchLeaderBoardTopEntriesAccount(
       client.utils.deriveLeaderTopEntriesAddress(leaderBoards[0])[0]
     );
-    let scores = topEntries.topScores.map((score) =>
+    const scores = topEntries.topScores.map((score) =>
       score.entry.score.toNumber()
     );
-    let expectedScores = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    const expectedScores = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     expect(JSON.stringify(scores)).to.equal(JSON.stringify(expectedScores));
   });
 
@@ -579,14 +586,14 @@ describe("soar", () => {
       user1.publicKey,
       leaderBoards[0]
     )[0];
-    let initialLength = 8 + 32 + 32 + 2 + 4 + 10 * (8 + 8); // initial space allocated for 10 scores.
+    const initialLength = 8 + 32 + 32 + 2 + 4 + 10 * (8 + 8); // initial space allocated for 10 scores.
     let info = await client.provider.connection.getAccountInfo(entryList);
     expect(info.data.length).to.equal(initialLength);
 
     let i = 2;
     while (i <= 10) {
-      let score = new BN(i);
-      let { transaction } = await client.submitScoreToLeaderBoard(
+      const score = new BN(i);
+      const { transaction } = await client.submitScoreToLeaderBoard(
         user1.publicKey,
         auths[0].publicKey,
         leaderBoards[0],
@@ -601,7 +608,7 @@ describe("soar", () => {
     expect(list.allocCount).to.equal(10);
     expect(info.data.length).to.equal(initialLength);
 
-    let { transaction } = await client.submitScoreToLeaderBoard(
+    const { transaction } = await client.submitScoreToLeaderBoard(
       user1.publicKey,
       auths[0].publicKey,
       leaderBoards[0],
@@ -618,13 +625,13 @@ describe("soar", () => {
   });
 
   it("Can store top entries for a leaderboard", async () => {
-    let topEntries = client.utils.deriveLeaderTopEntriesAddress(
+    const topEntries = client.utils.deriveLeaderTopEntriesAddress(
       leaderBoards[0]
     )[0];
-    let info = await client.fetchLeaderBoardTopEntriesAccount(topEntries);
+    const info = await client.fetchLeaderBoardTopEntriesAccount(topEntries);
 
-    let scores = info.topScores.map((score) => score.entry.score.toNumber());
-    let expectedScores = [11, 10, 9, 8, 7, 6, 5, 4, 3, 2];
+    const scores = info.topScores.map((score) => score.entry.score.toNumber());
+    const expectedScores = [11, 10, 9, 8, 7, 6, 5, 4, 3, 2];
     expect(scores.length).to.equal(expectedScores.length);
     expect(JSON.stringify(scores), JSON.stringify(expectedScores));
   });
@@ -633,7 +640,7 @@ describe("soar", () => {
     // -> Fail because player isn't registered to leaderboard.
     let thrown = false;
     try {
-      let { transaction } = await client.submitScoreToLeaderBoard(
+      const { transaction } = await client.submitScoreToLeaderBoard(
         user2.publicKey,
         auths[0].publicKey,
         leaderBoards[0],
@@ -648,7 +655,7 @@ describe("soar", () => {
     // -> Fail because authority not present.
     thrown = false;
     try {
-      let { transaction } = await client.submitScoreToLeaderBoard(
+      const { transaction } = await client.submitScoreToLeaderBoard(
         user1.publicKey,
         auths[0].publicKey,
         leaderBoards[0],
@@ -661,10 +668,10 @@ describe("soar", () => {
     expect(thrown).to.be.true;
 
     // Fail because wrong authority.
-    let random = Keypair.generate();
+    const random = Keypair.generate();
     thrown = false;
     try {
-      let { transaction } = await client.submitScoreToLeaderBoard(
+      const { transaction } = await client.submitScoreToLeaderBoard(
         user1.publicKey,
         random.publicKey,
         leaderBoards[0],
@@ -679,7 +686,7 @@ describe("soar", () => {
     // -> Fail because scores not within bounds.
     thrown = false;
     try {
-      let { transaction } = await client.submitScoreToLeaderBoard(
+      const { transaction } = await client.submitScoreToLeaderBoard(
         user1.publicKey,
         auths[0].publicKey,
         leaderBoards[0],
@@ -694,7 +701,7 @@ describe("soar", () => {
 
   it("Can unlock an achievement for a player", async () => {
     // Unlock achievements[0] for player. LeaderBoards[0] is the leaderboard the user is registered to.
-    let { newPlayerAchievement, transaction } =
+    const { newPlayerAchievement, transaction } =
       await client.unlockPlayerAchievement(
         user1.publicKey,
         auths[0].publicKey,
@@ -704,7 +711,7 @@ describe("soar", () => {
       );
     await client.sendAndConfirmTransaction(transaction, [auths[0]]);
 
-    let account = await client.fetchPlayerAchievementAccount(
+    const account = await client.fetchPlayerAchievementAccount(
       newPlayerAchievement
     );
     expect(account.player.toBase58()).to.equal(
@@ -715,7 +722,7 @@ describe("soar", () => {
   });
 
   it("Can initiate a merge", async () => {
-    let keys = [
+    const keys = [
       user2.publicKey,
       user3.publicKey,
       user2.publicKey,
@@ -723,21 +730,21 @@ describe("soar", () => {
       user3.publicKey,
     ].map((key) => client.utils.derivePlayerAddress(key)[0]);
 
-    let { newMerge, transaction } = await client.initiateMerge(
+    const { newMerge, transaction } = await client.initiateMerge(
       user1.publicKey,
       mergeAccount.publicKey,
       keys
     );
     await client.sendAndConfirmTransaction(transaction, [mergeAccount, user1]);
 
-    let account = await client.fetchMergedAccount(newMerge);
+    const account = await client.fetchMergedAccount(newMerge);
     expect(account.initiator.toBase58()).to.equal(user1.publicKey.toBase58());
     expect(account.approvals.length).to.equal(2);
     expect(account.approvals[0].approved).to.be.false;
     expect(account.approvals[1].approved).to.be.false;
     expect(account.mergeComplete).to.be.false;
 
-    let mapped = account.approvals.map((res) => res.key.toBase58());
+    const mapped = account.approvals.map((res) => res.key.toBase58());
     expect(mapped).to.contain(
       client.utils.derivePlayerAddress(user3.publicKey)[0].toBase58()
     );
@@ -747,11 +754,11 @@ describe("soar", () => {
   });
 
   it("Can approve a merge", async () => {
-    let { transaction: tx1 } = await client.registerMergeApproval(
+    const { transaction: tx1 } = await client.registerMergeApproval(
       user2.publicKey,
       mergeAccount.publicKey
     );
-    let { transaction: tx2 } = await client.registerMergeApproval(
+    const { transaction: tx2 } = await client.registerMergeApproval(
       user3.publicKey,
       mergeAccount.publicKey
     );
@@ -767,7 +774,7 @@ describe("soar", () => {
     await client.sendAndConfirmTransaction(tx1, [user2]);
     await client.sendAndConfirmTransaction(tx2, [user3]);
 
-    let approvals = await client
+    const approvals = await client
       .fetchMergedAccount(mergeAccount.publicKey)
       .then((res) => res.approvals);
     expect(approvals[0].approved).to.be.true;
@@ -781,15 +788,15 @@ describe("soar", () => {
     const availableRewards = new BN(10);
     const newReward = Keypair.generate();
 
-    let metaplex = utils.initMetaplex(client.provider.connection);
-    let collectionMint = await utils.initTestCollectionNft(
+    const metaplex = utils.initMetaplex(client.provider.connection);
+    const collectionMint = await utils.initTestCollectionNft(
       metaplex,
       utils.COLLECTION_URI,
       "collection"
     );
 
     // Overwrite achievement[0]'s reward.
-    let { transaction } = await client.addNonFungibleReward(
+    const { transaction } = await client.addNonFungibleReward(
       auths[0].publicKey,
       newReward.publicKey,
       achievements[0],
@@ -802,7 +809,7 @@ describe("soar", () => {
     );
 
     await client.sendAndConfirmTransaction(transaction, [auths[0], newReward]);
-    let account = await gameClient.program.fetchRewardAccount(
+    const account = await gameClient.program.fetchRewardAccount(
       newReward.publicKey
     );
 
@@ -823,7 +830,7 @@ describe("soar", () => {
 
   it("Can claim nft rewards for unlocking an achievement", async () => {
     let mint = Keypair.generate();
-    let { transaction } = await client.claimNftReward(
+    const { transaction } = await client.claimNftReward(
       auths[0].publicKey,
       achievements[0],
       mint.publicKey,
@@ -840,7 +847,7 @@ describe("soar", () => {
 
     // Claim an nft reward(and unlock a player achievement account).
     mint = Keypair.generate();
-    let { transaction: tx } = await client.claimNftReward(
+    const { transaction: tx } = await client.claimNftReward(
       auths[0].publicKey,
       achievements[0],
       mint.publicKey,
@@ -849,42 +856,44 @@ describe("soar", () => {
     await client.sendAndConfirmTransaction(tx, [mint, auths[0]]);
     user3NftMint = mint.publicKey;
 
-    let userWallet = client.utils.deriveAssociatedTokenAddress(
+    const userWallet = client.utils.deriveAssociatedTokenAddress(
       mint.publicKey,
       user3.publicKey
     );
-    let balance = await client.provider.connection.getTokenAccountBalance(
+    const balance = await client.provider.connection.getTokenAccountBalance(
       userWallet
     );
     expect(balance.value.uiAmount).to.equal(1);
 
-    let metadata = await utils.fetchMetadataAccount(client, mint.publicKey);
+    const metadata = await utils.fetchMetadataAccount(client, mint.publicKey);
     expect(metadata.mint.toBase58()).to.equal(mint.publicKey.toBase58());
     expect(metadata.updateAuthority.toBase58()).to.equal(
       achievements[0].toBase58()
     );
     expect(metadata.collection.verified).to.equal(false);
 
-    let rewardAddress = await client
+    const rewardAddress = await client
       .fetchAchievementAccount(achievements[0])
       .then((res) => res.reward);
-    let reward = await client.fetchRewardAccount(rewardAddress);
+    const reward = await client.fetchRewardAccount(rewardAddress);
     expect(metadata.collection.key.toBase58()).to.equal(
       reward.NonFungibleToken.collection.toBase58()
     );
     expect(reward.NonFungibleToken.minted.toNumber()).to.equal(1);
 
-    let playerAchievement = client.utils.derivePlayerAchievementAddress(
+    const playerAchievement = client.utils.derivePlayerAchievementAddress(
       user3.publicKey,
       achievements[0]
     )[0];
-    let account = await client.fetchPlayerAchievementAccount(playerAchievement);
+    const account = await client.fetchPlayerAchievementAccount(
+      playerAchievement
+    );
     expect(account.claimed).to.be.true;
 
     // Should fail because reward already claimed.
     mint = Keypair.generate();
     thrown = false;
-    let { transaction: shouldFail } = await client.claimNftReward(
+    const { transaction: shouldFail } = await client.claimNftReward(
       auths[0].publicKey,
       achievements[0],
       mint.publicKey,
@@ -900,7 +909,7 @@ describe("soar", () => {
 
   it("Can verify a claimed nft reward", async () => {
     let mint = user3NftMint;
-    let { transaction } = await client.verifyPlayerNftReward(
+    const { transaction } = await client.verifyPlayerNftReward(
       user3.publicKey,
       achievements[0],
       mint
@@ -911,7 +920,7 @@ describe("soar", () => {
       console.log(err);
     }
 
-    let metadata = await utils.fetchMetadataAccount(client, mint);
+    const metadata = await utils.fetchMetadataAccount(client, mint);
     expect(metadata.mint.toBase58()).to.equal(mint.toBase58());
     expect(metadata.collection.verified).to.equal(true);
 
@@ -919,7 +928,7 @@ describe("soar", () => {
     mint = Keypair.generate().publicKey;
     let thrown = false;
     try {
-      let { transaction } = await client.verifyPlayerNftReward(
+      const { transaction } = await client.verifyPlayerNftReward(
         user3.publicKey,
         achievements[0],
         mint
@@ -932,31 +941,33 @@ describe("soar", () => {
   });
 
   it("Can claim a ft reward for unlocking an achievement", async () => {
-    let wallet = client.utils.deriveAssociatedTokenAddress(
+    const wallet = client.utils.deriveAssociatedTokenAddress(
       ftRewardMint,
       user1.publicKey
     );
-    let tokenAccount = await client.provider.connection.getAccountInfo(wallet);
+    const tokenAccount = await client.provider.connection.getAccountInfo(
+      wallet
+    );
     if (tokenAccount !== null) {
-      let balance = await client.provider.connection.getTokenAccountBalance(
+      const balance = await client.provider.connection.getTokenAccountBalance(
         wallet
       );
       expect(balance.value.uiAmount).to.equal(0);
     }
 
-    let { transaction } = await client.claimFtReward(
+    const { transaction } = await client.claimFtReward(
       auths[0].publicKey,
       achievements[1],
       user1.publicKey
     );
     await client.sendAndConfirmTransaction(transaction, [auths[0]]);
 
-    let balance = await client.provider.connection.getTokenAccountBalance(
+    const balance = await client.provider.connection.getTokenAccountBalance(
       wallet
     );
     expect(balance.value.uiAmount).to.equal(1);
 
-    let account = await client.fetchPlayerAchievementAccount(
+    const account = await client.fetchPlayerAchievementAccount(
       client.utils.derivePlayerAchievementAddress(
         user1.publicKey,
         achievements[1]
@@ -964,4 +975,282 @@ describe("soar", () => {
     );
     expect(account.claimed).to.be.true;
   });
+
+
+
+  it("Check scores order allowing multiple scores per player, dec order", async () => {
+    const expectedDescription = "LeaderBoard2";
+    const expectedNftMeta = Keypair.generate().publicKey;
+    const scoresToRetain = 2;
+    const isAscending = false; // descending order
+    const decimals = 0;
+    const minScore = new BN(0);
+    const maxScore = new BN(100);
+
+    const { newLeaderBoard, topEntries, transaction } =
+        await gameClient.addLeaderBoard(
+            auths[1].publicKey,
+            expectedDescription,
+            expectedNftMeta,
+            scoresToRetain,
+            isAscending,
+            decimals,
+            minScore,
+            maxScore,
+            true
+        );
+    await client.sendAndConfirmTransaction(transaction, [auths[1]]);
+
+    const info = await gameClient.program.fetchLeaderBoardAccount(
+        newLeaderBoard
+    );
+
+    // Check that leaderboard is set up to accept multiple scores per player
+    expect(info.allowMultipleScores).to.be.true;
+
+    const { transaction: txRegisterUser, newList } =
+        await client.registerPlayerEntryForLeaderBoard(
+            user1.publicKey,
+            newLeaderBoard
+        );
+    await client.sendAndConfirmTransaction(txRegisterUser, [user1]);
+
+    // Submit a score for user1
+    const score1 = new BN(80);
+    const {transaction: txScore1} = await client.submitScoreToLeaderBoard(
+        user1.publicKey,
+        auths[1].publicKey,
+        newLeaderBoard,
+        score1
+    );
+    await client.sendAndConfirmTransaction(txScore1, [auths[1]]);
+
+    let entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(topEntries);
+    const user1P = client.utils.derivePlayerAddress(user1.publicKey)[0].toBase58();
+    expect(entries.isAscending).to.be.false;
+    expect(entries.topScores.length).to.equal(scoresToRetain);
+    expect(entries.topScores[0].entry.score.toNumber()).to.equal(score1.toNumber());
+    expect(entries.topScores[0].player.toBase58()).to.equal(user1P);
+    expect(entries.topScores[1].entry.score.toNumber()).to.equal(0);
+
+    // Submit a second score for user1
+    const score2 = new BN(90);
+    const {transaction: txScore2} = await client.submitScoreToLeaderBoard(
+        user1.publicKey,
+        auths[1].publicKey,
+        newLeaderBoard,
+        score2
+    );
+    await client.sendAndConfirmTransaction(txScore2, [auths[1]]);
+
+    entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(topEntries);
+    expect(entries.topScores[0].entry.score.toNumber()).to.equal(score2.toNumber());
+    expect(entries.topScores[0].player.toBase58()).to.equal(user1P);
+    expect(entries.topScores[1].entry.score.toNumber()).to.equal(score1.toNumber());
+    expect(entries.topScores[1].player.toBase58()).to.equal(user1P);
+
+    // Submit a third score for user1
+    const score3 = new BN(70);
+    const {transaction: txScore3} = await client.submitScoreToLeaderBoard(
+        user1.publicKey,
+        auths[1].publicKey,
+        newLeaderBoard,
+        score3
+    );
+    await client.sendAndConfirmTransaction(txScore3, [auths[1]]);
+
+    entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(topEntries);
+    expect(entries.topScores[0].entry.score.toNumber()).to.equal(score2.toNumber());
+    expect(entries.topScores[0].player.toBase58()).to.equal(user1P);
+    expect(entries.topScores[1].entry.score.toNumber()).to.equal(score1.toNumber());
+    expect(entries.topScores[1].player.toBase58()).to.equal(user1P);
+
+  });
+
+  it("Check scores order, don't allow multiple scores per player, dec order", async () => {
+    const expectedDescription = "LeaderBoard2";
+    const expectedNftMeta = Keypair.generate().publicKey;
+    const scoresToRetain = 2;
+    const isAscending = false; // descending order
+    const decimals = 0;
+    const minScore = new BN(0);
+    const maxScore = new BN(100);
+
+    const { newLeaderBoard, topEntries, transaction } =
+        await gameClient.addLeaderBoard(
+            auths[1].publicKey,
+            expectedDescription,
+            expectedNftMeta,
+            scoresToRetain,
+            isAscending,
+            decimals,
+            minScore,
+            maxScore,
+            false
+        );
+    await client.sendAndConfirmTransaction(transaction, [auths[1]]);
+
+    const info = await gameClient.program.fetchLeaderBoardAccount(
+        newLeaderBoard
+    );
+
+    // Check that leaderboard is set up to accept multiple scores per player
+    expect(info.allowMultipleScores).to.be.false;
+
+    const { transaction: txRegisterUser, newList } =
+        await client.registerPlayerEntryForLeaderBoard(
+            user1.publicKey,
+            newLeaderBoard
+        );
+    await client.sendAndConfirmTransaction(txRegisterUser, [user1]);
+
+    // Submit a score for user1
+    const score1 = new BN(80);
+    const {transaction: txScore1} = await client.submitScoreToLeaderBoard(
+        user1.publicKey,
+        auths[1].publicKey,
+        newLeaderBoard,
+        score1
+    );
+    await client.sendAndConfirmTransaction(txScore1, [auths[1]]);
+
+    let entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(topEntries);
+    const user1P = client.utils.derivePlayerAddress(user1.publicKey)[0].toBase58();
+    expect(entries.isAscending).to.be.false;
+    expect(entries.topScores.length).to.equal(scoresToRetain);
+    expect(entries.topScores[0].entry.score.toNumber()).to.equal(score1.toNumber());
+    expect(entries.topScores[0].player.toBase58()).to.equal(user1P);
+    expect(entries.topScores[1].entry.score.toNumber()).to.equal(0);
+
+    // Submit a second score for user1
+    const score2 = new BN(90);
+    const {transaction: txScore2} = await client.submitScoreToLeaderBoard(
+        user1.publicKey,
+        auths[1].publicKey,
+        newLeaderBoard,
+        score2
+    );
+    await client.sendAndConfirmTransaction(txScore2, [auths[1]]);
+
+    entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(topEntries);
+    expect(entries.topScores[0].entry.score.toNumber()).to.equal(score2.toNumber());
+    expect(entries.topScores[0].player.toBase58()).to.equal(user1P);
+    expect(entries.topScores[1].entry.score.toNumber()).to.equal(0);
+
+    // Submit a third score for user1
+    const score3 = new BN(70);
+    const {transaction: txScore3} = await client.submitScoreToLeaderBoard(
+        user1.publicKey,
+        auths[1].publicKey,
+        newLeaderBoard,
+        score3
+    );
+    await client.sendAndConfirmTransaction(txScore3, [auths[1]]);
+
+    // Submit a new score for user2
+    const user2P = client.utils.derivePlayerAddress(user2.publicKey)[0].toBase58();
+    const { transaction: txRegisterUser2 } =
+        await client.registerPlayerEntryForLeaderBoard(
+            user2.publicKey,
+            newLeaderBoard
+        );
+    await client.sendAndConfirmTransaction(txRegisterUser2, [user2]);
+
+    const score4 = new BN(70);
+    const {transaction: txScore4} = await client.submitScoreToLeaderBoard(
+        user2.publicKey,
+        auths[1].publicKey,
+        newLeaderBoard,
+        score4
+    );
+    await client.sendAndConfirmTransaction(txScore4, [auths[1]]);
+
+    entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(topEntries);
+    expect(entries.topScores[0].entry.score.toNumber()).to.equal(score2.toNumber());
+    expect(entries.topScores[0].player.toBase58()).to.equal(user1P);
+    expect(entries.topScores[1].entry.score.toNumber()).to.equal(score4.toNumber());
+    expect(entries.topScores[1].player.toBase58()).to.equal(user2P);
+  });
+
+  it("Check scores order, allow multiple scores per player, asc order", async () => {
+    const expectedDescription = "LeaderBoard2";
+    const expectedNftMeta = Keypair.generate().publicKey;
+    const scoresToRetain = 2;
+    const isAscending = true; // descending order
+    const decimals = 0;
+    const minScore = new BN(0);
+    const maxScore = new BN(100);
+
+    const { newLeaderBoard, topEntries, transaction } =
+        await gameClient.addLeaderBoard(
+            auths[1].publicKey,
+            expectedDescription,
+            expectedNftMeta,
+            scoresToRetain,
+            isAscending,
+            decimals,
+            minScore,
+            maxScore,
+            true
+        );
+    await client.sendAndConfirmTransaction(transaction, [auths[1]]);
+
+    console.log("leaderboard", newLeaderBoard.toBase58());
+
+    const info = await gameClient.program.fetchLeaderBoardAccount(newLeaderBoard);
+
+    // Check that leaderboard is set up to accept multiple scores per player
+    expect(info.allowMultipleScores).to.be.true;
+
+    const { transaction: txRegisterUser, newList } =
+        await client.registerPlayerEntryForLeaderBoard(
+            user1.publicKey,
+            newLeaderBoard
+        );
+    await client.sendAndConfirmTransaction(txRegisterUser, [user1]);
+
+    // Submit a score for user1
+    const score1 = new BN(80);
+    const {transaction: txScore1} = await client.submitScoreToLeaderBoard(
+        user1.publicKey,
+        auths[1].publicKey,
+        newLeaderBoard,
+        score1
+    );
+    await client.sendAndConfirmTransaction(txScore1, [auths[1]]);
+
+    let entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(topEntries);
+    const user1P = client.utils.derivePlayerAddress(user1.publicKey)[0].toBase58();
+    expect(entries.isAscending).to.be.true;
+    expect(entries.topScores.length).to.equal(scoresToRetain);
+    expect(entries.topScores[0].entry.score.toNumber()).to.equal(score1.toNumber());
+    expect(entries.topScores[0].player.toBase58()).to.equal(user1P);
+    expect(entries.topScores[1].entry.score.toNumber()).to.equal(0);
+
+    // Submit a second score for user1
+    // const score2 = new BN(90);
+    // const {transaction: txScore2} = await client.submitScoreToLeaderBoard(
+    //     user1.publicKey,
+    //     auths[1].publicKey,
+    //     newLeaderBoard,
+    //     score2
+    // );
+    // await client.sendAndConfirmTransaction(txScore2, [auths[1]]);
+    //
+    // entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(topEntries);
+    // expect(entries.topScores[0].entry.score.toNumber()).to.equal(score2.toNumber());
+    // expect(entries.topScores[0].player.toBase58()).to.equal(user1P);
+    // expect(entries.topScores[1].entry.score.toNumber()).to.equal(0);
+
+    // Submit a third score for user1
+    // const score3 = new BN(70);
+    // const {transaction: txScore3} = await client.submitScoreToLeaderBoard(
+    //     user1.publicKey,
+    //     auths[1].publicKey,
+    //     newLeaderBoard,
+    //     score3
+    // );
+    // await client.sendAndConfirmTransaction(txScore3, [auths[1]]);
+  });
+
 });

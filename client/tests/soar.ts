@@ -205,7 +205,7 @@ describe("soar", () => {
         decimals,
         minScore,
         maxScore,
-          true
+        true
       );
     await client.sendAndConfirmTransaction(transaction, [auths[1]]);
     leaderBoards.push(newLeaderBoard);
@@ -976,8 +976,6 @@ describe("soar", () => {
     expect(account.claimed).to.be.true;
   });
 
-
-
   it("Check scores order allowing multiple scores per player, dec order", async () => {
     const expectedDescription = "LeaderBoard2";
     const expectedNftMeta = Keypair.generate().publicKey;
@@ -988,83 +986,100 @@ describe("soar", () => {
     const maxScore = new BN(100);
 
     const { newLeaderBoard, topEntries, transaction } =
-        await gameClient.addLeaderBoard(
-            auths[1].publicKey,
-            expectedDescription,
-            expectedNftMeta,
-            scoresToRetain,
-            isAscending,
-            decimals,
-            minScore,
-            maxScore,
-            true
-        );
+      await gameClient.addLeaderBoard(
+        auths[1].publicKey,
+        expectedDescription,
+        expectedNftMeta,
+        scoresToRetain,
+        isAscending,
+        decimals,
+        minScore,
+        maxScore,
+        true
+      );
     await client.sendAndConfirmTransaction(transaction, [auths[1]]);
 
     const info = await gameClient.program.fetchLeaderBoardAccount(
-        newLeaderBoard
+      newLeaderBoard
     );
 
     // Check that leaderboard is set up to accept multiple scores per player
     expect(info.allowMultipleScores).to.be.true;
 
     const { transaction: txRegisterUser, newList } =
-        await client.registerPlayerEntryForLeaderBoard(
-            user1.publicKey,
-            newLeaderBoard
-        );
+      await client.registerPlayerEntryForLeaderBoard(
+        user1.publicKey,
+        newLeaderBoard
+      );
     await client.sendAndConfirmTransaction(txRegisterUser, [user1]);
 
     // Submit a score for user1
     const score1 = new BN(80);
-    const {transaction: txScore1} = await client.submitScoreToLeaderBoard(
-        user1.publicKey,
-        auths[1].publicKey,
-        newLeaderBoard,
-        score1
+    const { transaction: txScore1 } = await client.submitScoreToLeaderBoard(
+      user1.publicKey,
+      auths[1].publicKey,
+      newLeaderBoard,
+      score1
     );
     await client.sendAndConfirmTransaction(txScore1, [auths[1]]);
 
-    let entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(topEntries);
-    const user1P = client.utils.derivePlayerAddress(user1.publicKey)[0].toBase58();
+    let entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(
+      topEntries
+    );
+    const user1P = client.utils
+      .derivePlayerAddress(user1.publicKey)[0]
+      .toBase58();
     expect(entries.isAscending).to.be.false;
     expect(entries.topScores.length).to.equal(scoresToRetain);
-    expect(entries.topScores[0].entry.score.toNumber()).to.equal(score1.toNumber());
+    expect(entries.topScores[0].entry.score.toNumber()).to.equal(
+      score1.toNumber()
+    );
     expect(entries.topScores[0].player.toBase58()).to.equal(user1P);
     expect(entries.topScores[1].entry.score.toNumber()).to.equal(0);
 
     // Submit a second score for user1
     const score2 = new BN(90);
-    const {transaction: txScore2} = await client.submitScoreToLeaderBoard(
-        user1.publicKey,
-        auths[1].publicKey,
-        newLeaderBoard,
-        score2
+    const { transaction: txScore2 } = await client.submitScoreToLeaderBoard(
+      user1.publicKey,
+      auths[1].publicKey,
+      newLeaderBoard,
+      score2
     );
     await client.sendAndConfirmTransaction(txScore2, [auths[1]]);
 
-    entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(topEntries);
-    expect(entries.topScores[0].entry.score.toNumber()).to.equal(score2.toNumber());
+    entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(
+      topEntries
+    );
+    expect(entries.topScores[0].entry.score.toNumber()).to.equal(
+      score2.toNumber()
+    );
     expect(entries.topScores[0].player.toBase58()).to.equal(user1P);
-    expect(entries.topScores[1].entry.score.toNumber()).to.equal(score1.toNumber());
+    expect(entries.topScores[1].entry.score.toNumber()).to.equal(
+      score1.toNumber()
+    );
     expect(entries.topScores[1].player.toBase58()).to.equal(user1P);
 
     // Submit a third score for user1
     const score3 = new BN(70);
-    const {transaction: txScore3} = await client.submitScoreToLeaderBoard(
-        user1.publicKey,
-        auths[1].publicKey,
-        newLeaderBoard,
-        score3
+    const { transaction: txScore3 } = await client.submitScoreToLeaderBoard(
+      user1.publicKey,
+      auths[1].publicKey,
+      newLeaderBoard,
+      score3
     );
     await client.sendAndConfirmTransaction(txScore3, [auths[1]]);
 
-    entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(topEntries);
-    expect(entries.topScores[0].entry.score.toNumber()).to.equal(score2.toNumber());
+    entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(
+      topEntries
+    );
+    expect(entries.topScores[0].entry.score.toNumber()).to.equal(
+      score2.toNumber()
+    );
     expect(entries.topScores[0].player.toBase58()).to.equal(user1P);
-    expect(entries.topScores[1].entry.score.toNumber()).to.equal(score1.toNumber());
+    expect(entries.topScores[1].entry.score.toNumber()).to.equal(
+      score1.toNumber()
+    );
     expect(entries.topScores[1].player.toBase58()).to.equal(user1P);
-
   });
 
   it("Check scores order, don't allow multiple scores per player, dec order", async () => {
@@ -1077,98 +1092,116 @@ describe("soar", () => {
     const maxScore = new BN(100);
 
     const { newLeaderBoard, topEntries, transaction } =
-        await gameClient.addLeaderBoard(
-            auths[1].publicKey,
-            expectedDescription,
-            expectedNftMeta,
-            scoresToRetain,
-            isAscending,
-            decimals,
-            minScore,
-            maxScore,
-            false
-        );
+      await gameClient.addLeaderBoard(
+        auths[1].publicKey,
+        expectedDescription,
+        expectedNftMeta,
+        scoresToRetain,
+        isAscending,
+        decimals,
+        minScore,
+        maxScore,
+        false
+      );
     await client.sendAndConfirmTransaction(transaction, [auths[1]]);
 
     const info = await gameClient.program.fetchLeaderBoardAccount(
-        newLeaderBoard
+      newLeaderBoard
     );
 
     // Check that leaderboard is set up to accept multiple scores per player
     expect(info.allowMultipleScores).to.be.false;
 
     const { transaction: txRegisterUser, newList } =
-        await client.registerPlayerEntryForLeaderBoard(
-            user1.publicKey,
-            newLeaderBoard
-        );
+      await client.registerPlayerEntryForLeaderBoard(
+        user1.publicKey,
+        newLeaderBoard
+      );
     await client.sendAndConfirmTransaction(txRegisterUser, [user1]);
 
     // Submit a score for user1
     const score1 = new BN(80);
-    const {transaction: txScore1} = await client.submitScoreToLeaderBoard(
-        user1.publicKey,
-        auths[1].publicKey,
-        newLeaderBoard,
-        score1
+    const { transaction: txScore1 } = await client.submitScoreToLeaderBoard(
+      user1.publicKey,
+      auths[1].publicKey,
+      newLeaderBoard,
+      score1
     );
     await client.sendAndConfirmTransaction(txScore1, [auths[1]]);
 
-    let entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(topEntries);
-    const user1P = client.utils.derivePlayerAddress(user1.publicKey)[0].toBase58();
+    let entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(
+      topEntries
+    );
+    const user1P = client.utils
+      .derivePlayerAddress(user1.publicKey)[0]
+      .toBase58();
     expect(entries.isAscending).to.be.false;
     expect(entries.topScores.length).to.equal(scoresToRetain);
-    expect(entries.topScores[0].entry.score.toNumber()).to.equal(score1.toNumber());
+    expect(entries.topScores[0].entry.score.toNumber()).to.equal(
+      score1.toNumber()
+    );
     expect(entries.topScores[0].player.toBase58()).to.equal(user1P);
     expect(entries.topScores[1].entry.score.toNumber()).to.equal(0);
 
     // Submit a second score for user1
     const score2 = new BN(90);
-    const {transaction: txScore2} = await client.submitScoreToLeaderBoard(
-        user1.publicKey,
-        auths[1].publicKey,
-        newLeaderBoard,
-        score2
+    const { transaction: txScore2 } = await client.submitScoreToLeaderBoard(
+      user1.publicKey,
+      auths[1].publicKey,
+      newLeaderBoard,
+      score2
     );
     await client.sendAndConfirmTransaction(txScore2, [auths[1]]);
 
-    entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(topEntries);
-    expect(entries.topScores[0].entry.score.toNumber()).to.equal(score2.toNumber());
+    entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(
+      topEntries
+    );
+    expect(entries.topScores[0].entry.score.toNumber()).to.equal(
+      score2.toNumber()
+    );
     expect(entries.topScores[0].player.toBase58()).to.equal(user1P);
     expect(entries.topScores[1].entry.score.toNumber()).to.equal(0);
 
     // Submit a third score for user1
     const score3 = new BN(70);
-    const {transaction: txScore3} = await client.submitScoreToLeaderBoard(
-        user1.publicKey,
-        auths[1].publicKey,
-        newLeaderBoard,
-        score3
+    const { transaction: txScore3 } = await client.submitScoreToLeaderBoard(
+      user1.publicKey,
+      auths[1].publicKey,
+      newLeaderBoard,
+      score3
     );
     await client.sendAndConfirmTransaction(txScore3, [auths[1]]);
 
     // Submit a new score for user2
-    const user2P = client.utils.derivePlayerAddress(user2.publicKey)[0].toBase58();
+    const user2P = client.utils
+      .derivePlayerAddress(user2.publicKey)[0]
+      .toBase58();
     const { transaction: txRegisterUser2 } =
-        await client.registerPlayerEntryForLeaderBoard(
-            user2.publicKey,
-            newLeaderBoard
-        );
+      await client.registerPlayerEntryForLeaderBoard(
+        user2.publicKey,
+        newLeaderBoard
+      );
     await client.sendAndConfirmTransaction(txRegisterUser2, [user2]);
 
     const score4 = new BN(70);
-    const {transaction: txScore4} = await client.submitScoreToLeaderBoard(
-        user2.publicKey,
-        auths[1].publicKey,
-        newLeaderBoard,
-        score4
+    const { transaction: txScore4 } = await client.submitScoreToLeaderBoard(
+      user2.publicKey,
+      auths[1].publicKey,
+      newLeaderBoard,
+      score4
     );
     await client.sendAndConfirmTransaction(txScore4, [auths[1]]);
 
-    entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(topEntries);
-    expect(entries.topScores[0].entry.score.toNumber()).to.equal(score2.toNumber());
+    entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(
+      topEntries
+    );
+    expect(entries.topScores[0].entry.score.toNumber()).to.equal(
+      score2.toNumber()
+    );
     expect(entries.topScores[0].player.toBase58()).to.equal(user1P);
-    expect(entries.topScores[1].entry.score.toNumber()).to.equal(score4.toNumber());
+    expect(entries.topScores[1].entry.score.toNumber()).to.equal(
+      score4.toNumber()
+    );
     expect(entries.topScores[1].player.toBase58()).to.equal(user2P);
   });
 
@@ -1182,75 +1215,183 @@ describe("soar", () => {
     const maxScore = new BN(100);
 
     const { newLeaderBoard, topEntries, transaction } =
-        await gameClient.addLeaderBoard(
-            auths[1].publicKey,
-            expectedDescription,
-            expectedNftMeta,
-            scoresToRetain,
-            isAscending,
-            decimals,
-            minScore,
-            maxScore,
-            true
-        );
+      await gameClient.addLeaderBoard(
+        auths[1].publicKey,
+        expectedDescription,
+        expectedNftMeta,
+        scoresToRetain,
+        isAscending,
+        decimals,
+        minScore,
+        maxScore,
+        true
+      );
     await client.sendAndConfirmTransaction(transaction, [auths[1]]);
 
-    console.log("leaderboard", newLeaderBoard.toBase58());
-
-    const info = await gameClient.program.fetchLeaderBoardAccount(newLeaderBoard);
+    const info = await gameClient.program.fetchLeaderBoardAccount(
+      newLeaderBoard
+    );
 
     // Check that leaderboard is set up to accept multiple scores per player
     expect(info.allowMultipleScores).to.be.true;
 
     const { transaction: txRegisterUser, newList } =
-        await client.registerPlayerEntryForLeaderBoard(
-            user1.publicKey,
-            newLeaderBoard
-        );
+      await client.registerPlayerEntryForLeaderBoard(
+        user1.publicKey,
+        newLeaderBoard
+      );
     await client.sendAndConfirmTransaction(txRegisterUser, [user1]);
 
     // Submit a score for user1
     const score1 = new BN(80);
-    const {transaction: txScore1} = await client.submitScoreToLeaderBoard(
-        user1.publicKey,
-        auths[1].publicKey,
-        newLeaderBoard,
-        score1
+    const { transaction: txScore1 } = await client.submitScoreToLeaderBoard(
+      user1.publicKey,
+      auths[1].publicKey,
+      newLeaderBoard,
+      score1
     );
     await client.sendAndConfirmTransaction(txScore1, [auths[1]]);
 
-    let entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(topEntries);
-    const user1P = client.utils.derivePlayerAddress(user1.publicKey)[0].toBase58();
+    let entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(
+      topEntries
+    );
+    const user1P = client.utils
+      .derivePlayerAddress(user1.publicKey)[0]
+      .toBase58();
     expect(entries.isAscending).to.be.true;
     expect(entries.topScores.length).to.equal(scoresToRetain);
-    expect(entries.topScores[0].entry.score.toNumber()).to.equal(score1.toNumber());
+    expect(entries.topScores[0].entry.score.toNumber()).to.equal(
+      score1.toNumber()
+    );
     expect(entries.topScores[0].player.toBase58()).to.equal(user1P);
-    expect(entries.topScores[1].entry.score.toNumber()).to.equal(0);
+    expect(entries.topScores[1].entry.score.toNumber()).to.equal(
+      maxScore.toNumber()
+    );
 
     // Submit a second score for user1
-    // const score2 = new BN(90);
-    // const {transaction: txScore2} = await client.submitScoreToLeaderBoard(
-    //     user1.publicKey,
-    //     auths[1].publicKey,
-    //     newLeaderBoard,
-    //     score2
-    // );
-    // await client.sendAndConfirmTransaction(txScore2, [auths[1]]);
-    //
-    // entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(topEntries);
-    // expect(entries.topScores[0].entry.score.toNumber()).to.equal(score2.toNumber());
-    // expect(entries.topScores[0].player.toBase58()).to.equal(user1P);
-    // expect(entries.topScores[1].entry.score.toNumber()).to.equal(0);
+    const score2 = new BN(90);
+    const { transaction: txScore2 } = await client.submitScoreToLeaderBoard(
+      user1.publicKey,
+      auths[1].publicKey,
+      newLeaderBoard,
+      score2
+    );
+    await client.sendAndConfirmTransaction(txScore2, [auths[1]]);
+
+    entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(
+      topEntries
+    );
+    expect(entries.topScores[0].entry.score.toNumber()).to.equal(
+      score1.toNumber()
+    );
+    expect(entries.topScores[0].player.toBase58()).to.equal(user1P);
+    expect(entries.topScores[1].entry.score.toNumber()).to.equal(
+      score2.toNumber()
+    );
+    expect(entries.topScores[1].player.toBase58()).to.equal(user1P);
 
     // Submit a third score for user1
-    // const score3 = new BN(70);
-    // const {transaction: txScore3} = await client.submitScoreToLeaderBoard(
-    //     user1.publicKey,
-    //     auths[1].publicKey,
-    //     newLeaderBoard,
-    //     score3
-    // );
-    // await client.sendAndConfirmTransaction(txScore3, [auths[1]]);
+    const score3 = new BN(70);
+    const { transaction: txScore3 } = await client.submitScoreToLeaderBoard(
+      user1.publicKey,
+      auths[1].publicKey,
+      newLeaderBoard,
+      score3
+    );
+    await client.sendAndConfirmTransaction(txScore3, [auths[1]]);
+    entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(
+      topEntries
+    );
+    expect(entries.topScores[0].entry.score.toNumber()).to.equal(
+      score3.toNumber()
+    );
+    expect(entries.topScores[0].player.toBase58()).to.equal(user1P);
+    expect(entries.topScores[1].entry.score.toNumber()).to.equal(
+      score1.toNumber()
+    );
+    expect(entries.topScores[1].player.toBase58()).to.equal(user1P);
   });
 
+  it("Check scores order, does not allow multiple scores per player, asc order", async () => {
+    const expectedDescription = "LeaderBoard2";
+    const expectedNftMeta = Keypair.generate().publicKey;
+    const scoresToRetain = 2;
+    const isAscending = true; // descending order
+    const decimals = 0;
+    const minScore = new BN(0);
+    const maxScore = new BN(100);
+
+    const { newLeaderBoard, topEntries, transaction } =
+      await gameClient.addLeaderBoard(
+        auths[1].publicKey,
+        expectedDescription,
+        expectedNftMeta,
+        scoresToRetain,
+        isAscending,
+        decimals,
+        minScore,
+        maxScore,
+        false
+      );
+    await client.sendAndConfirmTransaction(transaction, [auths[1]]);
+
+    console.log("leaderboard", newLeaderBoard.toBase58());
+
+    const info = await gameClient.program.fetchLeaderBoardAccount(
+      newLeaderBoard
+    );
+
+    // Check that leaderboard is set up to not accept multiple scores per player
+    expect(info.allowMultipleScores).to.be.false;
+
+    const { transaction: txRegisterUser, newList } =
+      await client.registerPlayerEntryForLeaderBoard(
+        user1.publicKey,
+        newLeaderBoard
+      );
+    await client.sendAndConfirmTransaction(txRegisterUser, [user1]);
+
+    // Submit a score for user1
+    const score1 = new BN(80);
+    const { transaction: txScore1 } = await client.submitScoreToLeaderBoard(
+      user1.publicKey,
+      auths[1].publicKey,
+      newLeaderBoard,
+      score1
+    );
+    await client.sendAndConfirmTransaction(txScore1, [auths[1]]);
+
+    // Submit a second score for user1
+    const score2 = new BN(90);
+    const { transaction: txScore2 } = await client.submitScoreToLeaderBoard(
+      user1.publicKey,
+      auths[1].publicKey,
+      newLeaderBoard,
+      score2
+    );
+    await client.sendAndConfirmTransaction(txScore2, [auths[1]]);
+
+    // Submit a third score for user1
+    const score3 = new BN(70);
+    const { transaction: txScore3 } = await client.submitScoreToLeaderBoard(
+      user1.publicKey,
+      auths[1].publicKey,
+      newLeaderBoard,
+      score3
+    );
+    await client.sendAndConfirmTransaction(txScore3, [auths[1]]);
+    let entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(
+      topEntries
+    );
+    const user1P = client.utils
+      .derivePlayerAddress(user1.publicKey)[0]
+      .toBase58();
+    expect(entries.topScores[0].entry.score.toNumber()).to.equal(
+      score3.toNumber()
+    );
+    expect(entries.topScores[0].player.toBase58()).to.equal(user1P);
+    expect(entries.topScores[1].entry.score.toNumber()).to.equal(
+      maxScore.toNumber()
+    );
+  });
 });

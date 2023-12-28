@@ -269,7 +269,10 @@ export class SoarProgram {
     authority: PublicKey,
     leaderboard: PublicKey,
     newDescription?: string,
-    newNftMeta?: PublicKey
+    newNftMeta?: PublicKey,
+    newMinScore?: BN,
+    newMaxScore?: BN,
+    newAllowMultipleScores?: boolean
   ): Promise<InstructionResult.UpdateLeaderboard> {
     this.builder.clean();
     if (newDescription === undefined && newNftMeta === undefined) {
@@ -282,6 +285,9 @@ export class SoarProgram {
       {
         newDescription: newDescription ?? null,
         newNftMeta: newNftMeta ?? null,
+        newMinScore: newMinScore ?? null,
+        newMaxScore: newMaxScore ?? null,
+        newAllowMultipleScores: newAllowMultipleScores ?? null,
       },
       authority,
       leaderboard

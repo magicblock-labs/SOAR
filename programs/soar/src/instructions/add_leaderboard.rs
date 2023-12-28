@@ -32,6 +32,12 @@ pub fn handler(ctx: Context<AddLeaderBoard>, input: RegisterLeaderBoardInput) ->
 
         top_entries.is_ascending = order;
         top_entries.top_scores = vec![LeaderBoardScore::default(); retain_count as usize];
+
+        if top_entries.is_ascending {
+            top_entries.top_scores.iter_mut().for_each(|s| {
+                s.entry.score = ctx.accounts.leaderboard.max_score;
+            });
+        }
         ctx.accounts.leaderboard.top_entries = Some(top_entries.key());
     }
 

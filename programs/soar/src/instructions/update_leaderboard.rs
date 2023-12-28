@@ -6,6 +6,9 @@ pub fn handler(
     ctx: Context<UpdateLeaderBoard>,
     new_description: Option<String>,
     new_nft_meta: Option<Pubkey>,
+    new_min_score: Option<u64>,
+    new_max_score: Option<u64>,
+    new_allow_multiple_scores: Option<bool>,
 ) -> Result<()> {
     let leaderboard = &mut ctx.accounts.leaderboard;
 
@@ -14,6 +17,15 @@ pub fn handler(
     }
     if let Some(nft_meta) = new_nft_meta {
         leaderboard.nft_meta = nft_meta;
+    }
+    if let Some(max_score) = new_max_score {
+        leaderboard.max_score = max_score;
+    }
+    if let Some(min_score) = new_min_score {
+        leaderboard.min_score = min_score;
+    }
+    if let Some(allow_multiple_scores) = new_allow_multiple_scores {
+        leaderboard.allow_multiple_scores = allow_multiple_scores;
     }
     leaderboard.check()?;
 

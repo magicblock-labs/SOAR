@@ -325,7 +325,13 @@ export const updateLeaderBoardInstruction = async (
   pre?: TransactionInstruction[]
 ): Promise<TransactionInstruction> => {
   return program.methods
-    .updateLeaderboard(args.newDescription, args.newNftMeta)
+    .updateLeaderboard(
+      args.newDescription,
+      args.newNftMeta,
+      args.newMinScore,
+      args.newMaxScore,
+      args.newAllowMultipleScores
+    )
     .accounts(accounts)
     .preInstructions(pre ?? [])
     .instruction();

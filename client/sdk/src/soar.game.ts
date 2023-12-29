@@ -117,7 +117,8 @@ export class GameClient {
     scoresOrder: boolean,
     decimals?: number,
     minScore?: BN,
-    maxScore?: BN
+    maxScore?: BN,
+    allowMultipleScores?: boolean
   ): Promise<InstructionResult.AddLeaderBoard> {
     return this.program.addNewGameLeaderBoard(
       this.address,
@@ -128,7 +129,8 @@ export class GameClient {
       scoresOrder,
       decimals,
       minScore,
-      maxScore
+      maxScore,
+      allowMultipleScores
     );
   }
 

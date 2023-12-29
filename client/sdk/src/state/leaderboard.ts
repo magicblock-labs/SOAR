@@ -14,6 +14,7 @@ export class LeaderBoardAccount {
     public readonly decimals: number,
     public readonly minScore: BN,
     public readonly maxScore: BN,
+    public readonly allowMultipleScores: boolean,
     public readonly topEntries: PublicKey | null
   ) {}
 
@@ -31,6 +32,7 @@ export class LeaderBoardAccount {
       account.decimals,
       account.minScore,
       account.maxScore,
+      account.allowMultipleScores,
       account.topEntries
     );
   }
@@ -45,6 +47,7 @@ export class LeaderBoardAccount {
     decimals: number;
     minScore: string;
     maxScore: string;
+    allowMultipleScores: boolean;
     topEntries: string | null;
   } {
     return {
@@ -56,6 +59,7 @@ export class LeaderBoardAccount {
       decimals: this.decimals,
       minScore: this.minScore.toString(),
       maxScore: this.maxScore.toString(),
+      allowMultipleScores: this.allowMultipleScores,
       topEntries: this.topEntries ? this.topEntries.toBase58() : null,
     };
   }

@@ -79,13 +79,26 @@ pub mod soar {
         add_leaderboard::handler(ctx, input)
     }
 
-    /// Update's a leaderboard's description and nft metadata information.
+    /// Update's a leaderboard's description, nft metadata information, min/max score, or whether
+    /// or not multiple scores are allowed for a single player.
     pub fn update_leaderboard(
         ctx: Context<UpdateLeaderBoard>,
         new_description: Option<String>,
         new_nft_meta: Option<Pubkey>,
+        new_min_score: Option<u64>,
+        new_max_score: Option<u64>,
+        new_is_ascending: Option<bool>,
+        new_allow_multiple_scores: Option<bool>,
     ) -> Result<()> {
-        update_leaderboard::handler(ctx, new_description, new_nft_meta)
+        update_leaderboard::handler(
+            ctx,
+            new_description,
+            new_nft_meta,
+            new_min_score,
+            new_max_score,
+            new_is_ascending,
+            new_allow_multiple_scores,
+        )
     }
 
     /// Create a [Player] account for a particular user.
@@ -308,6 +321,8 @@ pub struct UpdateLeaderBoard<'info> {
         has_one = game
     )]
     pub leaderboard: Account<'info, LeaderBoard>,
+    #[account(mut)]
+    pub top_entries: Option<Account<'info, LeaderTopEntries>>,
 }
 
 #[derive(Accounts)]

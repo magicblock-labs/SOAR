@@ -10,7 +10,7 @@ pub fn handler(ctx: Context<AddLeaderBoard>, input: RegisterLeaderBoardInput) ->
     let new_count = game.next_leaderboard();
 
     let retain_count = input.scores_to_retain;
-    let order = input.scores_order;
+    let order = input.is_ascending;
 
     let leaderboard = input.into();
     ctx.accounts.leaderboard.set_inner(leaderboard);
@@ -30,6 +30,12 @@ pub fn handler(ctx: Context<AddLeaderBoard>, input: RegisterLeaderBoardInput) ->
 
         top_entries.is_ascending = order;
         top_entries.top_scores = vec![LeaderBoardScore::default(); retain_count as usize];
+
+        if top_entries.is_ascending {
+            top_entries.top_scores.iter_mut().for_each(|s| {
+                s.entry.score = ctx.accounts.leaderboard.max_score;
+            });
+        }
         ctx.accounts.leaderboard.top_entries = Some(top_entries.key());
     }
 

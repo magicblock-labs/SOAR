@@ -1,5 +1,5 @@
 export type Soar = {
-  version: "0.1.0";
+  version: "0.1.1";
   name: "soar";
   constants: [
     {
@@ -233,7 +233,8 @@ export type Soar = {
     {
       name: "updateLeaderboard";
       docs: [
-        "Update's a leaderboard's description and nft metadata information."
+        "Update's a leaderboard's description, nft metadata information, min/max score, or whether",
+        "or not multiple scores are allowed for a single player."
       ];
       accounts: [
         {
@@ -250,6 +251,12 @@ export type Soar = {
           name: "leaderboard";
           isMut: true;
           isSigner: false;
+        },
+        {
+          name: "topEntries";
+          isMut: true;
+          isSigner: false;
+          isOptional: true;
         }
       ];
       args: [
@@ -263,6 +270,30 @@ export type Soar = {
           name: "newNftMeta";
           type: {
             option: "publicKey";
+          };
+        },
+        {
+          name: "newMinScore";
+          type: {
+            option: "u64";
+          };
+        },
+        {
+          name: "newMaxScore";
+          type: {
+            option: "u64";
+          };
+        },
+        {
+          name: "newIsAscending";
+          type: {
+            option: "bool";
+          };
+        },
+        {
+          name: "newAllowMultipleScores";
+          type: {
+            option: "bool";
           };
         }
       ];
@@ -1111,6 +1142,13 @@ export type Soar = {
             type: {
               option: "publicKey";
             };
+          },
+          {
+            name: "allowMultipleScores";
+            docs: [
+              "Whether or not multiple scores are allowed for a single player."
+            ];
+            type: "bool";
           }
         ];
       };
@@ -1467,9 +1505,16 @@ export type Soar = {
             type: "u8";
           },
           {
-            name: "scoresOrder";
+            name: "isAscending";
             docs: [
               "Order by which scores are stored. `true` for ascending, `false` for descending."
+            ];
+            type: "bool";
+          },
+          {
+            name: "allowMultipleScores";
+            docs: [
+              "Whether or not multiple scores are kept in the leaderboard for a single player."
             ];
             type: "bool";
           }
@@ -1708,7 +1753,7 @@ export type Soar = {
 };
 
 export const IDL: Soar = {
-  version: "0.1.0",
+  version: "0.1.1",
   name: "soar",
   constants: [
     {
@@ -1942,7 +1987,8 @@ export const IDL: Soar = {
     {
       name: "updateLeaderboard",
       docs: [
-        "Update's a leaderboard's description and nft metadata information.",
+        "Update's a leaderboard's description, nft metadata information, min/max score, or whether",
+        "or not multiple scores are allowed for a single player.",
       ],
       accounts: [
         {
@@ -1960,6 +2006,12 @@ export const IDL: Soar = {
           isMut: true,
           isSigner: false,
         },
+        {
+          name: "topEntries",
+          isMut: true,
+          isSigner: false,
+          isOptional: true,
+        },
       ],
       args: [
         {
@@ -1972,6 +2024,30 @@ export const IDL: Soar = {
           name: "newNftMeta",
           type: {
             option: "publicKey",
+          },
+        },
+        {
+          name: "newMinScore",
+          type: {
+            option: "u64",
+          },
+        },
+        {
+          name: "newMaxScore",
+          type: {
+            option: "u64",
+          },
+        },
+        {
+          name: "newIsAscending",
+          type: {
+            option: "bool",
+          },
+        },
+        {
+          name: "newAllowMultipleScores",
+          type: {
+            option: "bool",
           },
         },
       ],
@@ -2821,6 +2897,13 @@ export const IDL: Soar = {
               option: "publicKey",
             },
           },
+          {
+            name: "allowMultipleScores",
+            docs: [
+              "Whether or not multiple scores are allowed for a single player.",
+            ],
+            type: "bool",
+          },
         ],
       },
     },
@@ -3176,9 +3259,16 @@ export const IDL: Soar = {
             type: "u8",
           },
           {
-            name: "scoresOrder",
+            name: "isAscending",
             docs: [
               "Order by which scores are stored. `true` for ascending, `false` for descending.",
+            ],
+            type: "bool",
+          },
+          {
+            name: "allowMultipleScores",
+            docs: [
+              "Whether or not multiple scores are kept in the leaderboard for a single player.",
             ],
             type: "bool",
           },

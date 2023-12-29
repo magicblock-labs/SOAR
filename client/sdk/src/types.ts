@@ -90,7 +90,8 @@ export interface AddLeaderBoardArgs {
   minScore: BN | null;
   maxScore: BN | null;
   scoresToRetain: number;
-  scoresOrder: boolean;
+  isAscending: boolean;
+  allowMultipleScores: boolean;
 }
 export interface AddNftRewardArgs {
   availableRewards: BN;
@@ -135,6 +136,10 @@ export interface UpdateGameArgs {
 export interface UpdateLeaderboardArgs {
   newDescription: string | null;
   newNftMeta: PublicKey | null;
+  newMinScore: BN | null;
+  newMaxScore: BN | null;
+  newIsAscending: boolean | null;
+  newAllowMultipleScores: boolean | null;
 }
 export interface UpdatePlayerArgs {
   newUsername: string | null;

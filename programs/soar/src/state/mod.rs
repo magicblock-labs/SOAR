@@ -46,7 +46,10 @@ pub struct RegisterLeaderBoardInput {
     pub scores_to_retain: u8,
 
     /// Order by which scores are stored. `true` for ascending, `false` for descending.
-    pub scores_order: bool,
+    pub is_ascending: bool,
+
+    /// Whether or not multiple scores are kept in the leaderboard for a single player.
+    pub allow_multiple_scores: bool,
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]

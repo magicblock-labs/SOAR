@@ -237,7 +237,8 @@ export class SoarProgram {
     scoresOrder: boolean,
     decimals?: number,
     minScore?: BN,
-    maxScore?: BN
+    maxScore?: BN,
+    allowMultipleScores?: boolean
   ): Promise<InstructionResult.AddLeaderBoard> {
     this.builder.clean();
 
@@ -246,10 +247,11 @@ export class SoarProgram {
         description,
         nftMeta,
         scoresToRetain,
-        scoresOrder,
+        isAscending: scoresOrder,
         decimals: decimals ?? null,
         minScore: minScore ?? null,
         maxScore: maxScore ?? null,
+        allowMultipleScores: allowMultipleScores ?? false,
       },
       gameAddress,
       authority
@@ -267,7 +269,12 @@ export class SoarProgram {
     authority: PublicKey,
     leaderboard: PublicKey,
     newDescription?: string,
-    newNftMeta?: PublicKey
+    newNftMeta?: PublicKey,
+    newMinScore?: BN,
+    newMaxScore?: BN,
+    newIsAscending?: boolean,
+    newAllowMultipleScores?: boolean,
+    topEntries?: PublicKey
   ): Promise<InstructionResult.UpdateLeaderboard> {
     this.builder.clean();
     if (newDescription === undefined && newNftMeta === undefined) {
@@ -280,9 +287,15 @@ export class SoarProgram {
       {
         newDescription: newDescription ?? null,
         newNftMeta: newNftMeta ?? null,
+        newMinScore: newMinScore ?? null,
+        newMaxScore: newMaxScore ?? null,
+        newIsAscending: newIsAscending ?? null,
+        newAllowMultipleScores: newAllowMultipleScores ?? null,
       },
       authority,
-      leaderboard
+      leaderboard,
+      undefined,
+      topEntries ?? undefined
     );
 
     return { transaction: step[0].build() };

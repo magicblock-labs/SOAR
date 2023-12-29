@@ -321,11 +321,19 @@ export const updateLeaderBoardInstruction = async (
     authority: PublicKey;
     game: PublicKey;
     leaderboard: PublicKey;
+    topEntries: PublicKey | null;
   },
   pre?: TransactionInstruction[]
 ): Promise<TransactionInstruction> => {
   return program.methods
-    .updateLeaderboard(args.newDescription, args.newNftMeta)
+    .updateLeaderboard(
+      args.newDescription,
+      args.newNftMeta,
+      args.newMinScore,
+      args.newMaxScore,
+      args.newIsAscending,
+      args.newAllowMultipleScores
+    )
     .accounts(accounts)
     .preInstructions(pre ?? [])
     .instruction();

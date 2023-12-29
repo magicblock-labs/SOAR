@@ -40,6 +40,9 @@ pub struct LeaderBoard {
 
     /// Top [entries](ScoreEntry) for a leaderboard.
     pub top_entries: Option<Pubkey>,
+
+    /// Whether or not multiple scores are allowed for a single player.
+    pub allow_multiple_scores: bool,
 }
 
 impl LeaderBoard {
@@ -52,6 +55,7 @@ impl LeaderBoard {
         1 +  // decimals
         8 +  // min_score
         8 +  // max_score
+        1 + // allow_multiple_scores
         1 + 32; // top_entries
 
     /// Create a new [LeaderBoard] instance.
@@ -72,6 +76,7 @@ impl LeaderBoard {
             decimals: decimals.unwrap_or(0),
             min_score: min_score.unwrap_or(u64::MIN),
             max_score: max_score.unwrap_or(u64::MAX),
+            allow_multiple_scores: false,
             top_entries: None,
         }
     }
@@ -85,6 +90,7 @@ impl From<RegisterLeaderBoardInput> for LeaderBoard {
             decimals: input.decimals.unwrap_or(0),
             min_score: input.min_score.unwrap_or(u64::MIN),
             max_score: input.max_score.unwrap_or(u64::MAX),
+            allow_multiple_scores: input.allow_multiple_scores,
             ..Default::default()
         }
     }

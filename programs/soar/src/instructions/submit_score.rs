@@ -53,16 +53,38 @@ pub fn handler(ctx: Context<SubmitScore>, score: u64) -> Result<()> {
 
     if let Some(top_entries) = &mut ctx.accounts.top_entries {
         require_keys_eq!(leaderboard.top_entries.unwrap(), top_entries.key());
-        let top_scores_entry = LeaderBoardScore::new(player_key, entry);
+        let mut score_entry = LeaderBoardScore::new(player_key, entry);
         let is_ascending = top_entries.is_ascending;
+
         let last_index = top_entries.top_scores.len() - 1;
+        let mut index = last_index;
 
         let scores = &mut top_entries.top_scores;
-        if is_ascending && entry.score > scores[0].entry.score {
-            scores[0] = top_scores_entry;
+        if is_ascending && entry.score < scores[last_index].entry.score {
+            if !ctx.accounts.leaderboard.allow_multiple_scores {
+                if let Some(idx) = scores.iter().position(|s| s.player == player_key) {
+                    index = idx;
+                    score_entry = if score_entry.entry.score < scores[idx].entry.score {
+                        score_entry
+                    } else {
+                        scores[idx].clone()
+                    };
+                }
+            }
+            scores[index] = score_entry;
             scores.sort_by(|a, b| a.entry.score.cmp(&b.entry.score));
         } else if !is_ascending && entry.score > scores[last_index].entry.score {
-            scores[last_index] = top_scores_entry;
+            if !ctx.accounts.leaderboard.allow_multiple_scores {
+                if let Some(idx) = scores.iter().position(|s| s.player == player_key) {
+                    index = idx;
+                    score_entry = if score_entry.entry.score > scores[idx].entry.score {
+                        score_entry
+                    } else {
+                        scores[idx].clone()
+                    };
+                }
+            }
+            scores[index] = score_entry;
             scores.sort_by(|a, b| b.entry.score.cmp(&a.entry.score));
         }
     }

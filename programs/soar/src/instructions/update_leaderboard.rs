@@ -8,6 +8,7 @@ pub fn handler(
     new_nft_meta: Option<Pubkey>,
     new_min_score: Option<u64>,
     new_max_score: Option<u64>,
+    new_is_ascending: Option<bool>,
     new_allow_multiple_scores: Option<bool>,
 ) -> Result<()> {
     let leaderboard = &mut ctx.accounts.leaderboard;
@@ -23,6 +24,12 @@ pub fn handler(
     }
     if let Some(min_score) = new_min_score {
         leaderboard.min_score = min_score;
+    }
+    if let Some(is_ascending) = new_is_ascending {
+        let top_entries = &mut ctx.accounts.top_entries;
+        if let Some(top_entries) = top_entries {
+            top_entries.is_ascending = is_ascending;
+        }
     }
     if let Some(allow_multiple_scores) = new_allow_multiple_scores {
         leaderboard.allow_multiple_scores = allow_multiple_scores;

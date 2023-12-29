@@ -537,11 +537,13 @@ export class AccountsBuilder {
   updateLeaderboardAccounts = async (
     authority: PublicKey,
     leaderboard: PublicKey,
-    game?: PublicKey
+    game?: PublicKey,
+    topEntries?: PublicKey
   ): Promise<{
     authority: PublicKey;
     game: PublicKey;
     leaderboard: PublicKey;
+    topEntries: PublicKey | null;
   }> => {
     const gameAddress =
       game ?? (await this.program.account.leaderBoard.fetch(leaderboard)).game;
@@ -550,6 +552,7 @@ export class AccountsBuilder {
       authority,
       game: gameAddress,
       leaderboard,
+      topEntries: topEntries ?? null,
     };
   };
 

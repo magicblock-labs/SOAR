@@ -321,6 +321,7 @@ export const updateLeaderBoardInstruction = async (
     authority: PublicKey;
     game: PublicKey;
     leaderboard: PublicKey;
+    topEntries: PublicKey | null;
   },
   pre?: TransactionInstruction[]
 ): Promise<TransactionInstruction> => {
@@ -330,6 +331,7 @@ export const updateLeaderBoardInstruction = async (
       args.newNftMeta,
       args.newMinScore,
       args.newMaxScore,
+      args.newIsAscending,
       args.newAllowMultipleScores
     )
     .accounts(accounts)

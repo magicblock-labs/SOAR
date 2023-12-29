@@ -138,6 +138,7 @@ export interface UpdateLeaderboardArgs {
   newNftMeta: PublicKey | null;
   newMinScore: BN | null;
   newMaxScore: BN | null;
+  newIsAscending: boolean | null;
   newAllowMultipleScores: boolean | null;
 }
 export interface UpdatePlayerArgs {

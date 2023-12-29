@@ -258,6 +258,62 @@ describe("soar", () => {
     expect(info.nftMeta.toBase58()).to.equal(newMeta.toBase58());
   });
 
+  it("Can update a leaderboard with top entries", async () => {
+    const leaderboard = leaderBoards[0];
+    const newDescription = "newDescription";
+    const newMeta = Keypair.generate().publicKey;
+
+    let info = await client.fetchLeaderBoardAccount(leaderboard);
+    let entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(
+      info.topEntries
+    );
+
+    let prevIsAscending = entries.isAscending;
+    let prevAllowMultipleScores = info.allowMultipleScores;
+
+    const { transaction } = await client.updateGameLeaderboard(
+      auths[0].publicKey,
+      leaderboard,
+      newDescription,
+      newMeta,
+      info.minScore,
+      info.maxScore,
+      !prevIsAscending,
+      !prevAllowMultipleScores,
+      info.topEntries
+    );
+    await client.sendAndConfirmTransaction(transaction, [auths[0]]);
+
+    info = await client.fetchLeaderBoardAccount(leaderboard);
+    expect(info.allowMultipleScores).to.be.not.equal(prevAllowMultipleScores);
+
+    entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(
+      info.topEntries
+    );
+    expect(entries.isAscending).to.be.not.equal(prevIsAscending);
+
+    const { transaction: transactionR } = await client.updateGameLeaderboard(
+      auths[0].publicKey,
+      leaderboard,
+      newDescription,
+      newMeta,
+      info.minScore,
+      info.maxScore,
+      prevIsAscending,
+      prevAllowMultipleScores,
+      info.topEntries
+    );
+    await client.sendAndConfirmTransaction(transactionR, [auths[0]]);
+
+    info = await client.fetchLeaderBoardAccount(leaderboard);
+    expect(info.allowMultipleScores).to.be.equal(prevAllowMultipleScores);
+
+    entries = await gameClient.program.fetchLeaderBoardTopEntriesAccount(
+      info.topEntries
+    );
+    expect(entries.isAscending).to.be.equal(prevIsAscending);
+  });
+
   it("Can't add a leaderboard with the wrong authority", async () => {
     const dummyKeypair = Keypair.generate();
     const expectedFail = await gameClient
@@ -1334,8 +1390,6 @@ describe("soar", () => {
         false
       );
     await client.sendAndConfirmTransaction(transaction, [auths[1]]);
-
-    console.log("leaderboard", newLeaderBoard.toBase58());
 
     const info = await gameClient.program.fetchLeaderBoardAccount(
       newLeaderBoard

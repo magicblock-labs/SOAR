@@ -263,7 +263,8 @@ export class InstructionBuilder {
     args: UpdateLeaderboardArgs,
     authority: PublicKey,
     leaderboard: PublicKey,
-    game?: PublicKey
+    game?: PublicKey,
+    topEntries?: PublicKey
   ): Promise<
     [
       InstructionBuilder,
@@ -275,7 +276,8 @@ export class InstructionBuilder {
     const accounts = await this.accounts.updateLeaderboardAccounts(
       authority,
       leaderboard,
-      game
+      game,
+      topEntries
     );
     const instruction = await updateLeaderBoardInstruction(
       this.program,

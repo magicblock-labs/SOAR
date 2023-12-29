@@ -251,6 +251,12 @@ export type Soar = {
           name: "leaderboard";
           isMut: true;
           isSigner: false;
+        },
+        {
+          name: "topEntries";
+          isMut: true;
+          isSigner: false;
+          isOptional: true;
         }
       ];
       args: [
@@ -276,6 +282,12 @@ export type Soar = {
           name: "newMaxScore";
           type: {
             option: "u64";
+          };
+        },
+        {
+          name: "newIsAscending";
+          type: {
+            option: "bool";
           };
         },
         {
@@ -1994,6 +2006,12 @@ export const IDL: Soar = {
           isMut: true,
           isSigner: false,
         },
+        {
+          name: "topEntries",
+          isMut: true,
+          isSigner: false,
+          isOptional: true,
+        },
       ],
       args: [
         {
@@ -2018,6 +2036,12 @@ export const IDL: Soar = {
           name: "newMaxScore",
           type: {
             option: "u64",
+          },
+        },
+        {
+          name: "newIsAscending",
+          type: {
+            option: "bool",
           },
         },
         {

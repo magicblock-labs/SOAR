@@ -1,5 +1,5 @@
 export type Soar = {
-  version: "0.1.0";
+  version: "0.1.1";
   name: "soar";
   constants: [
     {
@@ -1741,7 +1741,7 @@ export type Soar = {
 };
 
 export const IDL: Soar = {
-  version: "0.1.0",
+  version: "0.1.1",
   name: "soar",
   constants: [
     {

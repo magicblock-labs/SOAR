@@ -17,8 +17,8 @@ soar = "SoarNNzwQHMwcfdkdLc6kvbkoMSxcHy89gTHrjhJYkk"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "devnet"
-wallet = "~/Documents/Solana/Utils/safe.json"
+cluster = "localnet"
+wallet = "client/tests/fixtures/provider.json"
 
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 client/tests/*"

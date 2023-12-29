@@ -1125,18 +1125,18 @@ export type Soar = {
             type: "u64";
           },
           {
-            name: "allowMultipleScores";
-            docs: [
-              "Whether or not multiple scores are allowed for a single player."
-            ];
-            type: "bool";
-          },
-          {
             name: "topEntries";
             docs: ["Top [entries](ScoreEntry) for a leaderboard."];
             type: {
               option: "publicKey";
             };
+          },
+          {
+            name: "allowMultipleScores";
+            docs: [
+              "Whether or not multiple scores are allowed for a single player."
+            ];
+            type: "bool";
           }
         ];
       };
@@ -2867,18 +2867,18 @@ export const IDL: Soar = {
             type: "u64",
           },
           {
-            name: "allowMultipleScores",
-            docs: [
-              "Whether or not multiple scores are allowed for a single player.",
-            ],
-            type: "bool",
-          },
-          {
             name: "topEntries",
             docs: ["Top [entries](ScoreEntry) for a leaderboard."],
             type: {
               option: "publicKey",
             },
+          },
+          {
+            name: "allowMultipleScores",
+            docs: [
+              "Whether or not multiple scores are allowed for a single player.",
+            ],
+            type: "bool",
           },
         ],
       },

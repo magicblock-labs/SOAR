@@ -102,7 +102,7 @@ const achievement = game.recentAchievementAddress();
 ## InstructionBuilder
 
 ```typescript
-import { InstructionBuilder } from "@soar/sdk"
+import { InstructionBuilder } from "@magicblock-labs/soar-sdk"
 ```
 
 Provides a set of methods for conveniently bundling transactions.

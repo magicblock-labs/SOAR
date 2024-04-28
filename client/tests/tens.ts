@@ -33,20 +33,20 @@ describe("tens", () => {
   // For admin actions that we want to be permissionless(i.e in this case we want our `tens` game to
   // automatically submit a score for a user), we can set a `tens` PDA as an additional authority and
   // write CPI functionality to call and sign the submitScore instruction from our on-chain program.
-  let offChainAuthority = Keypair.generate();
+  const offChainAuthority = Keypair.generate();
   let auths = [offChainAuthority.publicKey];
 
   const user = Keypair.generate();
 
   it("Can play the tens game and submit scores directly on-chain by CPI!", async () => {
-    let title = "Tens";
-    let description = "Increase and get a ten to win!";
-    let genre = Genre.Casual;
-    let gameType = GameType.Web;
-    let nftMeta = Keypair.generate().publicKey;
+    const title = "Tens";
+    const description = "Increase and get a ten to win!";
+    const genre = Genre.Casual;
+    const gameType = GameType.Web;
+    const nftMeta = Keypair.generate().publicKey;
 
     // Initialize the `SOAR` state representing the `tens` game.
-    let { transaction: init } = await soar.initializeNewGame(
+    const { transaction: init } = await soar.initializeNewGame(
       gameKp.publicKey,
       title,
       description,
@@ -55,13 +55,15 @@ describe("tens", () => {
       nftMeta,
       auths
     );
-    await soar.sendAndConfirmTransaction(init, [gameKp]);
+    await soar.sendAndConfirmTransaction(init, [gameKp], {
+      skipPreflight: true,
+    });
 
-    let leaderboardDescription = "LeaderBoard1";
-    let leaderboardMeta = Keypair.generate().publicKey;
+    const leaderboardDescription = "LeaderBoard1";
+    const leaderboardMeta = Keypair.generate().publicKey;
 
     // Initialize a leaderboard for it.
-    let { newLeaderBoard, topEntries, transaction } =
+    const { newLeaderBoard, topEntries, transaction } =
       await soar.addNewGameLeaderBoard(
         soarGame,
         offChainAuthority.publicKey,
@@ -73,7 +75,7 @@ describe("tens", () => {
     await soar.sendAndConfirmTransaction(transaction, [offChainAuthority]);
 
     // Derive the tensStatePDA of the `tens` program.
-    let tensPDA = PublicKey.findProgramAddressSync(
+    const tensPDA = PublicKey.findProgramAddressSync(
       [Buffer.from("tens")],
       tensProgram.programId
     )[0];
@@ -91,10 +93,10 @@ describe("tens", () => {
 
     // Make the tensState PDA of our `tens` program an authority of the game so it can permissionlessly
     // sign CPI requests to SOAR that require the authority's signature.
-    let newAuths = auths.concat([tensPDA]);
+    const newAuths = auths.concat([tensPDA]);
     auths = newAuths;
 
-    let { transaction: update } = await soar.updateGameAccount(
+    const { transaction: update } = await soar.updateGameAccount(
       soarGame,
       offChainAuthority.publicKey,
       undefined,
@@ -103,7 +105,7 @@ describe("tens", () => {
     await soar.sendAndConfirmTransaction(update, [offChainAuthority]);
 
     // Initialize a SOAR player account, required for interacting with the `tens` game.
-    let { transaction: initPlayer } = await soar.initializePlayerAccount(
+    const { transaction: initPlayer } = await soar.initializePlayerAccount(
       user.publicKey,
       "player1",
       PublicKey.default
@@ -111,7 +113,7 @@ describe("tens", () => {
     await soar.sendAndConfirmTransaction(initPlayer, [user]);
 
     // Register the player to the leaderboard.
-    let { newList: playerScoresList, transaction: regPlayer } =
+    const { newList: playerScoresList, transaction: regPlayer } =
       await soar.registerPlayerEntryForLeaderBoard(
         user.publicKey,
         newLeaderBoard
@@ -150,14 +152,14 @@ describe("tens", () => {
         .signers([user])
         .rpc();
 
-      let tens = await tensProgram.account.tens.fetch(tensPDA);
-      let counter = tens.counter.toNumber();
+      const tens = await tensProgram.account.tens.fetch(tensPDA);
+      const counter = tens.counter.toNumber();
 
       if (counter % 10 !== 0) {
         console.log(`..Moved ${counter}. Keep going!`);
       } else {
         console.log(`> Brilliant!. You moved ${counter} and won this round!`);
-        let playerScores = await soar.fetchPlayerScoresListAccount(
+        const playerScores = await soar.fetchPlayerScoresListAccount(
           accounts.playerScores
         );
         console.log(
@@ -168,10 +170,10 @@ describe("tens", () => {
       }
     }
 
-    //---------------------------------------------------------------------------------------------//
+    // ---------------------------------------------------------------------------------------------//
     //                       Setup mint and token accounts for testing.                            //
-    //---------------------------------------------------------------------------------------------//
-    let { mint, authority } = await utils.initializeTestMint(soar);
+    // ---------------------------------------------------------------------------------------------//
+    const { mint, authority } = await utils.initializeTestMint(soar);
 
     const tokenAccountOwner = offChainAuthority;
     const tokenAccount = await utils.createTokenAccount(
@@ -182,8 +184,8 @@ describe("tens", () => {
     await utils.mintToAccount(soar, mint, authority, tokenAccount, 5);
 
     const userATA = await utils.createTokenAccount(soar, user.publicKey, mint);
-    //---------------------------------------------------------------------------------------------//
-    //---------------------------------------------------------------------------------------------//
+    // ---------------------------------------------------------------------------------------------//
+    // ---------------------------------------------------------------------------------------------//
 
     // Now we add an achievement for this game and a ft reward for that achievement.
     const { newAchievement, transaction: addAchievement } =

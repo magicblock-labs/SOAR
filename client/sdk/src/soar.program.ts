@@ -1,11 +1,12 @@
-import { type AnchorProvider, Program } from "@coral-xyz/anchor";
+import { type AnchorProvider, Program, type Provider } from "@coral-xyz/anchor";
 import {
+  PublicKey,
   type ConfirmOptions,
-  type PublicKey,
+  type Connection,
   type GetProgramAccountsFilter,
   type Signer,
-  type TransactionInstruction,
   type Transaction,
+  type TransactionInstruction,
 } from "@solana/web3.js";
 import { IDL, type Soar } from "./idl/soar";
 import { PROGRAM_ID } from "./constants";
@@ -14,22 +15,32 @@ import { InstructionBuilder } from "./instructions";
 import { Utils } from "./utils";
 import { type InstructionResult } from "./types";
 import {
+  AchievementAccount,
+  GameAccount,
+  type GameAttributes,
   type GameType,
   type Genre,
-  type GameAttributes,
-  GameAccount,
-  AchievementAccount,
-  PlayerAccount,
   LeaderBoardAccount,
-  TopEntriesAccount,
   MergedAccount,
-  PlayerScoresListAccount,
+  PlayerAccount,
   PlayerAchievementAccount,
+  PlayerScoresListAccount,
   RewardAccount,
+  TopEntriesAccount,
 } from "./state";
 import bs58 from "bs58";
 import { createAssociatedTokenAccountIdempotentInstruction } from "@solana/spl-token";
 import { GameClient } from "./soar.game";
+
+export class SimpleProvider implements Provider {
+  readonly connection: Connection;
+  readonly publicKey?: PublicKey;
+
+  constructor(connection: Connection, publicKey?: PublicKey) {
+    this.connection = connection;
+    this.publicKey = publicKey;
+  }
+}
 
 export class SoarProgram {
   readonly program: Program<Soar>;
@@ -42,28 +53,40 @@ export class SoarProgram {
     this.builder = new InstructionBuilder(provider, programId);
   }
 
+  public static getFromConnection(
+    connection: Connection,
+    defaultPayer: PublicKey,
+    programId?: PublicKey
+  ): SoarProgram {
+    return new SoarProgram(
+      new SimpleProvider(connection, defaultPayer) as AnchorProvider,
+      programId ?? PROGRAM_ID
+    );
+  }
+
   /// Static initializer for a SoarProgram instance.
   public static get(
     provider: AnchorProvider,
     programId?: PublicKey
   ): SoarProgram {
-    const client = new SoarProgram(provider, programId ?? PROGRAM_ID);
-    return client;
+    return new SoarProgram(provider, programId ?? PROGRAM_ID);
   }
 
   /**
    * Initialize a new Game account with the set parameters.
    */
   public async initializeNewGame(
-    newGame: PublicKey,
+    newGame: PublicKey | string,
     title: string,
     description: string,
     genre: Genre,
     gameType: GameType,
-    nftMeta: PublicKey,
+    nftMeta: PublicKey | string,
     authorities: PublicKey[]
   ): Promise<InstructionResult.InitializeGame> {
     this.builder.clean();
+    newGame = this.getPublicKey(newGame);
+    nftMeta = this.getPublicKey(nftMeta);
     const step = await this.builder.initGameStep(
       {
         gameMeta: {
@@ -88,11 +111,13 @@ export class SoarProgram {
    * Initialize a player account required to perform game-related actions.
    */
   public async initializePlayerAccount(
-    user: PublicKey,
+    user: PublicKey | string,
     username: string,
-    nftMeta: PublicKey
+    nftMeta: PublicKey | string
   ): Promise<InstructionResult.InitializePlayer> {
     this.builder.clean();
+    user = this.getPublicKey(user);
+    nftMeta = this.getPublicKey(nftMeta);
     const step = await this.builder.initPlayerStep(
       {
         username,
@@ -111,11 +136,13 @@ export class SoarProgram {
    * Update a game's attributes.
    */
   public async updateGameAccount(
-    game: PublicKey,
-    authority: PublicKey,
+    game: PublicKey | string,
+    authority: PublicKey | string,
     newMeta?: GameAttributes,
     newAuths?: PublicKey[]
   ): Promise<InstructionResult.UpdateGame> {
+    game = this.getPublicKey(game);
+    authority = this.getPublicKey(authority);
     if (newMeta === undefined && newAuths === undefined) {
       throw new Error(
         "Expected at least one of newMeta and newAuths to be defined"
@@ -139,10 +166,12 @@ export class SoarProgram {
    * Update a player account's attributes.
    */
   public async updatePlayerAccount(
-    user: PublicKey,
+    user: PublicKey | string,
     newUsername?: string,
-    newNftMeta?: PublicKey
+    newNftMeta?: PublicKey | string
   ): Promise<InstructionResult.UpdatePlayer> {
+    user = this.getPublicKey(user);
+    newNftMeta = this.getNullablePublicKey(newNftMeta);
     if (newUsername === undefined && newNftMeta === undefined) {
       throw new Error(
         "Expected one of newUsername and newNftMeta to be defined"
@@ -166,11 +195,13 @@ export class SoarProgram {
    * single user.
    */
   public async initiateMerge(
-    user: PublicKey,
-    newMergeAccount: PublicKey,
+    user: PublicKey | string,
+    newMergeAccount: PublicKey | string,
     playerAccountKeys: PublicKey[]
   ): Promise<InstructionResult.InitiateMerge> {
     this.builder.clean();
+    user = this.getPublicKey(user);
+    newMergeAccount = this.getPublicKey(newMergeAccount);
 
     const step = await this.builder.initMergeStep(
       {
@@ -188,10 +219,12 @@ export class SoarProgram {
 
   /** Mark approval for a merge action. */
   public async registerMergeApproval(
-    user: PublicKey,
-    mergeAccount: PublicKey
+    user: PublicKey | string,
+    mergeAccount: PublicKey | string
   ): Promise<InstructionResult.RegisterMergeApproval> {
     this.builder.clean();
+    user = this.getPublicKey(user);
+    mergeAccount = this.getPublicKey(mergeAccount);
 
     const step = await this.builder.registerMergeApprovalStep(
       user,
@@ -203,13 +236,16 @@ export class SoarProgram {
 
   /** Add a new achievement for a Game. */
   public async addNewGameAchievement(
-    gameAddress: PublicKey,
-    authority: PublicKey,
+    gameAddress: PublicKey | string,
+    authority: PublicKey | string,
     title: string,
     description: string,
-    nftMeta: PublicKey
+    nftMeta: PublicKey | string
   ): Promise<InstructionResult.AddGameAchievement> {
     this.builder.clean();
+    gameAddress = this.getPublicKey(gameAddress);
+    authority = this.getPublicKey(authority);
+    nftMeta = this.getPublicKey(nftMeta);
 
     const step = await this.builder.addAchievementStep(
       {
@@ -229,10 +265,10 @@ export class SoarProgram {
 
   /** Add a new leaderboard for a Game. */
   public async addNewGameLeaderBoard(
-    gameAddress: PublicKey,
-    authority: PublicKey,
+    gameAddress: PublicKey | string,
+    authority: PublicKey | string,
     description: string,
-    nftMeta: PublicKey,
+    nftMeta: PublicKey | string,
     scoresToRetain: number,
     scoresOrder: boolean,
     decimals?: number,
@@ -241,6 +277,9 @@ export class SoarProgram {
     allowMultipleScores?: boolean
   ): Promise<InstructionResult.AddLeaderBoard> {
     this.builder.clean();
+    gameAddress = this.getPublicKey(gameAddress);
+    authority = this.getPublicKey(authority);
+    nftMeta = this.getPublicKey(nftMeta);
 
     const step = await this.builder.addLeaderBoardStep(
       {
@@ -266,17 +305,21 @@ export class SoarProgram {
 
   /** Update a leaderboard. */
   public async updateGameLeaderboard(
-    authority: PublicKey,
-    leaderboard: PublicKey,
+    authority: PublicKey | string,
+    leaderboard: PublicKey | string,
     newDescription?: string,
-    newNftMeta?: PublicKey,
+    newNftMeta?: PublicKey | string,
     newMinScore?: BN,
     newMaxScore?: BN,
     newIsAscending?: boolean,
     newAllowMultipleScores?: boolean,
-    topEntries?: PublicKey
+    topEntries?: PublicKey | string
   ): Promise<InstructionResult.UpdateLeaderboard> {
     this.builder.clean();
+    authority = this.getPublicKey(authority);
+    leaderboard = this.getPublicKey(leaderboard);
+    newNftMeta = this.getNullablePublicKey(newNftMeta);
+    topEntries = this.getNullablePublicKey(topEntries);
     if (newDescription === undefined && newNftMeta === undefined) {
       throw new Error(
         "One of newDescription or newNftMeta is expected to be defined"
@@ -303,10 +346,12 @@ export class SoarProgram {
 
   /** Register a player to a particular leaderboard. */
   public async registerPlayerEntryForLeaderBoard(
-    user: PublicKey,
-    leaderboard: PublicKey
+    user: PublicKey | string,
+    leaderboard: PublicKey | string
   ): Promise<InstructionResult.RegisterPlayerEntry> {
     this.builder.clean();
+    user = this.getPublicKey(user);
+    leaderboard = this.getPublicKey(leaderboard);
 
     const step = await this.builder.registerPlayerEntryStep(user, leaderboard);
 
@@ -315,12 +360,15 @@ export class SoarProgram {
 
   /** Submit a player's score to a leaderboard they're registered to. */
   public async submitScoreToLeaderBoard(
-    user: PublicKey,
-    authority: PublicKey,
-    leaderboard: PublicKey,
+    user: PublicKey | string,
+    authority: PublicKey | string,
+    leaderboard: PublicKey | string,
     score: BN
   ): Promise<InstructionResult.SubmitScore> {
     this.builder.clean();
+    user = this.getPublicKey(user);
+    authority = this.getPublicKey(authority);
+    leaderboard = this.getPublicKey(leaderboard);
 
     const step = await this.builder.submitScoreStep(
       {
@@ -336,13 +384,16 @@ export class SoarProgram {
 
   /** Update an achievement's details. */
   public async updateGameAchievement(
-    authority: PublicKey,
-    achievement: PublicKey,
+    authority: PublicKey | string,
+    achievement: PublicKey | string,
     newTitle?: string,
     newDescription?: string,
-    newNftMeta?: PublicKey
+    newNftMeta?: PublicKey | string
   ): Promise<InstructionResult.UpdateAchievement> {
     this.builder.clean();
+    authority = this.getPublicKey(authority);
+    achievement = this.getPublicKey(achievement);
+    newNftMeta = this.getNullablePublicKey(newNftMeta);
 
     if (
       newTitle === undefined &&
@@ -367,13 +418,18 @@ export class SoarProgram {
 
   /** Unlock an achievement for a player. */
   public async unlockPlayerAchievement(
-    user: PublicKey,
-    authority: PublicKey,
-    achievement: PublicKey,
-    leaderboard: PublicKey,
-    game?: PublicKey
+    user: PublicKey | string,
+    authority: PublicKey | string,
+    achievement: PublicKey | string,
+    leaderboard: PublicKey | string,
+    game?: PublicKey | string
   ): Promise<InstructionResult.UnlockPlayerAchievement> {
     this.builder.clean();
+    user = this.getPublicKey(user);
+    authority = this.getPublicKey(authority);
+    achievement = this.getPublicKey(achievement);
+    leaderboard = this.getPublicKey(leaderboard);
+    game = this.getNullablePublicKey(game);
 
     const step = await this.builder.unlockPlayerAchievementStep(
       user,
@@ -390,17 +446,22 @@ export class SoarProgram {
 
   /** Add a fungible token reward for unlocking an achievement. */
   public async addFungibleReward(
-    authority: PublicKey,
-    newReward: PublicKey,
-    achievement: PublicKey,
+    authority: PublicKey | string,
+    newReward: PublicKey | string,
+    achievement: PublicKey | string,
     amountPerUser: BN,
     availableRewards: BN,
     initialDelegation: BN,
     mint: PublicKey,
-    sourceTokenAccount: PublicKey,
-    tokenAccountOwner: PublicKey
+    sourceTokenAccount: PublicKey | string,
+    tokenAccountOwner: PublicKey | string
   ): Promise<InstructionResult.AddReward> {
     this.builder.clean();
+    authority = this.getPublicKey(authority);
+    newReward = this.getPublicKey(newReward);
+    achievement = this.getPublicKey(achievement);
+    sourceTokenAccount = this.getPublicKey(sourceTokenAccount);
+    tokenAccountOwner = this.getPublicKey(tokenAccountOwner);
 
     const step = await this.builder.addFungibleRewardStep(
       {
@@ -430,16 +491,23 @@ export class SoarProgram {
 
   /** Add a non-fungible token reward for unlocking an achievement. */
   public async addNonFungibleReward(
-    authority: PublicKey,
-    newReward: PublicKey,
-    achievement: PublicKey,
+    authority: PublicKey | string,
+    newReward: PublicKey | string,
+    achievement: PublicKey | string,
     availableRewards: BN,
     uri: string,
     name: string,
     symbol: string,
-    collectionMint?: PublicKey,
-    collectionUpdateAuthority?: PublicKey
+    collectionMint?: PublicKey | string,
+    collectionUpdateAuthority?: PublicKey | string
   ): Promise<InstructionResult.AddReward> {
+    authority = this.getPublicKey(authority);
+    newReward = this.getPublicKey(newReward);
+    achievement = this.getPublicKey(achievement);
+    collectionMint = this.getNullablePublicKey(collectionMint);
+    collectionUpdateAuthority = this.getNullablePublicKey(
+      collectionUpdateAuthority
+    );
     this.builder.clean();
 
     if (collectionMint !== undefined) {
@@ -472,11 +540,15 @@ export class SoarProgram {
 
   /** Claim an non-fungible token reward as a result of unlocking an achievement. */
   public async claimNftReward(
-    authority: PublicKey,
-    achievement: PublicKey,
-    mint: PublicKey,
-    user: PublicKey
+    authority: PublicKey | string,
+    achievement: PublicKey | string,
+    mint: PublicKey | string,
+    user: PublicKey | string
   ): Promise<InstructionResult.ClaimNftReward> {
+    authority = this.getPublicKey(authority);
+    achievement = this.getPublicKey(achievement);
+    mint = this.getPublicKey(mint);
+    user = this.getPublicKey(user);
     this.builder.clean();
 
     const step = await this.builder.claimNftRewardStep(
@@ -494,11 +566,14 @@ export class SoarProgram {
 
   /** Claim a fungible-token reward as a result for unlocking an achievement. */
   public async claimFtReward(
-    authority: PublicKey,
-    achievement: PublicKey,
-    user: PublicKey
+    authority: PublicKey | string,
+    achievement: PublicKey | string,
+    user: PublicKey | string
   ): Promise<InstructionResult.ClaimFtReward> {
     this.builder.clean();
+    authority = this.getPublicKey(authority);
+    achievement = this.getPublicKey(achievement);
+    user = this.getPublicKey(user);
 
     const accounts = await this.builder.accounts.claimFtRewardAccounts(
       authority,
@@ -533,11 +608,14 @@ export class SoarProgram {
 
   /** Verify a minted NFT reward as part of the set collection. */
   public async verifyPlayerNftReward(
-    user: PublicKey,
-    achievement: PublicKey,
-    mint: PublicKey
+    user: PublicKey | string,
+    achievement: PublicKey | string,
+    mint: PublicKey | string
   ): Promise<InstructionResult.VerifyReward> {
     this.builder.clean();
+    user = this.getPublicKey(user);
+    achievement = this.getPublicKey(achievement);
+    mint = this.getPublicKey(mint);
 
     const step = await this.builder.verifyPlayerNftRewardStep(
       user,
@@ -549,10 +627,13 @@ export class SoarProgram {
   }
 
   private createATA(
-    mint: PublicKey,
-    owner: PublicKey,
-    ata: PublicKey
+    mint: PublicKey | string,
+    owner: PublicKey | string,
+    ata: PublicKey | string
   ): TransactionInstruction {
+    mint = this.getPublicKey(mint);
+    owner = this.getPublicKey(owner);
+    ata = this.getPublicKey(ata);
     return createAssociatedTokenAccountIdempotentInstruction(
       this.provider.publicKey,
       ata,
@@ -729,5 +810,19 @@ export class SoarProgram {
         achievement.publicKey
       )
     );
+  }
+
+  private getPublicKey(user: PublicKey | string): PublicKey {
+    return user != null && typeof user === "string"
+      ? new PublicKey(user)
+      : user;
+  }
+
+  private getNullablePublicKey(
+    user: PublicKey | string | undefined
+  ): PublicKey | undefined {
+    return user != null && typeof user === "string"
+      ? new PublicKey(user)
+      : user;
   }
 }

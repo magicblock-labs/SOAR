@@ -23,21 +23,23 @@ export class AccountsBuilder {
   }
 
   initializeGameAccounts = async (
-    game: PublicKey
+    game: PublicKey,
+    creator?: PublicKey
   ): Promise<{
     creator: PublicKey;
     game: PublicKey;
     systemProgram: PublicKey;
   }> => {
     return {
-      creator: this.provider.publicKey,
+      creator: creator != null ? creator : this.provider.publicKey,
       game,
       systemProgram: SystemProgram.programId,
     };
   };
 
   initializePlayerAccounts = async (
-    user: PublicKey
+    user: PublicKey,
+    payer?: PublicKey
   ): Promise<{
     playerAccount: PublicKey;
     user: PublicKey;
@@ -47,14 +49,15 @@ export class AccountsBuilder {
     return {
       playerAccount: this.utils.derivePlayerAddress(user)[0],
       user,
-      payer: this.provider.publicKey,
+      payer: payer != null ? payer : this.provider.publicKey,
       systemProgram: SystemProgram.programId,
     };
   };
 
   initiateMergeAccounts = async (
     user: PublicKey,
-    mergeAccount: PublicKey
+    mergeAccount: PublicKey,
+    payer?: PublicKey
   ): Promise<{
     user: PublicKey;
     payer: PublicKey;
@@ -64,7 +67,7 @@ export class AccountsBuilder {
   }> => {
     return {
       user,
-      payer: this.provider.publicKey,
+      payer: payer != null ? payer : this.provider.publicKey,
       playerAccount: this.utils.derivePlayerAddress(user)[0],
       mergeAccount,
       systemProgram: SystemProgram.programId,
@@ -74,7 +77,8 @@ export class AccountsBuilder {
   addAchievementAccounts = async (
     game: PublicKey,
     authority: PublicKey,
-    nextAchievement?: PublicKey
+    nextAchievement?: PublicKey,
+    payer?: PublicKey
   ): Promise<{
     newAchievement: PublicKey;
     game: PublicKey;
@@ -92,7 +96,7 @@ export class AccountsBuilder {
     return {
       newAchievement,
       game,
-      payer: this.provider.publicKey,
+      payer: payer != null ? payer : this.provider.publicKey,
       authority,
       systemProgram: SystemProgram.programId,
     };
@@ -102,7 +106,8 @@ export class AccountsBuilder {
     game: PublicKey,
     authority: PublicKey,
     nextLeaderboard?: PublicKey,
-    nullTopEntries?: boolean
+    nullTopEntries?: boolean,
+    payer?: PublicKey
   ): Promise<{
     authority: PublicKey;
     game: PublicKey;
@@ -130,7 +135,7 @@ export class AccountsBuilder {
     return {
       authority,
       game,
-      payer: this.provider.publicKey,
+      payer: payer != null ? payer : this.provider.publicKey,
       leaderboard: newLeaderBoard,
       topEntries,
       systemProgram: SystemProgram.programId,
@@ -144,7 +149,8 @@ export class AccountsBuilder {
     sourceTokenAccount: PublicKey,
     tokenAccountOwner: PublicKey,
     mint: PublicKey,
-    game?: PublicKey
+    game?: PublicKey,
+    payer?: PublicKey
   ): Promise<{
     authority: PublicKey;
     payer: PublicKey;
@@ -162,7 +168,7 @@ export class AccountsBuilder {
 
     return {
       authority,
-      payer: this.provider.publicKey,
+      payer: payer != null ? payer : this.provider.publicKey,
       game: gameAddress,
       achievement,
       newReward,
@@ -180,7 +186,8 @@ export class AccountsBuilder {
     achievement: PublicKey,
     collectionMint?: PublicKey,
     collectionUpdateAuthority?: PublicKey,
-    game?: PublicKey
+    game?: PublicKey,
+    payer?: PublicKey
   ): Promise<{
     authority: PublicKey;
     payer: PublicKey;
@@ -210,7 +217,7 @@ export class AccountsBuilder {
 
     return {
       authority,
-      payer: this.provider.publicKey,
+      payer: payer != null ? payer : this.provider.publicKey,
       game: gameAddress,
       achievement,
       newReward,
@@ -314,7 +321,8 @@ export class AccountsBuilder {
     mint: PublicKey,
     user: PublicKey,
     reward?: PublicKey,
-    game?: PublicKey
+    game?: PublicKey,
+    payer?: PublicKey
   ): Promise<{
     user: PublicKey;
     authority: PublicKey;
@@ -375,7 +383,7 @@ export class AccountsBuilder {
       achievement,
       reward: rewardAddress,
       playerAchievement,
-      payer: this.provider.publicKey,
+      payer: payer != null ? payer : this.provider.publicKey,
       claim,
       newMint: mint,
       newMetadata: metadata,
@@ -392,7 +400,8 @@ export class AccountsBuilder {
   registerPlayerEntryAccounts = async (
     user: PublicKey,
     leaderboard: PublicKey,
-    game?: PublicKey
+    game?: PublicKey,
+    payer?: PublicKey
   ): Promise<{
     user: PublicKey;
     payer: PublicKey;
@@ -412,7 +421,7 @@ export class AccountsBuilder {
 
     return {
       user,
-      payer: this.provider.publicKey,
+      payer: payer != null ? payer : this.provider.publicKey,
       playerAccount,
       newList,
       game: gameAddress,
@@ -425,7 +434,8 @@ export class AccountsBuilder {
     user: PublicKey,
     authority: PublicKey,
     leaderboard: PublicKey,
-    game?: PublicKey
+    game?: PublicKey,
+    payer?: PublicKey
   ): Promise<{
     payer: PublicKey;
     playerAccount: PublicKey;
@@ -448,7 +458,7 @@ export class AccountsBuilder {
     const topEntries = leaderboardAccount.topEntries;
 
     return {
-      payer: this.provider.publicKey,
+      payer: payer != null ? payer : this.provider.publicKey,
       playerAccount,
       authority,
       game: gameAddress,
@@ -483,7 +493,8 @@ export class AccountsBuilder {
     authority: PublicKey,
     achievement: PublicKey,
     leaderboard: PublicKey,
-    game?: PublicKey
+    game?: PublicKey,
+    payer?: PublicKey
   ): Promise<{
     payer: PublicKey;
     playerAccount: PublicKey;
@@ -507,7 +518,7 @@ export class AccountsBuilder {
     )[0];
 
     return {
-      payer: this.provider.publicKey,
+      payer: payer != null ? payer : this.provider.publicKey,
       playerAccount,
       playerScores: playerEntryList,
       game: gameAddress,
@@ -519,7 +530,8 @@ export class AccountsBuilder {
 
   updateGameAccounts = async (
     game: PublicKey,
-    authority: PublicKey
+    authority: PublicKey,
+    payer?: PublicKey
   ): Promise<{
     payer: PublicKey;
     game: PublicKey;
@@ -527,7 +539,7 @@ export class AccountsBuilder {
     systemProgram: PublicKey;
   }> => {
     return {
-      payer: this.provider.publicKey,
+      payer: payer != null ? payer : this.provider.publicKey,
       game,
       authority,
       systemProgram: SystemProgram.programId,
@@ -573,7 +585,8 @@ export class AccountsBuilder {
     achievement: PublicKey,
     mint: PublicKey,
     reward?: PublicKey,
-    game?: PublicKey
+    game?: PublicKey,
+    payer?: PublicKey
   ): Promise<{
     payer: PublicKey;
     user: PublicKey;
@@ -637,7 +650,7 @@ export class AccountsBuilder {
       this.utils.deriveEditionAddress(collectionMint)[0];
 
     return {
-      payer: this.provider.publicKey,
+      payer: payer != null ? payer : this.provider.publicKey,
       user,
       playerAccount,
       achievement,

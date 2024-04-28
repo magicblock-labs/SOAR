@@ -1,3 +1,5 @@
+#![allow(unused_imports)]
+
 pub mod add_achievement;
 pub mod add_leaderboard;
 pub mod add_reward;

@@ -1,6 +1,6 @@
 {
   "name": "@magicblock-labs/soar-sdk",
-  "version": "0.1.22",
+  "version": "0.1.23",
   "description": "Sdk bindings for the SOAR smart contract.",
   "repository": {
     "type": "git",
@@ -27,13 +27,11 @@
   "dependencies": {
     "@coral-xyz/anchor": "^0.27.0",
     "@metaplex-foundation/beet-solana": "^0.4.0",
-    "@metaplex-foundation/js": "^0.19.3",
+    "@metaplex-foundation/js": "^0.20.1",
     "@metaplex-foundation/mpl-token-metadata": "^2.13.0",
     "@solana/spl-token": "^0.3.8",
     "@solana/web3.js": "^1.73.2",
     "bn.js": "^5.2.1",
-    "bs58": "^5.0.0",
-    "tsx": "^3.12.3",
     "typescript": "*"
   },
   "devDependencies": {
@@ -41,6 +39,7 @@
     "@types/chai": "^4.3.0",
     "@typescript-eslint/eslint-plugin": "^5.50.0",
     "@typescript-eslint/parser": "^5.50.0",
+    "bs58": "^5.0.0",
     "chai": "^4.3.4",
     "eslint": "^8.33.0",
     "eslint-config-prettier": "^8.6.0",
@@ -48,7 +47,9 @@
     "eslint-plugin-n": "^16.5.0",
     "eslint-plugin-react": "^7.32.2",
     "prettier": "^2.6.2",
+    "tsx": "^3.12.3",
     "typedoc": "^0.25.1",
-    "typedoc-plugin-markdown": "^3.16.0"
+    "typedoc-plugin-markdown": "^3.16.0",
+    "typescript": "*"
   }
 }

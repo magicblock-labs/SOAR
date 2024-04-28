@@ -68,7 +68,8 @@ export class InstructionBuilder {
 
   public async initGameStep(
     args: InitializeGameArgs,
-    newGame: PublicKey
+    newGame: PublicKey,
+    creator?: PublicKey
   ): Promise<
     [
       InstructionBuilder,
@@ -77,7 +78,10 @@ export class InstructionBuilder {
       >
     ]
   > {
-    const accounts = await this.accounts.initializeGameAccounts(newGame);
+    const accounts = await this.accounts.initializeGameAccounts(
+      newGame,
+      creator
+    );
     const instruction = await initializeGameInstruction(
       this.program,
       args,
@@ -89,7 +93,8 @@ export class InstructionBuilder {
 
   public async initPlayerStep(
     args: InitializePlayerArgs,
-    user: PublicKey
+    user: PublicKey,
+    payer?: PublicKey
   ): Promise<
     [
       InstructionBuilder,
@@ -98,7 +103,7 @@ export class InstructionBuilder {
       >
     ]
   > {
-    const accounts = await this.accounts.initializePlayerAccounts(user);
+    const accounts = await this.accounts.initializePlayerAccounts(user, payer);
     const instruction = await initPlayerInstruction(
       this.program,
       args,
@@ -111,14 +116,19 @@ export class InstructionBuilder {
   public async updateGameStep(
     args: UpdateGameArgs,
     game: PublicKey,
-    authority: PublicKey
+    authority: PublicKey,
+    payer?: PublicKey
   ): Promise<
     [
       InstructionBuilder,
       Awaited<ReturnType<typeof AccountsBuilder.prototype.updateGameAccounts>>
     ]
   > {
-    const accounts = await this.accounts.updateGameAccounts(game, authority);
+    const accounts = await this.accounts.updateGameAccounts(
+      game,
+      authority,
+      payer
+    );
     const instruction = await updateGameInstruction(
       this.program,
       args,
@@ -150,7 +160,8 @@ export class InstructionBuilder {
   public async initMergeStep(
     args: InitMergeArgs,
     user: PublicKey,
-    newMergeAccount: PublicKey
+    newMergeAccount: PublicKey,
+    payer?: PublicKey
   ): Promise<
     [
       InstructionBuilder,
@@ -161,7 +172,8 @@ export class InstructionBuilder {
   > {
     const accounts = await this.accounts.initiateMergeAccounts(
       user,
-      newMergeAccount
+      newMergeAccount,
+      payer
     );
     const instruction = await initiateMergeInstruction(
       this.program,
@@ -201,7 +213,8 @@ export class InstructionBuilder {
     args: AddAchievementArgs,
     game: PublicKey,
     authority: PublicKey,
-    nextAchievement?: PublicKey
+    nextAchievement?: PublicKey,
+    payer?: PublicKey
   ): Promise<
     [
       InstructionBuilder,
@@ -213,7 +226,8 @@ export class InstructionBuilder {
     const accounts = await this.accounts.addAchievementAccounts(
       game,
       authority,
-      nextAchievement
+      nextAchievement,
+      payer
     );
     const instruction = await addAchievementInstruction(
       this.program,
@@ -228,7 +242,8 @@ export class InstructionBuilder {
     args: AddLeaderBoardArgs,
     gameAddress: PublicKey,
     authority: PublicKey,
-    nextLeaderboard?: PublicKey
+    nextLeaderboard?: PublicKey,
+    payer?: PublicKey
   ): Promise<
     [
       InstructionBuilder,
@@ -248,7 +263,8 @@ export class InstructionBuilder {
       gameAddress,
       authority,
       nextLeaderboard,
-      nullTopEntries
+      nullTopEntries,
+      payer
     );
     const instruction = await addLeaderBoardInstruction(
       this.program,
@@ -291,7 +307,8 @@ export class InstructionBuilder {
   public async registerPlayerEntryStep(
     user: PublicKey,
     leaderboard: PublicKey,
-    game?: PublicKey
+    game?: PublicKey,
+    payer?: PublicKey
   ): Promise<
     [
       InstructionBuilder,
@@ -303,7 +320,8 @@ export class InstructionBuilder {
     const accounts = await this.accounts.registerPlayerEntryAccounts(
       user,
       leaderboard,
-      game
+      game,
+      payer
     );
     const instruction = await registerPlayerEntryInstruction(
       this.program,
@@ -318,7 +336,8 @@ export class InstructionBuilder {
     user: PublicKey,
     authority: PublicKey,
     leaderboard: PublicKey,
-    game?: PublicKey
+    game?: PublicKey,
+    payer?: PublicKey
   ): Promise<
     [
       InstructionBuilder,
@@ -329,7 +348,8 @@ export class InstructionBuilder {
       user,
       authority,
       leaderboard,
-      game
+      game,
+      payer
     );
     const instruction = await submitScoreInstruction(
       this.program,
@@ -372,7 +392,8 @@ export class InstructionBuilder {
     authority: PublicKey,
     achievement: PublicKey,
     leaderboard: PublicKey,
-    game?: PublicKey
+    game?: PublicKey,
+    payer?: PublicKey
   ): Promise<
     [
       InstructionBuilder,
@@ -388,7 +409,8 @@ export class InstructionBuilder {
       authority,
       achievement,
       leaderboard,
-      game
+      game,
+      payer
     );
     const instruction = await unlockPlayerAchievementInstruction(
       this.program,
@@ -406,7 +428,8 @@ export class InstructionBuilder {
     sourceTokenAccount: PublicKey,
     tokenAccountOwner: PublicKey,
     mint: PublicKey,
-    game?: PublicKey
+    game?: PublicKey,
+    payer?: PublicKey
   ): Promise<
     [
       InstructionBuilder,
@@ -420,7 +443,8 @@ export class InstructionBuilder {
       sourceTokenAccount,
       tokenAccountOwner,
       mint,
-      game
+      game,
+      payer
     );
     const instruction = await addFtRewardInstruction(
       this.program,
@@ -438,7 +462,8 @@ export class InstructionBuilder {
     achievement: PublicKey,
     collectionMint?: PublicKey,
     collectionUpdateAuthority?: PublicKey,
-    game?: PublicKey
+    game?: PublicKey,
+    payer?: PublicKey
   ): Promise<
     [
       InstructionBuilder,
@@ -451,7 +476,8 @@ export class InstructionBuilder {
       achievement,
       collectionMint,
       collectionUpdateAuthority,
-      game
+      game,
+      payer
     );
     const instruction = await addNftRewardInstruction(
       this.program,
@@ -468,7 +494,8 @@ export class InstructionBuilder {
     mint: PublicKey,
     user: PublicKey,
     reward?: PublicKey,
-    game?: PublicKey
+    game?: PublicKey,
+    payer?: PublicKey
   ): Promise<
     [
       InstructionBuilder,
@@ -483,7 +510,8 @@ export class InstructionBuilder {
       mint,
       user,
       reward,
-      game
+      game,
+      payer
     );
     const instruction = await claimNftRewardInstruction(this.program, accounts);
 
@@ -527,7 +555,8 @@ export class InstructionBuilder {
     achievement: PublicKey,
     mint: PublicKey,
     reward?: PublicKey,
-    game?: PublicKey
+    game?: PublicKey,
+    payer?: PublicKey
   ): Promise<
     [
       InstructionBuilder,
@@ -541,7 +570,8 @@ export class InstructionBuilder {
       achievement,
       mint,
       reward,
-      game
+      game,
+      payer
     );
     const instruction = await verifyNftRewardInstruction(
       this.program,

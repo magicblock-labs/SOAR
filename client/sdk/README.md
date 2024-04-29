@@ -16,13 +16,13 @@ This Typescript sdk provides a convenient interface and methods for interacting 
 
 ## Getting started
 
+### Create a new game
+
 ```typescript
 import { SoarProgram, GameType, Genre } from "@magicblock-labs/soar-sdk";
 
-const provider = anchor.AnchorProvider.env();
-anchor.setProvider(provider);
-
-const client = SoarProgram.get(provider);
+// Create a Soar client using the '@solana/web3.js' active Connection and a defaultPayer
+const client = SoarProgram.getFromConnection(connection, defaultPayer); 
 
 let game = Keypair.generate();
 let title = "Game1";
@@ -35,8 +35,41 @@ let _auths = auths.map((keypair) => keypair.publicKey);
 // Retrieve the bundled transaction.
 let { newGame, transaction } = await client.initializeNewGame(game.publicKey, title, description, genre, gameType, nftMeta, _auths);
 // Send and confirm the transaction with the game keypair as signer. 
-await client.sendAndConfirmTransaction(transaction, [game]);
+await web3.sendAndConfirmTransaction(connection, transaction);
 ```
+
+### Create a leaderboard
+
+```typescript
+const transactionIx = await client.addNewGameLeaderBoard(
+    newGame,
+    authWallet.publicKey,
+    "my leaderboard", // description
+    leaderboardNft, // nft associated with the leaderboard
+    100,
+    true // isAscending
+);
+
+await web3.sendAndConfirmTransaction(connection, transactionIx.transaction, [authWallet]);
+```typescript
+
+### Submit a score
+
+```typescript
+const score = 10;
+const playerAddress = new web3.PublicKey("..."); // The player publicKey
+const authWallet = web3.Keypair.fromSecretKey(bs58.decode("")); // AUTH_WALLET_PRIVATE_KEY
+const leaderboardPda = new web3.PublicKey(""); // LEADERBOARD_PDA
+
+const transactionIx = await client.submitScoreToLeaderBoard(
+    playerAddress,
+    authWallet.publicKey,
+    leaderboardPda,
+    new BN(score)
+);
+
+await web3.sendAndConfirmTransaction(connection, transactionIx.transaction, [authWallet]);
+```typescript
 
 ## Classes
 
@@ -68,20 +101,20 @@ const accounts = await client.fetchAllLeaderboardAccounts([]);
 The `GameClient` provides a more specific set of functions tailored to a single Game account.
 
 ```typescript
-import { GameClient } from "@soar/sdk";
+import { GameClient } from "@magicblock-labs/soar-sdk";
 ```
 
 Get an instance representing an existing on-chain Game account:
 
 ```typescript
-const soar = SoarProgram.get(provider);
+const soar = SoarProgram.getFromConnection(connection, defaultPayer);
 const gameClient = new GameClient(soar, address);
 ```
 
 Register a new game:
 
 ```typescript
-const soar = SoarProgram.get(provider);
+const soar = SoarProgram.getFromConnection(connection, defaultPayer);
 const game = new GameClient.register(soar, ...);
 ```
 
@@ -105,7 +138,7 @@ const achievement = game.recentAchievementAddress();
 import { InstructionBuilder } from "@magicblock-labs/soar-sdk"
 ```
 
-Provides a set of methods for conveniently bundling transactions.
+The InstructionBuilder provides a set of methods for conveniently bundling transactions.
 
 ```typescript
 const transaction = await this.builder
@@ -115,12 +148,6 @@ const transaction = await this.builder
       .and(/*some other transaction*/)
       .then((builder) => builder.build());
 ```
-
-## Contributing
-
-The community is encouraged to contribute to the Soar SDK.
-
-Fixes and features are always welcome! Please feel free to submit a PR for review.
 
 ### Tests.
 

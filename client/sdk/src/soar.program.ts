@@ -10,7 +10,7 @@ import {
 } from "@solana/web3.js";
 import { IDL, type Soar } from "./idl/soar";
 import { PROGRAM_ID } from "./constants";
-import type BN from "bn.js";
+import BN from "bn.js";
 import { InstructionBuilder } from "./instructions";
 import { Utils } from "./utils";
 import { type InstructionResult } from "./types";
@@ -270,7 +270,7 @@ export class SoarProgram {
     description: string,
     nftMeta: PublicKey | string,
     scoresToRetain: number,
-    scoresOrder: boolean,
+    isAscending: boolean,
     decimals?: number,
     minScore?: BN,
     maxScore?: BN,
@@ -286,7 +286,7 @@ export class SoarProgram {
         description,
         nftMeta,
         scoresToRetain,
-        isAscending: scoresOrder,
+        isAscending,
         decimals: decimals ?? null,
         minScore: minScore ?? null,
         maxScore: maxScore ?? null,
@@ -363,9 +363,12 @@ export class SoarProgram {
     user: PublicKey | string,
     authority: PublicKey | string,
     leaderboard: PublicKey | string,
-    score: BN
+    score: BN | number
   ): Promise<InstructionResult.SubmitScore> {
     this.builder.clean();
+    if (typeof score === "number") {
+      score = new BN(score);
+    }
     user = this.getPublicKey(user);
     authority = this.getPublicKey(authority);
     leaderboard = this.getPublicKey(leaderboard);
